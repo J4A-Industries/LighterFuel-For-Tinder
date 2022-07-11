@@ -10,7 +10,7 @@ export default {
     "default_popup": "index.html"
   },
   "icons": {
-    "64": "LighterFuel64.png"
+    "64": "src/assets/LighterFuel64.png"
   },
   "externally_connectable": {
     "matches": ["*://tinder.com/*"]
@@ -21,12 +21,12 @@ export default {
     "scripting"
   ],
   "host_permissions": [
-    "*://*.tinder.com/*", 
-    "*://*.gotinder.com/*"
+    "*://\*.tinder.com/\*", 
+    "*://\*.gotinder.com/\*"
   ],
-  "content_scripts": [
+  /*"content_scripts": [
     {
-      "matches": ["*://*.tinder.com/*"],
+      "matches": ["*://\*.tinder.com/\*"],
       "js": ["./static/js/LighterFuel.js"],
       "css": ["./injectedCss.css"],
       "all_frames": false,
@@ -43,5 +43,5 @@ export default {
     ],
     "matches": ["<all_urls>"],
     "use_dynamic_url": true
-  }]
+  }]*/
 }
