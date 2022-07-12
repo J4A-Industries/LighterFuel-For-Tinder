@@ -19,8 +19,8 @@ class App extends React.Component {
     enlargeButton: boolean,
   };
 
-  constructor() {
-    super({});
+  constructor(props: any) {
+    super(props);
     this.state = { overlayButton: true, searchButton: true, enlargeButton: true };
     if (!chrome.runtime) throw new Error("This extension doesn't support the current browser");
     this.port = chrome.runtime.connect();
@@ -75,10 +75,10 @@ class App extends React.Component {
           >
             <p>{text.donate.location}</p>
             <div className="donateButtonContainer">
-              <div className="donationButton" onClick={() => openTab(links.ukraineAppeal)}>
+              <div className="donationButton content-center" onClick={() => openTab(links.ukraineAppeal)}>
                 {text.donate.buttonText}
                 {' '}
-                <Flag code="UA" className="h-6 inline-block mx-3 my-1" />
+                <Flag code="UA" className="h-6 inline-block mx-3" />
               </div>
             </div>
           </Collapsible>
