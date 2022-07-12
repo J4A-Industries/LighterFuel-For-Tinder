@@ -30,12 +30,12 @@ const languageTexts = {
 const findLanguage = (): any => {
 	const lang = navigator.language;
 	if (lang.startsWith("en")) {
-		return text["en-GB"];
+		return languageTexts["en-GB"];
 	}
 	return languageTexts["en-GB"];
 }
 
-export const text = languageTexts["en-GB"]; //findLanguage();
+export const text = findLanguage();
 
 export const links = {
 	donate3: "https://buy.stripe.com/00gfZVfUnbMZ8so5kl",
