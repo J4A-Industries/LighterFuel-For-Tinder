@@ -36,6 +36,9 @@ class App extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  /**
+   * Handles whenver the user changes the state of the toggle switches
+   */
   handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     switch (event.target.id) {
       case 'overlay':
@@ -54,6 +57,9 @@ class App extends React.Component {
     console.log(`Button ${event.target.id} Set To ${event.target.checked ? 'Checked' : 'Unchecked'}`);
   }
 
+  /**
+   * Sends the state of the toggle switches to the background script
+   */
   sendState() {
     this.port.postMessage({ showSettings: this.state });
     console.log(this.state);
@@ -65,7 +71,7 @@ class App extends React.Component {
       <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light">
         <header className="App-header">
           <div className="grid justify-center m-5">
-          <img src={logo} className="h-32 w-32" alt="logo" />
+          <img src={logo} className="h-32 w-32 select-none" alt="logo" />
           </div>
           
           <Collapsible
