@@ -16,10 +16,13 @@
     "@mui/icons-material": "^5.3.0",
     "@mui/material": "^5.3.0",
     "@mui/styled-engine-sc": "^5.3.0",
+    "@types/chrome": "^0.0.193",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "postcss": "^8.4.14",
     "react": "^18.2.0",
+    "react-collapsible": "^2.10.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
     "tailwindcss": "^3.1.6"
   },
   "devDependencies": {
