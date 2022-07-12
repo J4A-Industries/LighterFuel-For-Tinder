@@ -65,10 +65,9 @@ class App extends React.Component {
           <img src={logo} className="App-logo" alt="logo" />
           <Collapsible
             trigger={(
-              <div>
+              <div className="content-center">
                 {text.donate.title}
-                {' '}
-                <Flag code="UA" height="16" />
+                <Flag code="UA" className="h-6 inline-block mx-3 my-1" />
               </div>
             )}
             easing="ease-in"
@@ -79,7 +78,7 @@ class App extends React.Component {
               <div className="donationButton" onClick={() => openTab(links.ukraineAppeal)}>
                 {text.donate.buttonText}
                 {' '}
-                <Flag code="UA" height="16" />
+                <Flag code="UA" className="h-6 inline-block mx-3 my-1" />
               </div>
             </div>
           </Collapsible>
