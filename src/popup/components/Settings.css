@@ -1,0 +1,22 @@
+.setting {
+	box-shadow: 0 -1px 0 #FFF;
+	padding-top: 5px;
+	font-size: 15px;
+	margin: 4px;
+	padding-bottom: 5px;
+}
+.settingLabel {
+	margin-top: 10px;
+	font-size: 1.17em;
+	font-weight: bold;
+	width: auto;
+	display: flex;
+}
+.settingLabel div {
+	flex: 1;
+	align-self: right;
+}
+.MuiSlider-root {
+	margin-left: 10%;
+	margin-right: 10%;
+}
