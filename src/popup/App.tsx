@@ -1,45 +1,106 @@
-import React, { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import './App.css';
+import React from 'react';
+import Flag from 'react-world-flags';
+import Collapsible from 'react-collapsible';
+import logo from '@/assets/LighterFuel512.png';
+import Settings from '@/popup/components/Settings';
+import ToggleSwitch from '@/popup/components/ToggleSwitch';
+import {links, text} from '@/config';
+import {openTab} from '@/popup/misc';
+import { gpt } from '@/config';
 
-function App() {
-  const [count, setCount] = useState(0)
+class App extends React.Component {
 
-  return (
-    <div className="App w-full">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="text-5xl">Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount(() => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+  port: chrome.runtime.Port;
+
+  state: {
+    overlayButton: boolean,
+    searchButton: boolean,
+    enlargeButton: boolean,
+  };
+
+  constructor() {
+    super({});
+    this.state = { overlayButton: true, searchButton: true, enlargeButton: true };
+    if (!chrome.runtime) throw new Error("This extension doesn't support the current browser");
+    this.port = chrome.runtime.connect();
+    this.port.onMessage.addListener((msg) => {
+      console.log(`message recieved${msg}`);
+      if ('showSettings' in msg) {
+        this.setState(msg.showSettings);
+      }
+    });
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    switch (event.target.id) {
+      case 'overlay':
+        this.setState({ overlayButton: event.target.checked }, () => this.sendState());
+        break;
+      case 'search':
+        this.setState({ searchButton: event.target.checked }, () => this.sendState());
+        break;
+      case 'enlarge':
+        this.setState({ enlargeButton: event.target.checked }, () => this.sendState());
+        break;
+      default:
+        console.error('no handle change ID given :(');
+        break;
+    }
+    console.log(`Button ${event.target.id} Set To ${event.target.checked ? 'Checked' : 'Unchecked'}`);
+  }
+
+  sendState() {
+    this.port.postMessage({ showSettings: this.state });
+    console.log(this.state);
+  }
+
+  render() {
+    const { overlayButton, searchButton, enlargeButton } = this.state;
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <Collapsible
+            trigger={(
+              <div>
+                {text.donate.title}
+                {' '}
+                <Flag code="UA" height="16" />
+              </div>
+            )}
+            easing="ease-in"
+            transitionTime={200}
           >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+            <p>{text.donate.location}</p>
+            <div className="donateButtonContainer">
+              <div className="donationButton" onClick={() => openTab(links.ukraineAppeal)}>
+                {text.donate.buttonText}
+                {' '}
+                <Flag code="UA" height="16" />
+              </div>
+            </div>
+          </Collapsible>
+          <ToggleSwitch text={text.enableOverlay} id="overlay" state={overlayButton} onChange={this.handleChange} />
+          <ToggleSwitch text={text.enableSearchButton} id="search" state={searchButton} onChange={this.handleChange} />
+          <ToggleSwitch text={text.enableEnlargeButton} id="enlarge" state={enlargeButton} onChange={this.handleChange} />
+          <Collapsible trigger={text.info.title} easing="ease-in" transitionTime={200}>
+            <p>{text.info.text}</p>
+          </Collapsible>
+          <Collapsible trigger={text.reverseImageSearch.title} easing="ease-in" transitionTime={200}>
+            <p>{text.reverseImageSearch.title}</p>
+          </Collapsible>
+          {gpt && <Settings />}
+          <Collapsible trigger={text.testimonials.title} easing="ease-in" transitionTime={200}>
+            <p>{text.testimonials.text}</p>
+            <div className="donationButton" onClick={() => openTab(links.review)}>Leave a Review!</div>
+          </Collapsible>
+        </header>
+      </div>
+    );
+  }
 }
 
-export default App
+export default App;
