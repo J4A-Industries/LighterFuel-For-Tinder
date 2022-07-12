@@ -17,7 +17,7 @@ const languageTexts = {
 		},
 		reverseImageSearch: {
 			title: "Reverse image search",
-			text: "Enable the search button and click on it (only for matches) and see if that image is publicly available online (if it is, they&#39;re probably a catfish)",
+			text: "Enable the search button and click on it (only for matches) and see if that image is publicly available online (if it is, they're probably a catfish)",
 		},
 		testimonials: {
 			title: "Testimonials",
