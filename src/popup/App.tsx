@@ -8,6 +8,7 @@ import ToggleSwitch from '@/popup/components/ToggleSwitch';
 import {links, text} from '@/config';
 import {openTab} from '@/popup/misc';
 import { gpt } from '@/config';
+import {styles} from '@/popup/styles';
 
 class App extends React.Component {
 
@@ -19,6 +20,7 @@ class App extends React.Component {
     enlargeButton: boolean,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(props: any) {
     super(props);
     this.state = { overlayButton: true, searchButton: true, enlargeButton: true };
@@ -60,41 +62,43 @@ class App extends React.Component {
   render() {
     const { overlayButton, searchButton, enlargeButton } = this.state;
     return (
-      <div className="App">
+      <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
+          <div className="grid justify-center m-5">
+          <img src={logo} className="h-32 w-32" alt="logo" />
+          </div>
+          
           <Collapsible
             trigger={(
               <div className="content-center">
                 {text.donate.title}
-                <Flag code="UA" className="h-6 inline-block mx-3 my-1" />
+                <Flag code="UA" className={styles.ukraineFlag} />
               </div>
             )}
+            className=""
             easing="ease-in"
             transitionTime={200}
           >
-            <p>{text.donate.location}</p>
-            <div className="donateButtonContainer">
-              <div className="donationButton content-center" onClick={() => openTab(links.ukraineAppeal)}>
-                {text.donate.buttonText}
-                {' '}
-                <Flag code="UA" className="h-6 inline-block mx-3" />
-              </div>
+            <p className="text-lg">{text.donate.location}</p>
+            <div className={styles.donateButton} onClick={() => openTab(links.ukraineAppeal)}>
+              {text.donate.buttonText}
+              {' '}
+              <Flag code="UA" className={styles.ukraineFlag} />
             </div>
           </Collapsible>
           <ToggleSwitch text={text.enableOverlay} id="overlay" state={overlayButton} onChange={this.handleChange} />
           <ToggleSwitch text={text.enableSearchButton} id="search" state={searchButton} onChange={this.handleChange} />
           <ToggleSwitch text={text.enableEnlargeButton} id="enlarge" state={enlargeButton} onChange={this.handleChange} />
           <Collapsible trigger={text.info.title} easing="ease-in" transitionTime={200}>
-            <p>{text.info.text}</p>
+            <p className={styles.description}>{text.info.text}</p>
           </Collapsible>
           <Collapsible trigger={text.reverseImageSearch.title} easing="ease-in" transitionTime={200}>
-            <p>{text.reverseImageSearch.title}</p>
+            <p className={styles.description}>{text.reverseImageSearch.text}</p>
           </Collapsible>
           {gpt && <Settings />}
           <Collapsible trigger={text.testimonials.title} easing="ease-in" transitionTime={200}>
-            <p>{text.testimonials.text}</p>
-            <div className="donationButton" onClick={() => openTab(links.review)}>Leave a Review!</div>
+            <p className={styles.description}>{text.testimonials.text}</p>
+            <div className={styles.donateButton} onClick={() => openTab(links.review)}>Leave a Review!</div>
           </Collapsible>
         </header>
       </div>
