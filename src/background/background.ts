@@ -2,9 +2,22 @@
 
 import MatchManager from '@/background/MatchManager';
 import { debug } from '@/config.js';
+import { AISettings, ImageType, ShowSettings } from '@/types';
 
 class Background {
-	selfProfile: null;
+	selfProfile: any;
+
+  aiSettings: {
+    temperature: number;
+    bestOf: number;
+    APIkey: string;
+  };
+
+  images: ImageType[];
+
+  showSettings: ShowSettings;
+
+  matchManager: MatchManager;
 
   constructor() {
     /**
@@ -13,46 +26,34 @@ class Background {
      */
 
     this.selfProfile = null;
+
     // the array of image object which have been loaded
     this.images = [];
 
     this.matchManager = new MatchManager(this);
 
-    this.ai_settings = {
+    this.showSettings = {
+      overlayButton: true,
+      searchButton: true,
+      enlargeButton: true,
+    };
+
+    this.aiSettings = {
       temperature: 95,
       bestOf: 1,
       APIkey: '',
     };
 
     this.getStoredSettings();
-    // this.initialiseCoreListner();
     this.initialiseImageListner();
     this.initialisePagelistener();
     this.initialisePopupListner();
-    // this.registerContentScripts();
-  }
-
-  /**
-   * Registers the content scripts, not used right now,
-   * I think chrome might take away the manifest contentScript registering :(
-   */
-  registerContentScripts() {
-    chrome.scripting.registerContentScripts(
-      [{
-        id: 'contentScript',
-        matches: ['https://tinder.com/*'],
-        js: ['static/js/LighterFuel.js'],
-      }],
-    );
   }
 
   /**
    * Used to set the showOverlays variable
-   *
-   * @param {Boolean} setting to show/hide the overlay
-   * @param {Boolean} stored whether or not the boolean is already stored
    */
-  setShowSettings(setting, stored) {
+  setShowSettings(setting: ShowSettings, stored = false) {
     if (!setting) console.error('setting is undefined :(');
     if (!stored) chrome.storage.sync.set({ showSettings: setting });
     this.showSettings = setting;
@@ -67,9 +68,9 @@ class Background {
     this.consoleOut(`showOverlays set to ${setting}`);
   }
 
-  setAiSettings(settings, stored) {
-    if (!stored) chrome.storage.sync.set({ ai_settings: settings });
-    this.ai_settings = settings;
+  setAiSettings(settings: AISettings, stored = false) {
+    if (!stored) chrome.storage.sync.set({ aiSettings: settings });
+    this.aiSettings = settings;
   }
 
   /**
@@ -83,7 +84,7 @@ class Background {
           this.setShowSettings(msg.showSettings);
           port.postMessage({ showSettings: this.showSettings });
         } else if ('get ai settings' in msg) {
-          port.postMessage({ ai_settings: this.ai_settings });
+          port.postMessage({ aiSettings: this.aiSettings });
         } else if ('set ai settings' in msg) {
           this.setAiSettings(msg['set ai settings']);
         }
@@ -117,7 +118,7 @@ class Background {
             this.consoleOut(request.matches.data);
             return;
           }
-          request.matches.data.matches.forEach((match) => {
+          request.matches.data.matches.forEach((match: any) => {
             this.matchManager.newMatch(match, 'match');
           });
           break;
@@ -168,6 +169,7 @@ class Background {
         // tinder has yet to discover cache and the images reload *every time they're viewed*
         const imageInArray = this.images.find((x) => details.url === x.url);
         if (!imageInArray) {
+          if(!details.responseHeaders) return;
           this.sendInfoToTab({
             action: 'new image',
             data: {
@@ -176,7 +178,7 @@ class Background {
               timeAddedToArr: Date.now(),
             },
           }).catch((e) => {
-            if (this.debug) console.log(e);
+            if (debug) console.log(e);
           });
           console.log(details);
         }
@@ -201,26 +203,25 @@ class Background {
         this.setShowSettings(result.showSettings, true);
       }
     });
-    chrome.storage.sync.get(['ai_settings'], (result) => {
-      if (result.ai_settings) {
-        this.ai_settings = result.ai_settings;
+    chrome.storage.sync.get(['aiSettings'], (result) => {
+      if (result.aiSettings) {
+        this.aiSettings = result.aiSettings;
       }
     });
   }
 
   /**
-   * This filters through all the tabs
+   * This filters through all the tabs and sends the info to them
    *
-   * @param {Object} obj
    */
-  sendInfoToTab(obj) {
+  sendInfoToTab(obj: { action: string; data: ShowSettings | { url: string; lastModified: string | undefined; timeAddedToArr: number; }; }) {
     // format {action: String. data: Object}
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       chrome.tabs.query({})// query all tabs
         .then((x) => x.filter((y) => y.url))// filter to only ones we have permission to look at (all tinder tabs)
         .then((tabs) => {
           for (const tab of tabs) {
-            chrome.tabs.sendMessage(tab.id, obj);
+            if(tab.id) chrome.tabs.sendMessage(tab.id, obj);
           }
           resolve();
         });
@@ -230,7 +231,7 @@ class Background {
   /**
    * a console log facade for the debug bool
    */
-  consoleOut(message, error = false) {
+  consoleOut(message: string | any, error = false) {
     if (debug) {
       if (error) {
         console.error(message);
@@ -245,7 +246,7 @@ try {
   const bg = new Background();
   // prints the bg instance to the console for debugging!
   console.log(bg);
-} catch (err) {
+} catch (err: any) {
   console.error(`Error caught in background.js: ${err.stack}`);
 }
 
