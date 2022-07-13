@@ -1,14 +1,24 @@
 /* global chrome,  */
 
+import { createButtons, getDomsWithBGImages, getImageURLfromNode, getTimeOld, parentNode } from "@/background/injected/Misc";
+import { debug } from "@/config";
+
 // "this file is injected onto tinder.com so it can request all the files properly,
 // content script is not worth messing around with apparently" - Acorn221 in 2020
 
 class LighterFuel {
+
+  images: string[];
+  profileSliderContainers: { domNode: Element, data: any }[];
+  showSettings: any;
+  mainMutationObserver: MutationObserver;
+  textContainerObserver: MutationObserver;
+
+
   /**
    * @param {Boolean} debug
    */
-  constructor(debug = true) {
-    this.debug = debug;
+  constructor() {
     // images: {url: String, lastModified: String, timeAddedToArr: Integer}[]
     this.images = [];
     // profileSliderContainers: {domNode: DomNode, data: Object}[]
@@ -16,7 +26,7 @@ class LighterFuel {
     this.showSettings = {};
     this.mainMutationObserver = new MutationObserver(this.profileMutationCallback);
     this.textContainerObserver = new MutationObserver(this.textButtonObserverCallback);
-    if (this.debug) this.setCustomFetch();
+    if (debug) this.setCustomFetch();
     this.initialiseMessageListner();
     this.init();
   }
@@ -26,7 +36,7 @@ class LighterFuel {
    */
   init() {
     this.getInitialData().then(() => {
-      if (this.debug) this.consoleOut(this.images);
+      if (debug) this.consoleOut(this.images);
     }).catch((err) => {
       this.consoleOut(err);
     });
@@ -38,7 +48,7 @@ class LighterFuel {
    * @param {HTMLElement} container The profile images DIV
    * @returns {MutationObserver} The MutationObserver that has been created
    */
-  monitorContainer(container) {
+  monitorContainer(container: Element) {
     const config = { attributes: true, subtree: true };
 
     const observer = new MutationObserver((mutationsList) => {
@@ -59,17 +69,17 @@ class LighterFuel {
    * @param {MutationRecord} mutationsList The mutation list that has occurred
    * @param {HTMLElement} container The container on which the observer was observing
    */
-  profileMutationCallback(mutationsList, container) {
+  profileMutationCallback(mutationsList: MutationRecord[], container: HTMLElement) {
     for (const mutation of mutationsList) {
       // if "hidden" has changed (the pic displayed has changed)
       if (mutation.type === 'attributes') {
         // for every image span (div inside span is image)
-        for (const node of container.childNodes) {
+        for (const node of container.children) {
           // check whether or not the image is shown
           if (node.getAttribute('aria-hidden') === 'false') {
-            const internalImage = this.getDomsWithBGImages(node);
+            const internalImage = getDomsWithBGImages(node);
             if (internalImage.length > 0) {
-              const imageURL = this.getImageURLfromNode(internalImage[0]);
+              const imageURL = getImageURLfromNode(internalImage[0]);
               this.consoleOut(`Now displaying: ${imageURL}`);
               const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
               // ! somewhere here, there's an error 
@@ -144,7 +154,7 @@ class LighterFuel {
    * Used to get the initial images/settings from the background.js file
    */
   getInitialData() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       chrome.runtime.sendMessage({ action: 'get initial data' }, (response) => {
         if (!response) return reject();
         this.addNewImage(response.imageArray);
@@ -213,7 +223,7 @@ class LighterFuel {
    * TODO: make this look nicer
    */
   setCustomFetch() {
-    if (this.debug) {
+    if (debug) {
       // save default fetch
       const nativeFetch = window.fetch;
       window.fetch = (...args) => new Promise((resolve, reject) => {
@@ -240,7 +250,7 @@ class LighterFuel {
       messages: /https:*:\/\/api.gotinder.com\/v2\/matches\/([A-z0-9]+)\/messages\?/g,
     };
     // check for JSON here
-    result.json().then((jsonOut) => {
+    result.json().then((jsonOut: any) => {
       if (args[0].match(regexChecks.matches)) {
         chrome.runtime.sendMessage({ action: 'send matches', matches: jsonOut });
       } else if (args[0].match(regexChecks.core)) {
@@ -257,82 +267,6 @@ class LighterFuel {
 
   /* ************************************************ */
 
-  // TODO: Utility methods should be moved to a different class imo ⬇⬇⬇
-  /**
-   * Gets the images from the profile
-   * TODO: find out what this does
-   * @param {HTMLElement} doc The parent of the images to search for
-   * @param {Array} urlArray The array of URLs that the method searches for
-   * @returns {{domNode: DomNode, data: Object}[]} An array of images found with the node and the data entry
-   */
-  getProfileImages(doc, urlArray = this.images) {
-    if (!doc) return [];
-    // The regex to check for the background to match `url(...)`
-    const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-    return Array.from(
-      Array.from(doc.querySelectorAll('div'))
-        .reduce((collection, node) => {
-          // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
-          const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
-          // match `url(...)`
-          const match = srcChecker.exec(prop);
-          if (match) {
-            // look for the found URL in the URL list
-            const urlEntry = urlArray.find((x) => x.url === match[1]);
-            // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
-            if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
-              // add tothe collection
-              collection.add({ domNode: node, data: urlEntry });
-            }
-          }
-          return collection;
-        }, new Set()),
-    );
-  }
-
-  /**
-   * Probably could be obsolete and replaced with getProfileImages, will remove in the future
-   * TODO: move this to an external helper file
-   *
-   * @param {HTMLElement} doc The document to search though
-   * @returns {{HTMLElement}[]} The array of nodes
-   */
-  getDomsWithBGImages(doc) {
-    if (!doc) return [];
-    const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-    return Array.from(
-      Array.from(doc.querySelectorAll('*'))
-        .reduce((collection, node) => {
-          const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
-          const match = srcChecker.exec(prop);
-          if (match) {
-            // if(urlArray.find(x => x.url === match.slice(4, -1).replace(/"/g, ""))){
-            // match[1] is url
-            // var urlEntry = urlArray.find(x => x.url === match[1]);
-            if ((node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
-              collection.add(node);
-            }
-          }
-          return collection;
-        }, new Set()),
-    );
-  }
-
-  /**
-   * TODO: move this to an external helper file
-   * Gets the URL from the node (tinder uses CSS background images)
-   *
-   * @param {HTMLElement} node
-   * @returns {String} the URL from the node
-   */
-  getImageURLfromNode(node) {
-    const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-    // get background image from node
-    const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
-    const match = srcChecker.exec(prop);
-    return match ? match[1] : '';
-  }
-
   /**
    * Creates the overlay element for the photo
    *
@@ -343,91 +277,24 @@ class LighterFuel {
     const { lastModified } = data;
     const overlayNode = document.createElement('p');
     const date = new Date(lastModified);
-    const xOld = this.getTimeOld(date.getTime());
+    const xOld = getTimeOld(date.getTime());
     const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
     overlayNode.innerHTML = `Image Uploaded At: ${outFormat}`;
-    overlayNode.appendChild(this.createButtons(data));
+    overlayNode.appendChild(createButtons(data));
     console.log(overlayNode);
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
       // * whenever there's 100px above, we have room to place the box above
-      console.log(data);
       if (bounds.top > 100) {
         overlayNode.classList.add('topBox');
-        // TODO: fix jank
-        overlayNode.parentElement.parentElement.style.overflow = 'visible';
-        overlayNode.parentElement.parentElement.parentElement.parentElement.parentElement.style.top = '50px';
+        parentNode(overlayNode, 2).style.overflow = 'visible';
+        parentNode(overlayNode, 5).style.top = '50px';
       } else {
         overlayNode.classList.add('overlayBox');
       }
     };
 
     return { overlayNode, onPlaced };
-  }
-
-  /**
-   * TODO: move this to an external helper file
-   * Used to genereate the buttons
-   *
-   * @returns {HTMLElement} The buttons
-   */
-  createButtons(data) {
-    const parent = document.createElement('div');
-    parent.classList.add('buttonParent');
-    // * URLs that start with ... are private (their URL can't be passed to any other service)
-    // * They are seemingly the profile pictures when swiping
-    // * Let's just only allow this on matches for now
-    if (!data.url.startsWith('https://images-ssl.gotinder.com/u/')) {
-      const searchButton = document.createElement('div');
-      searchButton.classList.add('buttonLF');
-      searchButton.classList.add('search');
-      searchButton.innerText = 'Search';
-      searchButton.onclick = () => {
-        console.log(`https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(data.url)}&exph=800&expw=640&vt=2&sim=15`);
-        window.open(`https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(data.url)}&exph=800&expw=640&vt=2&sim=15`, '_blank').focus();
-      };
-      parent.appendChild(searchButton);
-
-      const enlargeButton = document.createElement('div');
-      enlargeButton.classList.add('buttonLF');
-      enlargeButton.classList.add('enlarge');
-      enlargeButton.innerText = 'Enlarge';
-      enlargeButton.onclick = () => {
-        window.open(this.getFullQualityImage(data.url), '_blank').focus();
-      };
-      parent.appendChild(enlargeButton);
-    }
-    return parent;
-  }
-
-  /**
-   * TODO: move this to an external helper file
-   * Transfers the input image to the "full quality" tinder ones
-   * Highly likely to break soon
-   *
-   * @param {String} url
-   * @returns {String}
-   */
-  getFullQualityImage(url) {
-    return url.replace(url.split('/')[4].split('_')[0], 'original').replace('.jpg', '.jpeg');
-  }
-
-  /**
-   * TODO: move this to an external helper file
-   * Used to get the relative time from the current time
-   *
-   * @param {String} time The Date.toString() time, eg "Wed, 08 Apr 2020 22:14:00 GMT"
-   * @returns {String} How many days/weeks/years ago, eg "20 Days"
-   */
-  getTimeOld(time) {
-    // get days old
-    const days = Math.round((Date.now() - time) / 24 / 60 / 60 / 1000);
-    if (days / 365 > 1) {
-      return `${Math.round((days / 365) * 100) / 100} Years`;
-    } if (days / 7 > 1) {
-      return `${Math.round((days / 7) * 10) / 10} Weeks`;
-    }
-    return `${days} Days`;
   }
 
   /**
@@ -450,28 +317,6 @@ class LighterFuel {
     this.consoleOut(this.showSettings);
   }
 
-  /**
-   * TODO: move this to an external helper file
-   * Highly likely to break if tinder makes changes, this is the best I can do to keep it going
-   * It gets the container for the buttons so they can be added
-   * @returns {HTMLElement} The parent node for the buttons
-   */
-  getTextButtonParent() {
-    const svgArr = [...document.querySelectorAll('svg')];
-    const svg24px = svgArr.filter((n) => n.getAttribute('height') === '24px');
-    const hasLastChild = svg24px.filter((n) => n.firstChild.lastChild);
-    const musicIcon = hasLastChild.find((n) => n.firstChild.lastChild.getAttribute('fill') === '#17af70');
-    if (musicIcon) return musicIcon.parentNode.parentNode.parentNode;
-    const spanArr = [...document.querySelectorAll('span')];
-    const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
-    for (const n of hiddenSpans) {
-      if (n.innerText === 'Vinyl' || n.innerText === 'Sticker' || n.innerText === 'GIF') {
-        return n.parentNode.parentNode.parentNode;
-      }
-    }
-    return null;
-  }
-
   // TODO: complete these (GPT Integration)
   setTextButtonObserver() {
     if (this.getTextButtonParent()) {
@@ -488,8 +333,8 @@ class LighterFuel {
   /**
    * a console log facade for the debug bool
    */
-  consoleOut(message) {
-    if (this.debug) console.log(message);
+  consoleOut(message: string | any[] | any) {
+    if (debug) console.log(message);
   }
 }
 

@@ -127,7 +127,6 @@ export const getDomsWithBGImages = (doc: { querySelectorAll: (arg0: string) => I
 };
 
 /**
- * TODO: move this to an external helper file
  * Gets the URL from the node (tinder uses CSS background images)
  *
  * @param {HTMLElement} node
@@ -140,3 +139,46 @@ export const getDomsWithBGImages = (doc: { querySelectorAll: (arg0: string) => I
   const match = srcChecker.exec(prop);
   return match ? match[1] : '';
 };
+
+/**
+ * Returns the parent node, "count" times up the DOM tree
+ */
+export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
+  if (count === 0) return node;
+  if(!node.parentElement){
+    console.error(new Error('No parent node found :('));
+    return node;
+  }
+  return parentNode(node.parentElement, count - 1);
+};
+
+/**
+ * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
+ * It gets the container for the buttons so they can be added
+ * @returns {HTMLElement} The parent node for the buttons
+ */
+export const getTextButtonParent = () =>  {
+  const svgArr = [...document.querySelectorAll('svg')];
+  const svg24px = svgArr.filter((n) => n.getAttribute('height') === '24px');
+  const hasLastChild = svg24px.filter((n) => n.firstChild?.lastChild);
+  
+  const musicIcon = hasLastChild.find((n) => {
+    const firstChild = n.children[0];
+    if(firstChild){
+      const secondChild = firstChild.children[firstChild.children.length-1];
+      if(secondChild){
+        return secondChild.getAttribute('fill') === '#17af70';
+      }
+    }
+    return false;
+  });
+  if (musicIcon) return parentNode(musicIcon, 3);
+  const spanArr = [...document.querySelectorAll('span')];
+  const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
+  for (const n of hiddenSpans) {
+    if (n.innerText === 'Vinyl' || n.innerText === 'Sticker' || n.innerText === 'GIF') {
+      return parentNode(n, 3);
+    }
+  }
+  return null;
+}
