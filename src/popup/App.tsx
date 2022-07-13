@@ -5,9 +5,8 @@ import Collapsible from 'react-collapsible';
 import logo from '@/assets/LighterFuel512.png';
 import Settings from '@/popup/components/Settings';
 import ToggleSwitch from '@/popup/components/ToggleSwitch';
-import {links, text} from '@/config';
+import {links, text, gpt} from '@/config';
 import {openTab} from '@/popup/misc';
-import { gpt } from '@/config';
 import {styles} from '@/popup/styles';
 
 class App extends React.Component {
