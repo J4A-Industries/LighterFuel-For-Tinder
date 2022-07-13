@@ -69,12 +69,12 @@ export const getTimeOld = (time: number) => {
 
 /**
  * Gets the images from the profile
- * TODO: find out what this does
+ * 
  * @param {HTMLElement} doc The parent of the images to search for
  * @param {Array} urlArray The array of URLs that the method searches for
  * @returns {{domNode: DomNode, data: Object}[]} An array of images found with the node and the data entry
  */
- export const getProfileImages = (doc: { querySelectorAll: (arg0: string) => Iterable<unknown> | ArrayLike<unknown>; }, urlArray: any[]) => {
+ export const getProfileImages = (doc: HTMLElement | Document, urlArray: any[]) => {
   if (!doc) return [];
   // The regex to check for the background to match `url(...)`
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
@@ -100,33 +100,33 @@ export const getTimeOld = (time: number) => {
 };
 
 /**
+ * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
  * Probably could be obsolete and replaced with getProfileImages, will remove in the future
  *
  * @param {HTMLElement} doc The document to search though
  * @returns {{HTMLElement}[]} The array of nodes
  */
-export const getDomsWithBGImages = (doc: { querySelectorAll: (arg0: string) => Iterable<unknown> | ArrayLike<unknown>; }) => {
+export const getDomsWithBGImages = (doc: HTMLElement) => {
   if (!doc) return [];
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-  return Array.from(
-    Array.from(doc.querySelectorAll('*'))
-      .reduce((collection, node) => {
-        const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
+  const arr: Array<Element> = Array.from(doc.querySelectorAll('*'));
+  const imageArray = arr.reduce((collection: Set<Element>, node: Element) => {
+    const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
         const match = srcChecker.exec(prop);
         if (match) {
-          // if(urlArray.find(x => x.url === match.slice(4, -1).replace(/"/g, ""))){
-          // match[1] is url
-          // var urlEntry = urlArray.find(x => x.url === match[1]);
           if ((node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
             collection.add(node);
           }
         }
-        return collection;
-      }, new Set()),
-  );
+    return collection;
+  }, new Set());
+
+  return Array.from(imageArray);
 };
 
+
 /**
+ * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
  * Gets the URL from the node (tinder uses CSS background images)
  *
  * @param {HTMLElement} node
@@ -143,7 +143,7 @@ export const getDomsWithBGImages = (doc: { querySelectorAll: (arg0: string) => I
 /**
  * Returns the parent node, "count" times up the DOM tree
  */
-export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
+export const parentNode = (node: HTMLElement | Element, count: number): HTMLElement | Element => {
   if (count === 0) return node;
   if(!node.parentElement){
     console.error(new Error('No parent node found :('));
