@@ -8,16 +8,13 @@ import ToggleSwitch from '@/popup/components/ToggleSwitch';
 import {links, text, gpt} from '@/config';
 import {openTab} from '@/popup/misc';
 import {styles} from '@/popup/styles';
+import { ShowSettings } from '@/types';
 
 class App extends React.Component {
 
   port: chrome.runtime.Port;
 
-  state: {
-    overlayButton: boolean,
-    searchButton: boolean,
-    enlargeButton: boolean,
-  };
+  state: ShowSettings;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(props: any) {
