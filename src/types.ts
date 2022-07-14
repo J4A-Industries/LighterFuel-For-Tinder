@@ -4,6 +4,11 @@ export type ImageType = {
   timeAddedToArr: Date;
 }
 
+export type ProfileImage = {
+  domNode: HTMLElement;
+  data: ImageType;
+}
+
 export type ShowSettings = {
   overlayButton: boolean;
   searchButton: boolean;
