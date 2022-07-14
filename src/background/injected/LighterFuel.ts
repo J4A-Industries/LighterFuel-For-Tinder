@@ -1,7 +1,8 @@
 /* global chrome,  */
 
-import { createButtons, getDomsWithBGImages, getImageURLfromNode, getTimeOld, parentNode } from "@/background/injected/Misc";
+import { createButtons, getDomsWithBGImages, getImageURLfromNode, getProfileImages, getTimeOld, parentNode } from "@/background/injected/Misc";
 import { debug } from "@/config";
+import { ImageType } from "@/types";
 
 // "this file is injected onto tinder.com so it can request all the files properly,
 // content script is not worth messing around with apparently" - Acorn221 in 2020
@@ -110,7 +111,7 @@ class LighterFuel {
    * @param {HTMLElement} imgDom The profile element
    */
   setupProfileSlider(imgDom) {
-    const profileImages = this.getProfileImages(imgDom, this.images);
+    const profileImages = getProfileImages(imgDom, this.images);
     if (profileImages.length > 0) {
       // this might break, not sure of a better way to do it though! This is most likely to break first
       let profileImagesContainer = profileImages[0].domNode.parentNode.parentNode;
@@ -180,7 +181,7 @@ class LighterFuel {
     // prune off the old images
     if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
     window.requestIdleCallback(() => {
-      const pImages = this.getProfileImages(document, this.images);
+      const pImages = getProfileImages(document, this.images);
       pImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode));
     });
   }
@@ -202,15 +203,15 @@ class LighterFuel {
    *
    * @returns {Promise<Array>}
    */
-  lookForProfileImages() {
+  lookForProfileImages(): Promise<Array> {
     return new Promise((resolve) => {
-      const profileImages = this.getProfileImages(document, this.images);
+      const profileImages = getProfileImages(document, this.images);
       if (profileImages.length < 1) {
         resolve(profileImages);
       } else {
         window.onload = () => {
           resolve(this.lookForProfileImages());
-          if (this.debug) this.consoleOut('No nodes found, setting window onload event');
+          if (debug) this.consoleOut('No nodes found, setting window onload event');
         };
       }
     });
@@ -273,7 +274,7 @@ class LighterFuel {
    * @param {String} lastModified The last modified time from the image
    * @returns {HTMLElement}
    */
-  createOverlayNode(data) {
+  createOverlayNode(data: ImageType) {
     const { lastModified } = data;
     const overlayNode = document.createElement('p');
     const date = new Date(lastModified);
@@ -318,6 +319,7 @@ class LighterFuel {
   }
 
   // TODO: complete these (GPT Integration)
+  /*
   setTextButtonObserver() {
     if (this.getTextButtonParent()) {
 
@@ -329,7 +331,7 @@ class LighterFuel {
 
     }
   }
-
+  */
   /**
    * a console log facade for the debug bool
    */
@@ -339,7 +341,7 @@ class LighterFuel {
 }
 
 try {
-  const lf = new LighterFuel(true);
+  const lf = new LighterFuel();
   // prints the lf instance to the console for debugging!
   console.log(lf);
 } catch (err) {
