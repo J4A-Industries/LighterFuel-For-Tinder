@@ -1,15 +1,25 @@
-/* global chrome,  */
+import { 
+  createButtons, 
+  getDomsWithBGImages, 
+  getImageURLfromNode, 
+  getProfileImages, 
+  getTimeOld, 
+  parentNode 
+} from "@/background/injected/Misc";
 
-import { createButtons, getDomsWithBGImages, getImageURLfromNode, getProfileImages, getTimeOld, parentNode } from "@/background/injected/Misc";
 import { debug } from "@/config";
-import { ImageType } from "@/types";
+
+import { 
+  ImageType, 
+  ProfileImage 
+} from "@/types";
 
 // "this file is injected onto tinder.com so it can request all the files properly,
 // content script is not worth messing around with apparently" - Acorn221 in 2020
 
 class LighterFuel {
 
-  images: string[];
+  images: ImageType[];
   profileSliderContainers: { domNode: Element, data: any }[];
   showSettings: any;
   mainMutationObserver: MutationObserver;
@@ -26,7 +36,7 @@ class LighterFuel {
     this.profileSliderContainers = [];
     this.showSettings = {};
     this.mainMutationObserver = new MutationObserver(this.profileMutationCallback);
-    this.textContainerObserver = new MutationObserver(this.textButtonObserverCallback);
+    // this.textContainerObserver = new MutationObserver(textButtonObserverCallback);
     if (debug) this.setCustomFetch();
     this.initialiseMessageListner();
     this.init();
@@ -169,9 +179,8 @@ class LighterFuel {
   /**
    * Adds the images to the images array, then it prunes the old ones off (if the array gets to big)
    *
-   * @param {Array<Object> || Object} image
    */
-  addNewImage(image) {
+  addNewImage(image: ImageType | ImageType[]) {
     if (!image) return;
     if (Array.isArray(image)) {
       this.images.push(...image);
@@ -203,7 +212,7 @@ class LighterFuel {
    *
    * @returns {Promise<Array>}
    */
-  lookForProfileImages(): Promise<Array> {
+  lookForProfileImages(): Promise<ProfileImage[]> {
     return new Promise((resolve) => {
       const profileImages = getProfileImages(document, this.images);
       if (profileImages.length < 1) {
@@ -242,7 +251,8 @@ class LighterFuel {
    * @param {Response} result The result from the fetch
    * @param {Array} args The arguments sent back
    */
-  handleFetchResponse(result, args) {
+  
+  handleFetchResponse(result: Response, args: any[]) {
     const regexChecks = {
       matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
       core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
