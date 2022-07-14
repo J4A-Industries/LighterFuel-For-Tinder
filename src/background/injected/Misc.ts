@@ -1,4 +1,5 @@
 import {debug} from '@/config';
+import { ImageType, ProfileImage } from '@/types';
 
 /**
  * Transfers the input image to the "full quality" tinder ones
@@ -72,13 +73,13 @@ export const getTimeOld = (time: number) => {
  * 
  * @param {HTMLElement} doc The parent of the images to search for
  * @param {Array} urlArray The array of URLs that the method searches for
- * @returns {{domNode: DomNode, data: Object}[]} An array of images found with the node and the data entry
+ * @returns {ProfileImage[]} An array of images found with the node and the data entry
  */
  export const getProfileImages = (doc: HTMLElement | Document, urlArray: any[]) => {
   if (!doc) return [];
   // The regex to check for the background to match `url(...)`
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-  return Array.from(
+  const outArr = Array.from(
     Array.from(doc.querySelectorAll('div'))
       .reduce((collection, node) => {
         // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
@@ -87,16 +88,18 @@ export const getTimeOld = (time: number) => {
         const match = srcChecker.exec(prop);
         if (match) {
           // look for the found URL in the URL list
-          const urlEntry = urlArray.find((x: { url: string; }) => x.url === match[1]);
+          const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
           // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
           if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
             // add tothe collection
-            collection.add({ domNode: node, data: urlEntry });
+            const entry: ProfileImage = { domNode: node, data: urlEntry };
+            collection.add(entry);
           }
         }
         return collection;
       }, new Set()),
   );
+  return outArr as ProfileImage[];
 };
 
 /**
@@ -143,11 +146,11 @@ export const getDomsWithBGImages = (doc: HTMLElement) => {
 /**
  * Returns the parent node, "count" times up the DOM tree
  */
-export const parentNode = (node: HTMLElement | Element, count: number): HTMLElement | Element => {
-  if (count === 0) return node;
+export const parentNode = (node: HTMLElement | Element, count: number): HTMLElement => {
+  if (count === 0) return node as HTMLElement;
   if(!node.parentElement){
     console.error(new Error('No parent node found :('));
-    return node;
+    return node as HTMLElement;
   }
   return parentNode(node.parentElement, count - 1);
 };
