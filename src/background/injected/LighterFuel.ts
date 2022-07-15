@@ -39,7 +39,7 @@ class LighterFuel {
     // profileSliderContainers: {domNode: DomNode, data: Object}[]
     this.profileSliderContainers = [];
     this.showSettings = {};
-    this.mainMutationObserver = new MutationObserver(this.profileMutationCallback);
+    this.mainMutationObserver = new MutationObserver(() => this.profileMutationCallback);
     // this.textContainerObserver = new MutationObserver(textButtonObserverCallback);
     if (debug) this.setCustomFetch();
     this.initialiseMessageListner();
@@ -93,11 +93,13 @@ class LighterFuel {
         for (const node of container.children) {
           // check whether or not the image is shown
           if (node.getAttribute('aria-hidden') === 'false') {
-            const internalImage = getDomsWithBGImages(node);
+            const internalImage = getDomsWithBGImages(node as HTMLElement);
             if (internalImage.length > 0) {
               const imageURL = getImageURLfromNode(internalImage[0]);
               this.consoleOut(`Now displaying: ${imageURL}`);
               const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
+
+              if(!containerRecord) return this.consoleOut('containerRecord not found in profileMutationCallback');
               // ! somewhere here, there's an error 
               // ! not sure, the image is downloaded and the console outputs the image URL
               const requestRecord = this.images.find((y) => y.url === imageURL);
@@ -110,7 +112,7 @@ class LighterFuel {
               }
               const overlay = this.createOverlayNode(requestRecord);
               const newOverlayBox = overlay.overlayNode;
-              containerRecord.overlayBox.parentNode.replaceChild(newOverlayBox, containerRecord.overlayBox);
+              parentNode(containerRecord.overlayBox, 1).replaceChild(newOverlayBox, containerRecord.overlayBox);
               containerRecord.overlayBox = newOverlayBox;
               overlay.onPlaced();
             }
@@ -129,18 +131,18 @@ class LighterFuel {
     const profileImages = getProfileImages(imgDom, this.images);
     if (profileImages.length > 0) {
       // this might break, not sure of a better way to do it though! This is most likely to break first
-      let profileImagesContainer = profileImages[0].domNode.parentNode.parentNode;
+      let profileImagesContainer = parentNode(profileImages[0].domNode, 2);
 
-      if (profileImagesContainer.nodeName === 'SPAN') profileImagesContainer = profileImagesContainer.parentNode;
-      let overlayBoxDom = profileImagesContainer.parentNode.querySelector('.overlayBox');
-      let containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === profileImagesContainer);
+      if (profileImagesContainer.nodeName === 'SPAN') profileImagesContainer = parentNode(profileImagesContainer, 1);
+      let overlayBoxDom = parentNode(profileImagesContainer, 1).querySelector('.overlayBox');
+      const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === profileImagesContainer);
       // if container record not already in profileSliderContainers array, add it
       if (!containerRecord) {
         // TODO: might not always be profileImages[0]
         const overlay = this.createOverlayNode(profileImages[0].data);
         overlayBoxDom = overlay.overlayNode;
-        profileImagesContainer.parentNode.appendChild(overlayBoxDom);
-        const observer = this.monitorContainer(profileImagesContainer, overlayBoxDom);
+        parentNode(profileImagesContainer, 1).appendChild(overlayBoxDom);
+        const observer = this.monitorContainer(profileImagesContainer);
         if(!observer) return this.consoleOut('observer not created in setupProfileSlider, monitorContainer returned undefined');
         overlay.onPlaced();
         const newRecord = { 
@@ -149,7 +151,7 @@ class LighterFuel {
           overlayBox: overlayBoxDom as HTMLElement
         };
         this.profileSliderContainers.push(newRecord);
-        
+
         this.consoleOut('New container found! Record: ');
         this.consoleOut(newRecord);
       }

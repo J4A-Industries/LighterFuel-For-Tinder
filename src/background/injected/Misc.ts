@@ -75,7 +75,7 @@ export const getTimeOld = (time: number) => {
  * @param {Array} urlArray The array of URLs that the method searches for
  * @returns {ProfileImage[]} An array of images found with the node and the data entry
  */
- export const getProfileImages = (doc: HTMLElement | Document, urlArray: any[]) => {
+ export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]) => {
   if (!doc) return [];
   // The regex to check for the background to match `url(...)`
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
@@ -146,7 +146,7 @@ export const getDomsWithBGImages = (doc: HTMLElement) => {
 /**
  * Returns the parent node, "count" times up the DOM tree
  */
-export const parentNode = (node: HTMLElement | Element, count: number): HTMLElement => {
+export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
   if (count === 0) return node as HTMLElement;
   if(!node.parentElement){
     console.error(new Error('No parent node found :('));
