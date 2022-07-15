@@ -5,20 +5,16 @@ import Collapsible from 'react-collapsible';
 import logo from '@/assets/LighterFuel512.png';
 import Settings from '@/popup/components/Settings';
 import ToggleSwitch from '@/popup/components/ToggleSwitch';
-import {links, text} from '@/config';
+import {links, text, gpt} from '@/config';
 import {openTab} from '@/popup/misc';
-import { gpt } from '@/config';
 import {styles} from '@/popup/styles';
+import { ShowSettings } from '@/types';
 
 class App extends React.Component {
 
   port: chrome.runtime.Port;
 
-  state: {
-    overlayButton: boolean,
-    searchButton: boolean,
-    enlargeButton: boolean,
-  };
+  state: ShowSettings;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(props: any) {
