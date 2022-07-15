@@ -175,7 +175,7 @@ export const getTextButtonParent = () =>  {
     }
     return false;
   });
-  if (musicIcon) return parentNode(musicIcon, 3);
+  if (musicIcon) return musicIcon.parentNode?.parentNode?.parentNode;
   const spanArr = [...document.querySelectorAll('span')];
   const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
   for (const n of hiddenSpans) {
