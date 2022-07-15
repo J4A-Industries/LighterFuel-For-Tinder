@@ -20,10 +20,14 @@ import {
 class LighterFuel {
 
   images: ImageType[];
-  profileSliderContainers: { domNode: Element, data: any }[];
+  profileSliderContainers: { 
+    containerDOM: HTMLElement,
+    observer: MutationObserver,
+    overlayBox: HTMLElement
+  }[];
   showSettings: any;
   mainMutationObserver: MutationObserver;
-  textContainerObserver: MutationObserver;
+  textContainerObserver: MutationObserver | undefined;
 
 
   /**
@@ -59,7 +63,7 @@ class LighterFuel {
    * @param {HTMLElement} container The profile images DIV
    * @returns {MutationObserver} The MutationObserver that has been created
    */
-  monitorContainer(container: Element) {
+  monitorContainer(container: Element): MutationObserver | undefined {
     const config = { attributes: true, subtree: true };
 
     const observer = new MutationObserver((mutationsList) => {
@@ -69,7 +73,8 @@ class LighterFuel {
     if (!document.body.contains(container)) {
       // TODO: find why this is needed and sort it out
       this.consoleOut('observer disconnected in monitorContainer, not sure why this is needed yet');
-      return observer.disconnect();
+      observer.disconnect();
+      return;
     }
     return observer;
   }
@@ -80,7 +85,7 @@ class LighterFuel {
    * @param {MutationRecord} mutationsList The mutation list that has occurred
    * @param {HTMLElement} container The container on which the observer was observing
    */
-  profileMutationCallback(mutationsList: MutationRecord[], container: HTMLElement) {
+  profileMutationCallback(mutationsList: MutationRecord[], container: Element) {
     for (const mutation of mutationsList) {
       // if "hidden" has changed (the pic displayed has changed)
       if (mutation.type === 'attributes') {
@@ -120,7 +125,7 @@ class LighterFuel {
    *
    * @param {HTMLElement} imgDom The profile element
    */
-  setupProfileSlider(imgDom) {
+  setupProfileSlider(imgDom: HTMLElement) {
     const profileImages = getProfileImages(imgDom, this.images);
     if (profileImages.length > 0) {
       // this might break, not sure of a better way to do it though! This is most likely to break first
@@ -135,9 +140,16 @@ class LighterFuel {
         const overlay = this.createOverlayNode(profileImages[0].data);
         overlayBoxDom = overlay.overlayNode;
         profileImagesContainer.parentNode.appendChild(overlayBoxDom);
+        const observer = this.monitorContainer(profileImagesContainer, overlayBoxDom);
+        if(!observer) return this.consoleOut('observer not created in setupProfileSlider, monitorContainer returned undefined');
         overlay.onPlaced();
-        const newRecord = { containerDOM: profileImagesContainer, observer: this.monitorContainer(profileImagesContainer, overlayBoxDom), overlayBox: overlayBoxDom };
-        containerRecord = this.profileSliderContainers.push(newRecord);
+        const newRecord = { 
+          containerDOM: profileImagesContainer as HTMLElement, 
+          observer: observer, 
+          overlayBox: overlayBoxDom as HTMLElement
+        };
+        this.profileSliderContainers.push(newRecord);
+        
         this.consoleOut('New container found! Record: ');
         this.consoleOut(newRecord);
       }
@@ -191,7 +203,10 @@ class LighterFuel {
     if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
     window.requestIdleCallback(() => {
       const pImages = getProfileImages(document, this.images);
-      pImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode));
+      pImages.forEach((node) => {
+        if(!node.domNode.parentNode) throw new Error('node.domNode.parentNode is null in addNewImage');
+        this.setupProfileSlider(node.domNode.parentNode as HTMLElement)
+      });
     });
   }
 
@@ -202,7 +217,7 @@ class LighterFuel {
     this.lookForProfileImages().then((profileImages) => {
       const config = { attributes: false, childList: true, subtree: true };
       this.consoleOut(profileImages);
-      profileImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode));
+      profileImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode as HTMLElement));
       this.mainMutationObserver.observe(document.getElementsByClassName('App')[0], config);
     });
   }
