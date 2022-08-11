@@ -1,5 +1,3 @@
-/* global chrome */
-
 import MatchManager from '@/background/MatchManager';
 import { debug } from '@/config.js';
 import { AISettings, ImageType, ShowSettings } from '@/types';
