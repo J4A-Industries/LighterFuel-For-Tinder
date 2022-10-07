@@ -8,6 +8,7 @@ import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
 import HelpCenterIcon from '@mui/icons-material/HelpCenter';
 import './Settings.css';
 import { Link } from 'react-router-dom';
+import { AISettings } from '@/types';
 
 const TextFieldStyled = styled(TextField)({
   '& label': {
@@ -63,16 +64,12 @@ const InfoTooltip = styled(({ className, title, children, ...props }: InfoToolti
 }));
 
 class Settings extends React.Component {
-  state: {
-    temperature: number,
-    bestOf: number,
-    APIkey: string,
-  };
+  state: AISettings;
 
   port: chrome.runtime.Port;
 
-  constructor(props: any) { // todo: fix type
-    super(props);
+  constructor() { // todo: fix type
+    super({});
     this.state = {
       temperature: 95,
       bestOf: 3,
