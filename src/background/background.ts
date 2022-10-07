@@ -1,4 +1,3 @@
-import MatchManager from '@/background/MatchManager';
 import { debug } from '@/config.js';
 import { AISettings, ImageType, ShowSettings } from '@/types';
 
@@ -15,8 +14,6 @@ class Background {
 
   showSettings: ShowSettings;
 
-  matchManager: MatchManager;
-
   constructor() {
     /**
      * Profiles not used right now, however it will be in the future
@@ -27,8 +24,6 @@ class Background {
 
     // the array of image object which have been loaded
     this.images = [];
-
-    this.matchManager = new MatchManager(this);
 
     this.showSettings = {
       overlayButton: true,
@@ -116,22 +111,16 @@ class Background {
             this.consoleOut(request.matches.data);
             return;
           }
-          request.matches.data.matches.forEach((match: any) => {
-            this.matchManager.newMatch(match, 'match');
-          });
           break;
         case 'send user data':
           this.consoleOut('Got user data!');
           this.consoleOut(request.data.results);
-          this.matchManager.newMatch(request.data.results, 'user');
           break;
         case 'send messages':
           if (!Array.isArray(request.messages.data.messages)) {
             this.consoleOut('Error recieving messages :( they\'re not an array!');
             return;
           }
-
-          this.matchManager.newMessages(request.messages.data.messages);
           break;
         case 'ping': // used for debugging
           sendResponse('pong');
