@@ -24,24 +24,23 @@ export default {
     "*://\*.tinder.com/\*", 
     "*://\*.gotinder.com/\*"
   ],
-  /*"content_scripts": [
+  "content_scripts": [
     {
       "matches": ["*://\*.tinder.com/\*"],
-      "js": ["./static/js/LighterFuel.js"],
-      "css": ["./injectedCss.css"],
+      "js": ["src/background/injected/LighterFuel.ts"],
+      "css": ["src/assets/injectedCss.css"],
       "all_frames": false,
       "run_at": "document_end"
     }
   ],
   "background": {
-    "service_worker": "/static/js/background.js"
+    "service_worker": "src/background/background.ts"
   },
   "web_accessible_resources": [{
     "resources": [
-      "static/*", 
-      "./injectedCss.css"
+      "src/assets/injectedCss.css"
     ],
     "matches": ["<all_urls>"],
     "use_dynamic_url": true
-  }]*/
+  }]
 }

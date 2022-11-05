@@ -28,7 +28,6 @@ class Background {
     this.showSettings = {
       overlayButton: true,
       searchButton: true,
-      enlargeButton: true,
     };
 
     this.aiSettings = {
@@ -183,7 +182,7 @@ class Background {
       if (!result.showSettings) {
         // set the default settings
         if (debug) console.log("No 'showSettings' Found, Setting To Default!");
-        this.setShowSettings({ overlayButton: true, searchButton: true, enlargeButton: true }, false);
+        this.setShowSettings({ overlayButton: true, searchButton: true }, false);
       } else {
         // else set it to the default value
         if (debug) console.log(`'showSettings' Found: ${JSON.stringify(result.showSettings)}`);

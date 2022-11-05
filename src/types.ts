@@ -12,7 +12,6 @@ export type ProfileImage = {
 export type ShowSettings = {
   overlayButton: boolean;
   searchButton: boolean;
-  enlargeButton: boolean;
 };
 
 export type TabMessage = {

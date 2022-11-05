@@ -19,7 +19,7 @@ class App extends React.Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(props: any) {
     super(props);
-    this.state = { overlayButton: true, searchButton: true, enlargeButton: true };
+    this.state = { overlayButton: true, searchButton: true };
     if (!chrome.runtime) throw new Error("This extension doesn't support the current browser");
     this.port = chrome.runtime.connect();
     this.port.onMessage.addListener((msg) => {
@@ -43,8 +43,6 @@ class App extends React.Component {
       case 'search':
         this.setState({ searchButton: event.target.checked }, () => this.sendState());
         break;
-      case 'enlarge':
-        this.setState({ enlargeButton: event.target.checked }, () => this.sendState());
         break;
       default:
         console.error('no handle change ID given :(');
@@ -62,7 +60,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { overlayButton, searchButton, enlargeButton } = this.state;
+    const { overlayButton, searchButton } = this.state;
     return (
       <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light">
         <header className="App-header">
@@ -90,7 +88,6 @@ class App extends React.Component {
           </Collapsible>
           <ToggleSwitch text={text.enableOverlay} id="overlay" state={overlayButton} onChange={this.handleChange} />
           <ToggleSwitch text={text.enableSearchButton} id="search" state={searchButton} onChange={this.handleChange} />
-          <ToggleSwitch text={text.enableEnlargeButton} id="enlarge" state={enlargeButton} onChange={this.handleChange} />
           <Collapsible trigger={text.info.title} easing="ease-in" transitionTime={200}>
             <p className={styles.description}>{text.info.text}</p>
           </Collapsible>

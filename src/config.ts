@@ -10,7 +10,6 @@ const languageTexts = {
 		},
 		enableOverlay: "Enable overlay",
 		enableSearchButton: "Enable search button",
-		enableEnlargeButton: "Enable enlarge button",
 		info: {
 			title: "Info",
 			text: "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account, reverse image search your matches photos and get the maximum resolution photos!",
