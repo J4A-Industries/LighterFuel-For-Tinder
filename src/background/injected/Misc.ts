@@ -2,17 +2,6 @@ import {debug} from '@/config';
 import { ImageType, ProfileImage } from '@/types';
 
 /**
- * Transfers the input image to the "full quality" tinder ones
- * Highly likely to break soon
- *
- * @param {String} url
- * @returns {String}
- */
- export const getFullQualityImage = (url: string) => {
-  return url.replace(url.split('/')[4].split('_')[0], 'original').replace('.jpg', '.jpeg');
-};
-
-/**
    * Used to genereate the buttons
    *
    * @returns {HTMLElement} The buttons
@@ -25,7 +14,6 @@ import { ImageType, ProfileImage } from '@/types';
   // * Let's just only allow this on matches for now
   if (!data.url.startsWith('https://images-ssl.gotinder.com/u/')) {
     const searchButton = document.createElement('div');
-    const enlargedUrl = getFullQualityImage(data.url);
     const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(data.url)}&exph=800&expw=640&vt=2&sim=15`;
     searchButton.classList.add('buttonLF');
     searchButton.classList.add('search');
@@ -36,16 +24,6 @@ import { ImageType, ProfileImage } from '@/types';
       if(newTab) newTab.focus();
     };
     parent.appendChild(searchButton);
-
-    const enlargeButton = document.createElement('div');
-    enlargeButton.classList.add('buttonLF');
-    enlargeButton.classList.add('enlarge');
-    enlargeButton.innerText = 'Enlarge';
-    enlargeButton.onclick = () => {
-      const newTab = window.open(enlargedUrl, '_blank');
-      if(newTab) newTab.focus();
-    };
-    parent.appendChild(enlargeButton);
   }
   return parent;
 };
