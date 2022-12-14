@@ -4,9 +4,9 @@ import { ImageType, ProfileImage } from '@/types';
 /**
    * Used to genereate the buttons
    *
-   * @returns {HTMLElement} The buttons
+   * @returns The buttons
    */
- export const createButtons = (data: {url: string}) => {
+ export const createButtons = (data: {url: string}): HTMLElement => {
   const parent = document.createElement('div');
   parent.classList.add('buttonParent');
   // * URLs that start with ... are private (their URL can't be passed to any other service)
@@ -31,10 +31,10 @@ import { ImageType, ProfileImage } from '@/types';
 /**
  * Used to get the relative time from the current time
  *
- * @param {String} time The Date.toString() time, eg "Wed, 08 Apr 2020 22:14:00 GMT"
- * @returns {String} How many days/weeks/years ago, eg "20 Days"
+ * @param time The timestamp to get the relative time from
+ * @returns How many days/weeks/years ago, eg "20 Days"
  */
-export const getTimeOld = (time: number) => {
+export const getTimeOld = (time: number): string => {
   // get days old
   const days = Math.round((Date.now() - time) / 24 / 60 / 60 / 1000);
   if (days / 365 > 1) {
@@ -49,11 +49,11 @@ export const getTimeOld = (time: number) => {
 /**
  * Gets the images from the profile
  * 
- * @param {HTMLElement} doc The parent of the images to search for
+ * @param {HTMLElement | Document | Element} doc The parent of the images to search for
  * @param {Array} urlArray The array of URLs that the method searches for
- * @returns {ProfileImage[]} An array of images found with the node and the data entry
+ * @returns An array of images found with the node and the data entry
  */
- export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]) => {
+ export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]): ProfileImage[] => {
   if (!doc) return [];
   // The regex to check for the background to match `url(...)`
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
@@ -84,10 +84,10 @@ export const getTimeOld = (time: number) => {
  * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
  * Probably could be obsolete and replaced with getProfileImages, will remove in the future
  *
- * @param {HTMLElement} doc The document to search though
- * @returns {{HTMLElement}[]} The array of nodes
+ * @param doc The document to search though
+ * @returns The array of nodes
  */
-export const getDomsWithBGImages = (doc: HTMLElement) => {
+export const getDomsWithBGImages = (doc: HTMLElement): Element[] => {
   if (!doc) return [];
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   const arr: Array<Element> = Array.from(doc.querySelectorAll('*'));
@@ -111,9 +111,9 @@ export const getDomsWithBGImages = (doc: HTMLElement) => {
  * Gets the URL from the node (tinder uses CSS background images)
  *
  * @param {HTMLElement} node
- * @returns {String} the URL from the node
+ * @returns the URL from the node
  */
- export const getImageURLfromNode = (node: Element) => {
+ export const getImageURLfromNode = (node: Element): string => {
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   // get background image from node
   const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
@@ -125,10 +125,10 @@ export const getDomsWithBGImages = (doc: HTMLElement) => {
  * Returns the parent node, "count" times up the DOM tree
  */
 export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
-  if (count === 0) return node as HTMLElement;
+  if (count === 0) return node;
   if(!node.parentElement){
     console.error(new Error('No parent node found :('));
-    return node as HTMLElement;
+    return node;
   }
   return parentNode(node.parentElement, count - 1);
 };
@@ -138,7 +138,7 @@ export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
  * It gets the container for the buttons so they can be added
  * @returns {HTMLElement} The parent node for the buttons
  */
-export const getTextButtonParent = () =>  {
+export const getTextButtonParent = (): HTMLElement | null =>  {
   const svgArr = [...document.querySelectorAll('svg')];
   const svg24px = svgArr.filter((n) => n.getAttribute('height') === '24px');
   const hasLastChild = svg24px.filter((n) => n.firstChild?.lastChild);
@@ -153,7 +153,10 @@ export const getTextButtonParent = () =>  {
     }
     return false;
   });
-  if (musicIcon) return musicIcon.parentNode?.parentNode?.parentNode;
+  if (musicIcon){
+    if(!musicIcon.parentNode?.parentNode?.parentNode) return null;
+    return musicIcon.parentNode?.parentNode?.parentNode as HTMLElement;
+  }
   const spanArr = [...document.querySelectorAll('span')];
   const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
   for (const n of hiddenSpans) {
