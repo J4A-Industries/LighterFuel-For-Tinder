@@ -1,0 +1,50 @@
+{
+  "name": "LighterFuel-For-Tinder",
+  "private": true,
+  "version": "1.2",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts"
+  },
+  "dependencies": {
+    "@babel/core": "7.0.0",
+    "@crxjs/vite-plugin": "^1.0.14",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@material-ui/core": "^4.12.4",
+    "@material/textfield": "^14.0.0",
+    "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.12",
+    "@mui/styled-engine-sc": "^5.10.6",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "@types/react-world-flags": "^1.4.2",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "@vitejs/plugin-react": "^2.2.0",
+    "autoprefixer": "^10.4.13",
+    "eslint-import-resolver-typescript": "^3.5.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.31.10",
+    "postcss": "^8.4.18",
+    "react": "^18.1.0",
+    "react-collapsible": "^2.10.0",
+    "react-dom": "^18.1.0",
+    "react-is": "^18.2.0",
+    "react-router-dom": "^6.4.3",
+    "react-world-flags": "^1.5.1",
+    "styled-components": "^5.3.6",
+    "tailwindcss": "^3.2.2",
+    "ts-node": "^10.9.1",
+    "typescript-transform-paths": "^3.4.4"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.200",
+    "eslint": "^8.26.0",
+    "typescript": "^4.8.4",
+    "vite": "3.0.0"
+  }
+}

@@ -1,50 +1,111 @@
 {
-  "name": "LighterFuel-For-Tinder",
-  "private": true,
-  "version": "1.2",
+  "name": "lighter-fuel-for-tinder",
+  "displayName": "Lighter fuel for tinder",
+  "version": "0.0.1",
+  "description": "A basic Plasmo extension.",
+  "author": "James",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .ts"
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
   },
   "dependencies": {
-    "@babel/core": "7.0.0",
-    "@crxjs/vite-plugin": "^1.0.14",
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
-    "@material-ui/core": "^4.12.4",
-    "@material/textfield": "^14.0.0",
-    "@mui/icons-material": "^5.10.9",
-    "@mui/material": "^5.10.12",
-    "@mui/styled-engine-sc": "^5.10.6",
-    "@types/node": "^18.11.9",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.8",
-    "@types/react-world-flags": "^1.4.2",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
-    "@vitejs/plugin-react": "^2.2.0",
-    "autoprefixer": "^10.4.13",
-    "eslint-import-resolver-typescript": "^3.5.2",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-react": "^7.31.10",
-    "postcss": "^8.4.18",
-    "react": "^18.1.0",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.15",
+    "plasmo": "0.67.4",
+    "react": "18.2.0",
     "react-collapsible": "^2.10.0",
-    "react-dom": "^18.1.0",
-    "react-is": "^18.2.0",
-    "react-router-dom": "^6.4.3",
-    "react-world-flags": "^1.5.1",
-    "styled-components": "^5.3.6",
-    "tailwindcss": "^3.2.2",
-    "ts-node": "^10.9.1",
-    "typescript-transform-paths": "^3.4.4"
+    "react-dom": "18.2.0",
+    "react-world-flags": "^1.5.1"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.200",
-    "eslint": "^8.26.0",
-    "typescript": "^4.8.4",
-    "vite": "3.0.0"
+    "@plasmohq/prettier-plugin-sort-imports": "3.6.3",
+    "@types/chrome": "0.0.210",
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.27",
+    "@types/react-dom": "18.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
+    "autoprefixer": "10.4.13",
+    "eslint": "^8.16.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.30.0",
+    "eslint-plugin-react-hooks": "^4.5.0",
+    "postcss": "8.4.21",
+    "prettier": "2.8.3",
+    "tailwindcss": "3.2.4",
+    "typescript": "4.9.4"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*/*"
+    ]
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {},
+      "autoprefixer": {}
+    }
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": [
+      "plugin:react/recommended",
+      "airbnb"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+      "react",
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "react/function-component-definition": [
+        2,
+        {
+          "namedComponents": "arrow-function",
+          "unnamedComponents": "arrow-function"
+        }
+      ],
+      "linebreak-style": 0,
+      "no-plusplus": 0,
+      "no-tabs": [
+        "error",
+        {
+          "allowIndentationTabs": true
+        }
+      ],
+      "import/extensions": 0,
+      "import/no-unresolved": 0,
+      "jsx-a11y/click-events-have-key-events": 0,
+      "jsx-a11y/no-static-element-interactions": 0,
+      "react/forbid-prop-types": 0,
+      "react/react-in-jsx-scope": 0,
+      "react/require-default-props": 0,
+      "no-unused-vars": 0,
+      "max-len": 0,
+      "react/jsx-filename-extension": 0,
+      "react/button-has-type": 0,
+      "jsx-a11y/anchor-is-valid": 0,
+      "jsx-a11y/alt-text": 0,
+      "no-bitwise": 0,
+      "react/jsx-props-no-spreading": 0,
+      "react/prop-types": 0,
+      "no-console": 0,
+      "no-alert": 0,
+      "import/prefer-default-export": 0
+    }
   }
 }
