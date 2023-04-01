@@ -17,6 +17,7 @@
     "react": "18.2.0",
     "react-collapsible": "^2.10.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.8.0",
     "react-world-flags": "^1.5.1"
   },
   "devDependencies": {
@@ -105,7 +106,9 @@
       "react/prop-types": 0,
       "no-console": 0,
       "no-alert": 0,
-      "import/prefer-default-export": 0
+      "import/prefer-default-export": 0,
+      "no-shadow": "off",
+      "@typescript-eslint/no-shadow": "error"
     }
   }
 }
