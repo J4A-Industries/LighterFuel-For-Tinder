@@ -28,6 +28,7 @@ const IndexPopup = () => {
   useEffect(() => {
     console.log('Overlay Button: ', overlayButton);
   }, [overlayButton]);
+  
   useEffect(() => {
     const storage = new Storage();
     storage.get('overlayButton').then((x) => {
@@ -36,8 +37,8 @@ const IndexPopup = () => {
   }, []);
 
   return (
-    <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none">
-      <div className="grid justify-center mb-3 cursor-pointer" onClick={() => openTab(links.reviews)}>
+    <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none gap-2 flex flex-col">
+      <div className="grid justify-center cursor-pointer" onClick={() => openTab(links.reviews)}>
         <img src={logo} className="h-32 w-32 select-none" alt="logo" />
       </div>
 
@@ -64,7 +65,7 @@ const IndexPopup = () => {
 
       {menuTab === menuOptions.settings && (
         <div className="flex justify-center align-middle m-2 flex-col gap-2">
-          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44">
+          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
             <div>
               {text.enableOverlay}
             </div>
@@ -77,7 +78,7 @@ const IndexPopup = () => {
               className="m-auto"
             />
           </div>
-          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44">
+          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
             <div>
               {text.enableSearchButton}
             </div>
@@ -98,46 +99,6 @@ const IndexPopup = () => {
           {text.info.text}
         </div>
       )}
-
-      {/* <ToggleSwitch
-          text={text.enableOverlay}
-          id="overlay"
-          state={overlayButton}
-          onChange={handleChange}
-        />
-        <ToggleSwitch
-          text={text.enableSearchButton}
-          id="search"
-          state={searchButton}
-          onChange={handleChange}
-          />
-        <Collapsible
-          trigger={text.info.title}
-          easing="ease-in"
-          transitionTime={200}
-        >
-          <p className="text-base">{text.info.text}</p>
-        </Collapsible>
-        <Collapsible
-          trigger={text.reverseImageSearch.title}
-          easing="ease-in"
-          transitionTime={200}
-        >
-          <p className="text-base">{text.reverseImageSearch.text}</p>
-        </Collapsible>
-        <Collapsible
-          trigger={text.testimonials.title}
-          easing="ease-in"
-          transitionTime={200}
-        >
-          <p className="text-base">{text.testimonials.text}</p>
-          <div
-            className="text-base"
-            onClick={() => openTab(links.review)}
-          >
-            Leave a Review!
-          </div>
-        </Collapsible> */}
     </div>
   );
 };
