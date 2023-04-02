@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Collapsible from 'react-collapsible';
 import Flag from 'react-world-flags';
 import '@/style.css';
 import logo from 'data-base64:~assets/LighterFuel512.png';
 import Switch from '@mui/material/Switch';
 import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
+import { useStorage, Storage } from '@plasmohq/storage/hook';
 import { gpt, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
 
@@ -15,13 +16,23 @@ enum menuOptions {
 
 const IndexPopup = () => {
   const [data, setData] = useState('');
-  const [overlayButton, setOverlayButton] = useState(true);
-  const [searchButton, setSearchButton] = useState(true);
   const [menuTab, setMenuTab] = useState<menuOptions>(menuOptions.settings);
+  const [overlayButton, setOverlayButton] = useStorage('overlayButton', (x) => (x === undefined ? true : x));
+  const [searchButton, setSearchButton] = useStorage('searchButton', (x) => (x === undefined ? true : x));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.id);
   };
+
+  useEffect(() => {
+    console.log('Overlay Button: ', overlayButton);
+  }, [overlayButton]);
+  useEffect(() => {
+    const storage = new Storage();
+    storage.get('overlayButton').then((x) => {
+      console.log('Overlay Button in storage: ', x);
+    });
+  }, []);
 
   return (
     <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none">

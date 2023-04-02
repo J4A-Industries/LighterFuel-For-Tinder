@@ -4,7 +4,9 @@ specifiers:
   '@emotion/react': ^11.10.6
   '@emotion/styled': ^11.10.6
   '@mui/material': ^5.11.15
+  '@plasmohq/messaging': ^0.1.7
   '@plasmohq/prettier-plugin-sort-imports': 3.6.3
+  '@plasmohq/storage': ^1.4.0
   '@types/chrome': 0.0.210
   '@types/node': 18.11.18
   '@types/react': 18.0.27
@@ -33,6 +35,8 @@ dependencies:
   '@emotion/react': 11.10.6_3stiutgnnbnfnf3uowm5cip22i
   '@emotion/styled': 11.10.6_zjrrpqmb4rf5frur5mrydkybnq
   '@mui/material': 5.11.15_yxvt43keouwjyeqzti2jjtf4mu
+  '@plasmohq/messaging': 0.1.7_react@18.2.0
+  '@plasmohq/storage': 1.4.0_react@18.2.0
   plasmo: 0.67.4_gjpyg5imi5mt2gbvkmn3a4dr7m
   react: 18.2.0
   react-collapsible: 2.10.0_biqbaboplfbrettd7655fr4n2y
@@ -2123,6 +2127,17 @@ packages:
     resolution: {integrity: sha512-4fA29jzUU5tHpsJ3rpUEbt/jme/aCDIqolAbTWd6F7M4rJ/33q4mVQ6eIflWjUhVNcygjpjMApdT2gIrNQi0fw==}
     dev: false
 
+  /@plasmohq/messaging/0.1.7_react@18.2.0:
+    resolution: {integrity: sha512-6B6Udnf3nmMCra0dVfPAyZWQtSxhZQVAW4Hdxfj//kXtnGD+glkqw1xhE+FQzv2AZTGlV7KBGpgyBmB0DpzRdg==}
+    peerDependencies:
+      react: ^16.8.6 || ^17 || ^18
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /@plasmohq/parcel-bundler/0.4.8:
     resolution: {integrity: sha512-nUf9Z3iOl6R2XNOQ4CEnREj2L4kkivBstx1FiTTT2pD3SeKs17hCWFEaLaZGg0Eum3RheuRtzA9Zlezs2tyoEg==}
     engines: {node: '>= 16.0.0', parcel: '>= 2.7.0'}
@@ -2452,6 +2467,18 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@plasmohq/storage/1.4.0_react@18.2.0:
+    resolution: {integrity: sha512-o4BjkbKUqmXcY5yt1g+dA89WfbEzqwY5Iq0D3MeX41vGUSaLroFEciuaTZLyg1mIMKeJYec15RPa7bypt/CcIw==}
+    peerDependencies:
+      react: ^16.8.6 || ^17 || ^18
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      pify: 6.1.0
+      react: 18.2.0
+    dev: false
 
   /@pnpm/config.env-replace/1.0.0:
     resolution: {integrity: sha512-ZVPVDi1E8oeXlYqkGRtX0CkzLTwE2zt62bjWaWKaAvI8NZqHzlMvGeSNDpW+JB3+aKanYb4UETJOF1/CxGPemA==}
@@ -5757,6 +5784,11 @@ packages:
     engines: {node: '>=6'}
     dev: false
     optional: true
+
+  /pify/6.1.0:
+    resolution: {integrity: sha512-KocF8ve28eFjjuBKKGvzOBGzG8ew2OqOOSxTTZhirkzH7h3BI1vyzqlR0qbfcDBve1Yzo3FVlWUAtCRrbVN8Fw==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /pirates/4.0.5:
     resolution: {integrity: sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==}
