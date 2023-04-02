@@ -5,7 +5,8 @@ import '@/style.css';
 import logo from 'data-base64:~assets/LighterFuel512.png';
 import Switch from '@mui/material/Switch';
 import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
-import { useStorage, Storage } from '@plasmohq/storage/hook';
+import { Storage } from '@plasmohq/storage';
+import { useStorage } from '@plasmohq/storage/hook';
 import { gpt, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
 
