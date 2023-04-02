@@ -32,10 +32,10 @@ const IndexPopup = () => {
       <div className="flex justify-center align-middle">
         <div className="grid grid-cols-2 w-44 gap-4 m-auto">
           <div className="flex align-middle justify-center">
-            <AiOutlineSetting className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => setMenuTab(menuOptions.settings)} />
+            <AiOutlineSetting className={`m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer ${(menuTab === menuOptions.settings) ? 'bg-slate-500' : 'bg-slate-600'} hover:outline-offset-2 outline-white outline`} onClick={() => setMenuTab(menuOptions.settings)} />
           </div>
           <div className="flex align-middle justify-center">
-            <AiOutlineInfoCircle className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => setMenuTab(menuOptions.info)} />
+            <AiOutlineInfoCircle className={`m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer ${(menuTab === menuOptions.info) ? 'bg-slate-500' : 'bg-slate-600'} hover:outline-offset-2 outline-white outline`} onClick={() => setMenuTab(menuOptions.info)} />
           </div>
           <div className="flex align-middle justify-center">
             <AiOutlineGithub className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.github)} />
