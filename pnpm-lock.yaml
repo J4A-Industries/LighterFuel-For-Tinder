@@ -11,6 +11,7 @@ specifiers:
   '@types/node': 18.11.18
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
+  '@types/webextension-polyfill': ^0.10.0
   '@typescript-eslint/eslint-plugin': ^5.26.0
   '@typescript-eslint/parser': ^5.26.0
   autoprefixer: 10.4.13
@@ -37,6 +38,7 @@ dependencies:
   '@mui/material': 5.11.15_yxvt43keouwjyeqzti2jjtf4mu
   '@plasmohq/messaging': 0.1.7_react@18.2.0
   '@plasmohq/storage': 1.4.0_react@18.2.0
+  '@types/webextension-polyfill': 0.10.0
   plasmo: 0.67.4_gjpyg5imi5mt2gbvkmn3a4dr7m
   react: 18.2.0
   react-collapsible: 2.10.0_biqbaboplfbrettd7655fr4n2y
@@ -2739,6 +2741,10 @@ packages:
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
     dev: true
+
+  /@types/webextension-polyfill/0.10.0:
+    resolution: {integrity: sha512-If4EcaHzYTqcbNMp/FdReVdRmLL/Te42ivnJII551bYjhX19bWem5m14FERCqdJA732OloGuxCRvLBvcMGsn4A==}
+    dev: false
 
   /@typescript-eslint/eslint-plugin/5.57.0_swpjsg26mqzu4wdsj62xip5nu4:
     resolution: {integrity: sha512-itag0qpN6q2UMM6Xgk6xoHa0D0/P+M17THnr4SVgqn9Rgam5k/He33MA7/D7QoJcdMxHFyX7U9imaBonAX/6qA==}
