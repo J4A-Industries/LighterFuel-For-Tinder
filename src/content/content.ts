@@ -1,6 +1,13 @@
-import type { PlasmoCSConfig } from 'plasmo';
+import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
+import styleText from 'data-text:./injectedCss.css';
 import LighterFuel from './LighterFuel';
 import { debug } from '@/misc/config';
+
+export const getStyle: PlasmoGetStyle = () => {
+  const style = document.createElement('style');
+  style.textContent = styleText;
+  return style;
+};
 
 export const config: PlasmoCSConfig = {
   matches: ['https://www.tinder.com/*'],
