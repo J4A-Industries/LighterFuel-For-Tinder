@@ -28,7 +28,7 @@ const IndexPopup = () => {
   useEffect(() => {
     console.log('Overlay Button: ', overlayButton);
   }, [overlayButton]);
-  
+
   useEffect(() => {
     const storage = new Storage();
     storage.get('overlayButton').then((x) => {
