@@ -57,15 +57,8 @@ class LighterFuel {
     this.storage = new Storage();
     // this.textContainerObserver = new MutationObserver(textButtonObserverCallback);
     if (debug) this.setCustomFetch();
-    this.initialiseMessageListner();
-    this.init();
-  }
-
-  /**
-   * Ran to initialise the checking for profile images
-   */
-  init() {
     this.getInitialData();
+    this.initialiseMessageListner();
   }
 
   /**
@@ -172,10 +165,6 @@ class LighterFuel {
   initialiseMessageListner() {
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
-        case 'settings update':
-          this.showSettings = request.showSettings;
-          this.setDisplayStatus();
-          break;
         case 'new image':
           this.addNewImage(request.data);
           break;
@@ -190,11 +179,12 @@ class LighterFuel {
    * Used to get the initial images/settings from the background.js file
    */
   getInitialData() {
-    this.storage.get('showSettings').then((result) => {
-      this.showSettings = JSON.parse(result) as ShowSettings;
+    this.storage.get<ShowSettings>('showSettings').then((c) => {
+      this.showSettings = c;
       this.setDisplayStatus();
     });
 
+    // watching the storage for changes, for live updating
     this.storage.watch({
       showSettings: (c) => {
         this.showSettings = c.newValue;
