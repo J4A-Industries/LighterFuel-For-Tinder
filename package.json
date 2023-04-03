@@ -1,8 +1,8 @@
 {
   "name": "lighter-fuel-for-tinder",
-  "displayName": "Lighter fuel for tinder",
+  "displayName": "LighterFuel for tinder",
   "version": "0.0.1",
-  "description": "A basic Plasmo extension.",
+  "description": "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account and reverse image search your matches photos!",
   "author": "James",
   "scripts": {
     "dev": "plasmo dev",
