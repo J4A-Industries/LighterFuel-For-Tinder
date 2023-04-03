@@ -1,8 +1,8 @@
-import { debug } from '@/config';
-import { AISettings, ImageType, ShowSettings } from '@/types';
+import { debug } from '@/misc/config';
+import type { AISettings, ImageType, ShowSettings } from '@/misc/types';
 
 class Background {
-	selfProfile: any;
+  selfProfile: any;
 
   aiSettings: {
     temperature: number;
@@ -108,7 +108,6 @@ class Background {
           if (!request.matches.data) {
             this.consoleOut('send matches that was invalid to loop through arr:');
             this.consoleOut(request.matches.data);
-            return;
           }
           break;
         case 'send user data':
@@ -118,12 +117,11 @@ class Background {
         case 'send messages':
           if (!Array.isArray(request.messages.data.messages)) {
             this.consoleOut('Error recieving messages :( they\'re not an array!');
-            return;
           }
           break;
         case 'ping': // used for debugging
           sendResponse('pong');
-          break
+          break;
         default:
           sendResponse('I was supposed to be sent something :(');
           break;
@@ -155,7 +153,7 @@ class Background {
         // tinder has yet to discover cache and the images reload *every time they're viewed*
         const imageInArray = this.images.find((x) => details.url === x.url);
         if (!imageInArray) {
-          if(!details.responseHeaders) return;
+          if (!details.responseHeaders) return;
           this.sendInfoToTab({
             action: 'new image',
             data: {
@@ -207,7 +205,7 @@ class Background {
         .then((x) => x.filter((y) => y.url))// filter to only ones we have permission to look at (all tinder tabs)
         .then((tabs) => {
           for (const tab of tabs) {
-            if(tab.id) chrome.tabs.sendMessage(tab.id, obj);
+            if (tab.id) chrome.tabs.sendMessage(tab.id, obj);
           }
           resolve();
         });

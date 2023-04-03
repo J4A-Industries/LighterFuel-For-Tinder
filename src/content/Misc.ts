@@ -1,4 +1,4 @@
-import { debug } from '@/config';
+import { debug } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
 /**
@@ -164,4 +164,12 @@ export const getTextButtonParent = (): HTMLElement | null => {
     }
   }
   return null;
+};
+
+/**
+* a console log facade for the debug bool
+*/
+
+export const consoleOut = (message: string | any[] | any) => {
+  if (debug) console.log(message);
 };

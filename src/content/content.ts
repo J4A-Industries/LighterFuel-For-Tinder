@@ -1,13 +1,17 @@
 import type { PlasmoCSConfig } from 'plasmo';
+import LighterFuel from './LighterFuel';
+import { debug } from '@/misc/config';
 
 export const config: PlasmoCSConfig = {
-  matches: ['https://www.plasmo.com/*'],
+  matches: ['https://www.tinder.com/*'],
 };
 
 window.addEventListener('load', () => {
-  console.log(
-    'You may find that having is not so pleasing a thing as wanting. This is not logical, but it is often true.',
-  );
-
-  document.body.style.background = 'pink';
+  try {
+    const lf = new LighterFuel();
+    // prints the lf instance to the console for debugging!
+    if (debug) console.log(lf);
+  } catch (err) {
+    console.error(err);
+  }
 });

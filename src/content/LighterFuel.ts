@@ -7,6 +7,7 @@ import {
   getProfileImages,
   getTimeOld,
   parentNode,
+  consoleOut,
 } from '@/content/Misc';
 
 import { debug } from '@/misc/config';
@@ -55,9 +56,9 @@ class LighterFuel {
    */
   init() {
     this.getInitialData().then(() => {
-      if (debug) this.consoleOut(this.images);
+      if (debug) consoleOut(this.images);
     }).catch((err) => {
-      this.consoleOut(err);
+      consoleOut(err);
     });
   }
 
@@ -76,7 +77,7 @@ class LighterFuel {
     observer.observe(container, config);
     if (!document.body.contains(container)) {
       // TODO: find why this is needed and sort it out
-      this.consoleOut('observer disconnected in monitorContainer, not sure why this is needed yet');
+      consoleOut('observer disconnected in monitorContainer, not sure why this is needed yet');
       observer.disconnect();
       return;
     }
@@ -100,17 +101,17 @@ class LighterFuel {
             const internalImage = getDomsWithBGImages(node as HTMLElement);
             if (internalImage.length > 0) {
               const imageURL = getImageURLfromNode(internalImage[0]);
-              this.consoleOut(`Now displaying: ${imageURL}`);
+              consoleOut(`Now displaying: ${imageURL}`);
               const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
 
-              if (!containerRecord) return this.consoleOut('containerRecord not found in profileMutationCallback');
+              if (!containerRecord) return consoleOut('containerRecord not found in profileMutationCallback');
               // ! somewhere here, there's an error
               // ! not sure, the image is downloaded and the console outputs the image URL
               const requestRecord = this.images.find((y) => y.url === imageURL);
               if (!requestRecord) {
-                this.consoleOut('request record invalid in monitor container :( running findNodes again, container record:');
-                this.consoleOut(containerRecord);
-                this.consoleOut(requestRecord);
+                consoleOut('request record invalid in monitor container :( running findNodes again, container record:');
+                consoleOut(containerRecord);
+                consoleOut(requestRecord);
                 this.findNodes();
                 return;
               }
@@ -147,7 +148,7 @@ class LighterFuel {
         overlayBoxDom = overlay.overlayNode;
         parentNode(profileImagesContainer, 1).appendChild(overlayBoxDom);
         const observer = this.monitorContainer(profileImagesContainer);
-        if (!observer) return this.consoleOut('observer not created in setupProfileSlider, monitorContainer returned undefined');
+        if (!observer) return consoleOut('observer not created in setupProfileSlider, monitorContainer returned undefined');
         overlay.onPlaced();
         const newRecord = {
           containerDOM: profileImagesContainer as HTMLElement,
@@ -156,8 +157,8 @@ class LighterFuel {
         };
         this.profileSliderContainers.push(newRecord);
 
-        this.consoleOut('New container found! Record: ');
-        this.consoleOut(newRecord);
+        consoleOut('New container found! Record: ');
+        consoleOut(newRecord);
       }
     }
   }
@@ -222,7 +223,7 @@ class LighterFuel {
   findNodes() {
     this.lookForProfileImages().then((profileImages) => {
       const config = { attributes: false, childList: true, subtree: true };
-      this.consoleOut(profileImages);
+      consoleOut(profileImages);
       profileImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode as HTMLElement));
       this.mainMutationObserver.observe(document.getElementsByClassName('App')[0], config);
     });
@@ -241,7 +242,7 @@ class LighterFuel {
       } else {
         window.onload = () => {
           resolve(this.lookForProfileImages());
-          if (debug) this.consoleOut('No nodes found, setting window onload event');
+          if (debug) consoleOut('No nodes found, setting window onload event');
         };
       }
     });
@@ -345,7 +346,7 @@ class LighterFuel {
 .overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
 .topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
 .buttonLF .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
-    this.consoleOut(this.showSettings);
+    consoleOut(this.showSettings);
   }
 
   // TODO: complete these (GPT Integration)
@@ -362,18 +363,6 @@ class LighterFuel {
     }
   }
   */
-  /**
-   * a console log facade for the debug bool
-   */
-  consoleOut(message: string | any[] | any) {
-    if (debug) console.log(message);
-  }
 }
 
-try {
-  const lf = new LighterFuel();
-  // prints the lf instance to the console for debugging!
-  console.log(lf);
-} catch (err) {
-  console.error(err);
-}
+export default LighterFuel;
