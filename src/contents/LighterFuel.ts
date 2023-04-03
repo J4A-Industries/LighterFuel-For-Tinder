@@ -3,6 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
+import { createRoot } from 'react-dom/client';
 import {
   createButtons,
   getDomsWithBGImages,
@@ -11,6 +12,8 @@ import {
   getTimeOld,
   parentNode,
   consoleOut,
+  getProfileImagesShown,
+  getBackgroundImageFromNode,
 } from '@/contents/Misc';
 
 import { debug } from '@/misc/config';
@@ -86,38 +89,64 @@ class LighterFuel {
    * @param {MutationRecord} mutationsList The mutation list that has occurred
    * @param {HTMLElement} container The container on which the observer was observing
    */
-  profileMutationCallback(mutationsList: MutationRecord[], container: Element) {
+  profileMutationCallbackOld(mutationsList: MutationRecord[], container: Element) {
     for (const mutation of mutationsList) {
       // if "hidden" has changed (the pic displayed has changed)
       if (mutation.type === 'attributes') {
         // for every image span (div inside span is image)
-        for (const node of container.children) {
-          // check whether or not the image is shown
-          if (node.getAttribute('aria-hidden') === 'false') {
-            const internalImage = getDomsWithBGImages(node as HTMLElement);
-            if (internalImage.length > 0) {
-              const imageURL = getImageURLfromNode(internalImage[0]);
-              consoleOut(`Now displaying: ${imageURL}`);
-              const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
+        // check whether or not the image is shown
+        const internalImage = getDomsWithBGImages(container as HTMLElement);
+        if (internalImage.length > 0) {
+          const imageURL = getImageURLfromNode(internalImage[0]);
+          consoleOut(`Now displaying: ${imageURL}`);
+          const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
 
-              if (!containerRecord) return consoleOut('containerRecord not found in profileMutationCallback');
-              // ! somewhere here, there's an error
-              // ! not sure, the image is downloaded and the console outputs the image URL
-              const requestRecord = this.images.find((y) => y.url === imageURL);
-              if (!requestRecord) {
-                consoleOut('request record invalid in monitor container :( running findNodes again, container record:');
-                consoleOut(containerRecord);
-                consoleOut(requestRecord);
-                this.findNodes();
-                return;
-              }
-              const overlay = this.createOverlayNode(requestRecord);
-              const newOverlayBox = overlay.overlayNode;
-              parentNode(containerRecord.overlayBox, 1).replaceChild(newOverlayBox, containerRecord.overlayBox);
-              containerRecord.overlayBox = newOverlayBox;
-              overlay.onPlaced();
-            }
+          if (!containerRecord) return consoleOut('containerRecord not found in profileMutationCallback');
+          // ! somewhere here, there's an error
+          // ! not sure, the image is downloaded and the console outputs the image URL
+          const requestRecord = this.images.find((y) => y.url === imageURL);
+          if (!requestRecord) {
+            consoleOut('request record invalid in monitor container :( running findNodes again, container record:');
+            consoleOut(containerRecord);
+            consoleOut(requestRecord);
+            this.findNodes();
+            return;
           }
+          const overlay = this.createOverlayNode(requestRecord);
+          const newOverlayBox = overlay.overlayNode;
+          parentNode(containerRecord.overlayBox, 1).replaceChild(newOverlayBox, containerRecord.overlayBox);
+          containerRecord.overlayBox = newOverlayBox;
+          overlay.onPlaced();
+        }
+      }
+    }
+  }
+
+  /**
+   * The mutation observer callback which is put on the profile image container
+   *
+   * @param {MutationRecord} mutationsList The mutation list that has occurred
+   * @param {HTMLElement} container The container on which the observer was observing
+   */
+  profileMutationCallback(mutationsList: MutationRecord[], container: Element) {
+    for (const mutation of mutationsList) {
+      // if "hidden" has changed (the pic displayed has changed)
+      if (mutation.type === 'attributes') {
+        const imagesShown = getProfileImagesShown();
+        consoleOut(imagesShown);
+        if (imagesShown.length > 0) {
+          // TODO: maybe shown[0] or maybe all of them?
+          const image = imagesShown[0];
+          const url = getBackgroundImageFromNode(image);
+          const requestRecord = this.images.find((y) => y.url === url);
+          if (!requestRecord) {
+            consoleOut(`Request record invalid for image ${url} in monitor container :(`);
+            return;
+          }
+          const overlay = this.createOverlayNode(requestRecord);
+          const newOverlayBox = overlay.overlayNode;
+          parentNode(image, 1).replaceChild(newOverlayBox, image);
+          overlay.onPlaced();
         }
       }
     }
@@ -215,6 +244,7 @@ class LighterFuel {
   }
 
   /**
+   * TODO: TO DEPRECIATE
    * Sets the mutation observer after the profile images have been identified to exist
    */
   findNodes() {
@@ -300,7 +330,7 @@ class LighterFuel {
    * Creates the overlay element for the photo
    *
    * @param {String} lastModified The last modified time from the image
-   * @returns {HTMLElement}
+   * @returns {{HTMLElement, function}}
    */
   createOverlayNode(data: ImageType) {
     const { lastModified } = data;
@@ -326,9 +356,55 @@ class LighterFuel {
     return { overlayNode, onPlaced };
   }
 
+  /*
+  /**
+   * Creates the overlay element for the photo
+   * TODO: Fix to use CSUI instead of raw html
+   * @param {String} lastModified The last modified time from the image
+   * @returns {HTMLElement}
+
+  createReactOverlayNode(data: ImageType) {
+    const { lastModified } = data;
+    const overlayNode = document.createElement('p');
+    const date = new Date(lastModified);
+    const xOld = getTimeOld(date.getTime());
+    const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
+    const text = `Image Uploaded At: ${outFormat}`;
+
+    const rootNode = createRoot(document.createElement('div'));
+
+    const Overlay = () => (
+      <div className="z-100 text-2xl bg-white text-black">
+        <div className="overlayText">
+          {text}
+        </div>
+        <div className="overlayButtons">
+          **Insert Buttons**
+        </div>
+      </div>
+    );
+
+    rootNode.render(<Overlay />);
+
+    const onPlaced = () => {
+      const bounds = overlayNode.getBoundingClientRect();
+      // * whenever there's 100px above, we have room to place the box above
+      if (bounds.top > 100) {
+        overlayNode.classList.add('topBox');
+        parentNode(overlayNode, 2).style.overflow = 'visible';
+        parentNode(overlayNode, 5).style.top = '50px';
+      } else {
+        overlayNode.classList.add('overlayBox');
+      }
+    };
+    consoleOut(overlayNode);
+    return { overlayNode, onPlaced };
+  }
+ */
   /**
    * Sets the overlay display status to shown/hidden
    *
+   * TODO: use the CSUI to show the overlay
    * @param {Boolean} status Whether or not to display the overlay
    */
   setDisplayStatus() {

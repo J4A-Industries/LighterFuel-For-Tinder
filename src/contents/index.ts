@@ -1,6 +1,6 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
 import styleText from 'data-text:./../style.css';
-import LighterFuel from './LighterFuel';
+import LighterFuel from '@/contents/LighterFuel';
 import { debug } from '@/misc/config';
 
 /**
