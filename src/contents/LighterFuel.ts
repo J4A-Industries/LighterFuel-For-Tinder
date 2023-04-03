@@ -21,9 +21,6 @@ import type {
   ShowSettings,
 } from '@/misc/types';
 
-// "this file is injected onto tinder.com so it can request all the files properly,
-// content script is not worth messing around with apparently" - Acorn221 in 2020
-
 class LighterFuel {
   images: ImageType[];
 
@@ -162,6 +159,9 @@ class LighterFuel {
     }
   }
 
+  /**
+   * Listens for messages from the background
+   */
   initialiseMessageListner() {
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
@@ -176,7 +176,7 @@ class LighterFuel {
   }
 
   /**
-   * Used to get the initial images/settings from the background.js file
+   * Used to get the initial images/settings from the background
    */
   getInitialData() {
     this.storage.get<ShowSettings>('showSettings').then((c) => {
