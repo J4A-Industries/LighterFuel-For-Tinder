@@ -26,7 +26,7 @@ const defaultSettings = {
 const IndexPopup = () => {
   const [data, setData] = useState('');
   const [menuTab, setMenuTab] = useState<menuOptions>(menuOptions.settings);
-  const [showSettings, setShowSettings] = useStorage('overlayButton', (x) => (x === undefined ? defaultSettings : x));
+  const [showSettings, setShowSettings] = useStorage('showSettings', (x) => (x === undefined ? defaultSettings : x));
 
   return (
     <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none gap-2 flex flex-col">
