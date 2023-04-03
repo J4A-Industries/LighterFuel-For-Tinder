@@ -21,7 +21,8 @@
     "react-collapsible": "^2.10.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
-    "react-world-flags": "^1.5.1"
+    "react-world-flags": "^1.5.1",
+    "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
     "@plasmohq/prettier-plugin-sort-imports": "3.6.3",
@@ -45,8 +46,20 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
-    ]
+      "*://*.tinder.com/*",
+      "*://*.gotinder.com/*"
+    ],
+    "permissions": [
+      "scripting",
+      "webRequest",
+      "storage"
+    ],
+    "icons": {
+      "64": "/assets/icon.png"
+    },
+    "externally_connectable": {
+      "matches": ["*://tinder.com/*"]
+    }
   },
   "postcss": {
     "plugins": {
