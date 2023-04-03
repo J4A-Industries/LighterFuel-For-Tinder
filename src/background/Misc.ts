@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
-import type { ImageType } from '@/misc/types';
+import type { ImageType, TabMessage } from '@/misc/types';
 import { debug } from '@/misc/config';
+
 /**
    * This filters through all the tabs and sends the info to them
    *
@@ -11,7 +12,11 @@ export const sendInfoToTab = (obj: ImageType) => new Promise<void>((resolve) => 
     .then((tabs) => {
       tabs.forEach((tab) => {
         if (tab.id) {
-          browser.tabs.sendMessage(tab.id, obj).catch((e) => {
+          const msg: TabMessage = {
+            action: 'newImage',
+            data: obj,
+          };
+          browser.tabs.sendMessage(tab.id, JSON.stringify(msg)).catch((e) => {
             if (debug) console.log(e);
           });
         }
