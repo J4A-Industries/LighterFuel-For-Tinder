@@ -1,16 +1,76 @@
 {
-  "name": "Translator",
+  "name": "TS-Node-Project-Template",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
+  "description": "Template!",
+  "main": "src/index.ts",
+  "repository": "",
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node-dev --no-notify --respawn --exit-child -r tsconfig-paths/register src/",
+    "build": "tsc --outdir ./dist/"
+  },
   "dependencies": {
     "@babel/core": "^7.21.4",
+    "@google-cloud/translate": "^7.2.0",
+    "@translate-tools/core": "^0.2.12",
+    "dotenv": "^16.0.3",
+    "language-tags": "^1.0.8",
     "translate": "^1.4.1"
+  },
+  "devDependencies": {
+    "@types/language-tags": "^1.0.1",
+    "@types/node": "^18.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "ts-node": "^10.8.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.0.0",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.7.3",
+    "typescript-transform-paths": "^3.3.1"
+  },
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "airbnb"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "linebreak-style": 0,
+    "no-plusplus": 0,
+    "no-tabs": [
+      "error",
+      {
+        "allowIndentationTabs": true
+      }
+    ],
+    "import/extensions": 0,
+    "import/no-unresolved": 0,
+    "react/forbid-prop-types": 0,
+    "react/react-in-jsx-scope": 0,
+    "react/require-default-props": 0,
+    "no-unused-vars": 0,
+    "max-len": 0,
+    "no-bitwise": 0,
+    "no-console": 0,
+    "no-alert": 0
   }
 }
