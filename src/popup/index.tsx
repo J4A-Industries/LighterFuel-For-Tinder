@@ -15,26 +15,18 @@ enum menuOptions {
   info,
 }
 
+/**
+ * Default settings for the extension, if no settings are found in storage
+ */
+const defaultSettings = {
+  overlayButton: true,
+  searchButton: true,
+};
+
 const IndexPopup = () => {
   const [data, setData] = useState('');
   const [menuTab, setMenuTab] = useState<menuOptions>(menuOptions.settings);
-  const [overlayButton, setOverlayButton] = useStorage('overlayButton', (x) => (x === undefined ? true : x));
-  const [searchButton, setSearchButton] = useStorage('searchButton', (x) => (x === undefined ? true : x));
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.id);
-  };
-
-  useEffect(() => {
-    console.log('Overlay Button: ', overlayButton);
-  }, [overlayButton]);
-
-  useEffect(() => {
-    const storage = new Storage();
-    storage.get('overlayButton').then((x) => {
-      console.log('Overlay Button in storage: ', x);
-    });
-  }, []);
+  const [showSettings, setShowSettings] = useStorage('overlayButton', (x) => (x === undefined ? defaultSettings : x));
 
   return (
     <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none gap-2 flex flex-col">
@@ -71,8 +63,8 @@ const IndexPopup = () => {
             </div>
 
             <Switch
-              checked={overlayButton}
-              onChange={() => setOverlayButton(!overlayButton)}
+              checked={showSettings.overlayButton}
+              onChange={() => setShowSettings({ ...showSettings, overlayButton: !showSettings.overlayButton })}
               inputProps={{ 'aria-label': 'controlled' }}
               aria-label={text.enableOverlay}
               className="m-auto"
@@ -84,8 +76,8 @@ const IndexPopup = () => {
             </div>
 
             <Switch
-              checked={searchButton}
-              onChange={() => setSearchButton(!searchButton)}
+              checked={showSettings.searchButton}
+              onChange={() => setShowSettings({ ...showSettings, searchButton: !showSettings.searchButton })}
               inputProps={{ 'aria-label': 'controlled' }}
               aria-label={text.enableSearchButton}
               className="m-auto"
