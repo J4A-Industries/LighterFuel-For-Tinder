@@ -1,5 +1,8 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
+import browser from 'webextension-polyfill';
+import { Storage } from '@plasmohq/storage';
 import {
   createButtons,
   getDomsWithBGImages,
@@ -15,6 +18,7 @@ import { debug } from '@/misc/config';
 import type {
   ImageType,
   ProfileImage,
+  ShowSettings,
 } from '@/misc/types';
 
 // "this file is injected onto tinder.com so it can request all the files properly,
@@ -29,11 +33,13 @@ class LighterFuel {
     overlayBox: HTMLElement
   }[];
 
-  showSettings: any;
+  showSettings: ShowSettings;
 
   mainMutationObserver: MutationObserver;
 
   textContainerObserver: MutationObserver | undefined;
+
+  storage: Storage;
 
   /**
    * @param {Boolean} debug
@@ -43,8 +49,12 @@ class LighterFuel {
     this.images = [];
     // profileSliderContainers: {domNode: DomNode, data: Object}[]
     this.profileSliderContainers = [];
-    this.showSettings = {};
+    this.showSettings = {
+      overlayButton: true,
+      searchButton: true,
+    };
     this.mainMutationObserver = new MutationObserver(() => this.profileMutationCallback);
+    this.storage = new Storage();
     // this.textContainerObserver = new MutationObserver(textButtonObserverCallback);
     if (debug) this.setCustomFetch();
     this.initialiseMessageListner();
@@ -55,11 +65,7 @@ class LighterFuel {
    * Ran to initialise the checking for profile images
    */
   init() {
-    this.getInitialData().then(() => {
-      if (debug) consoleOut(this.images);
-    }).catch((err) => {
-      consoleOut(err);
-    });
+    this.getInitialData();
   }
 
   /**
@@ -164,7 +170,7 @@ class LighterFuel {
   }
 
   initialiseMessageListner() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
       switch (request.action) {
         case 'settings update':
           this.showSettings = request.showSettings;
@@ -184,20 +190,18 @@ class LighterFuel {
    * Used to get the initial images/settings from the background.js file
    */
   getInitialData() {
-    return new Promise<void>((resolve, reject) => {
-      chrome.runtime.sendMessage({ action: 'get initial data' }, (response) => {
-        if (!response) return reject();
-        this.addNewImage(response.imageArray);
-        this.showSettings = response.showSettings;
-        this.setDisplayStatus();
-        return resolve();
-      });
+    this.storage.get('overlayButton').then((result) => {
+      this.showSettings.overlayButton = result === 'true';
+      this.setDisplayStatus();
+    });
+    this.storage.get('searchButton').then((result) => {
+      this.showSettings.searchButton = result === 'true';
+      this.setDisplayStatus();
     });
   }
 
   /**
    * Adds the images to the images array, then it prunes the old ones off (if the array gets to big)
-   *
    */
   addNewImage(image: ImageType | ImageType[]) {
     if (!image) return;
@@ -273,7 +277,6 @@ class LighterFuel {
    * @param {Response} result The result from the fetch
    * @param {Array} args The arguments sent back
    */
-
   handleFetchResponse(result: Response, args: any[]) {
     const regexChecks = {
       matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
@@ -285,15 +288,15 @@ class LighterFuel {
     // check for JSON here
     result.json().then((jsonOut: any) => {
       if (args[0].match(regexChecks.matches)) {
-        chrome.runtime.sendMessage({ action: 'send matches', matches: jsonOut });
+        browser.runtime.sendMessage({ action: 'send matches', matches: jsonOut });
       } else if (args[0].match(regexChecks.core)) {
-        chrome.runtime.sendMessage({ action: 'send core', core: jsonOut });
+        browser.runtime.sendMessage({ action: 'send core', core: jsonOut });
       } else if (args[0].match(regexChecks.profile)) {
-        chrome.runtime.sendMessage({ action: 'send profile', profile: jsonOut });
+        browser.runtime.sendMessage({ action: 'send profile', profile: jsonOut });
       } else if (args[0].match(regexChecks.user)) {
-        chrome.runtime.sendMessage({ action: 'send user data', data: jsonOut });
+        browser.runtime.sendMessage({ action: 'send user data', data: jsonOut });
       } else if (args[0].match(regexChecks.messages)) {
-        chrome.runtime.sendMessage({ action: 'send messages', messages: jsonOut });
+        browser.runtime.sendMessage({ action: 'send messages', messages: jsonOut });
       }
     });
   }
@@ -348,21 +351,6 @@ class LighterFuel {
 .buttonLF .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
     consoleOut(this.showSettings);
   }
-
-  // TODO: complete these (GPT Integration)
-  /*
-  setTextButtonObserver() {
-    if (this.getTextButtonParent()) {
-
-    }
-  }
-
-  textButtonObserverCallback(mutations, observer) {
-    if (this.getTextButtonParent()) {
-
-    }
-  }
-  */
 }
 
 export default LighterFuel;
