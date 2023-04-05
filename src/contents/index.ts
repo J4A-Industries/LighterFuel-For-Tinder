@@ -15,7 +15,6 @@ export const getStyle: PlasmoGetStyle = () => {
 };
 
 try {
-  console.log('Working!');
   const lf = new LighterFuel();
   // prints the lf instance to the console for debugging!
   if (debug) console.log(lf);
