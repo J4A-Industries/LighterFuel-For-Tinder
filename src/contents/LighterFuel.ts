@@ -22,16 +22,13 @@ import type {
   ImageType,
   ProfileImage,
   ShowSettings,
+  profileSliderContainer,
 } from '@/misc/types';
 
 class LighterFuel {
   images: ImageType[];
 
-  profileSliderContainers: {
-    containerDOM: HTMLElement,
-    observer: MutationObserver,
-    overlayBox: HTMLElement
-  }[];
+  profileSliderContainers: profileSliderContainer[];
 
   showSettings: ShowSettings;
 
@@ -45,17 +42,16 @@ class LighterFuel {
    * @param {Boolean} debug
    */
   constructor() {
-    // images: {url: String, lastModified: String, timeAddedToArr: Integer}[]
     this.images = [];
-    // profileSliderContainers: {domNode: DomNode, data: Object}[]
     this.profileSliderContainers = [];
     this.showSettings = {
       overlayButton: true,
       searchButton: true,
     };
+
     this.mainMutationObserver = new MutationObserver(() => this.profileMutationCallback);
     this.storage = new Storage();
-    // this.textContainerObserver = new MutationObserver(textButtonObserverCallback);
+
     if (debug) this.setCustomFetch();
     this.getInitialData();
     this.initialiseMessageListner();

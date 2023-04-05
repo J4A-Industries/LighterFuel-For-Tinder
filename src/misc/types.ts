@@ -24,3 +24,9 @@ export type AISettings = {
 	bestOf: number;
 	APIkey: string;
 };
+
+export type profileSliderContainer = {
+  containerDOM: HTMLElement,
+  observer: MutationObserver,
+  overlayBox: HTMLElement
+};
