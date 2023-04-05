@@ -81,6 +81,23 @@ export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray
 };
 
 /**
+ * This gets all the images shown on the page
+ *
+ * @returns The array of nodes with a background image
+ */
+export const getProfileImagesShown = () => [...document.querySelectorAll('div')]
+  .filter((x) => window.getComputedStyle(x, null)
+    .getPropertyValue('background-image').includes('url("'));
+
+export const getBackgroundImageFromNode = (node: Element): string => {
+  const style = window.getComputedStyle(node, null).getPropertyValue('background-image');
+  const regex = /background-image:\s*url\("?(.*?)"?\);/;
+  const match = regex.exec(style);
+
+  return match ? match[1] : '';
+};
+
+/**
  * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
  * Probably could be obsolete and replaced with getProfileImages, will remove in the future
  *

@@ -4,7 +4,7 @@ import { debug } from '@/misc/config';
 import type {
   AISettings, ImageType, ShowSettings,
 } from '@/misc/types';
-import { sendInfoToTab } from './Misc';
+import { sendImageDataToTab } from './Misc';
 
 class Background {
   images: ImageType[];
@@ -32,7 +32,7 @@ class Background {
           };
           // TODO: maybe need to send the images array to the tab?
           this.addImage(data);
-          sendInfoToTab(data).catch((e) => {
+          sendImageDataToTab(data).catch((e) => {
             if (debug) console.log(e);
           });
 
