@@ -8,12 +8,12 @@ import {
   createButtons,
   getDomsWithBGImages,
   getImageURLfromNode,
-  getProfileImages,
   getTimeOld,
   parentNode,
   consoleOut,
   getProfileImagesShown,
   getBackgroundImageFromNode,
+  getShownImages,
 } from '@/contents/Misc';
 
 import { debug } from '@/misc/config';
@@ -38,150 +38,78 @@ class LighterFuel {
 
   storage: Storage;
 
+  shownProfileImages: Element[];
+
   /**
    * @param {Boolean} debug
    */
   constructor() {
     this.images = [];
+    this.shownProfileImages = [];
     this.profileSliderContainers = [];
     this.showSettings = {
       overlayButton: true,
       searchButton: true,
     };
 
-    this.mainMutationObserver = new MutationObserver(() => this.profileMutationCallback);
+    this.mainMutationObserver = new MutationObserver(() => this.mutationCallback());
     this.storage = new Storage();
 
     if (debug) this.setCustomFetch();
     this.getInitialData();
     this.initialiseMessageListner();
+    this.initaliseObserver();
   }
 
-  /**
-   * A method to monitor the container of the profile images DIV
-   *
-   * @param {HTMLElement} container The profile images DIV
-   * @returns {MutationObserver} The MutationObserver that has been created
-   */
-  monitorContainer(container: Element): MutationObserver | undefined {
-    const config = { attributes: true, subtree: true };
+  initaliseObserver() {
+    const config = {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class'],
+    };
+    consoleOut('initaliseObserver');
+    // * The main observer, observing the body for changes
+    consoleOut(document.body ? 'body exists' : 'body does not exist');
+    if (document.body) {
+      this.mainMutationObserver.observe(document.body, config);
+    } else {
+      // on body load
+      document.addEventListener('DOMContentLoaded', () => {
+        consoleOut('body loaded');
+        this.mainMutationObserver.observe(document.body, config);
+      });
+    }
+  }
 
-    const observer = new MutationObserver((mutationsList) => {
-      this.profileMutationCallback(mutationsList, container);
-    });
-    observer.observe(container, config);
-    if (!document.body.contains(container)) {
-      // TODO: find why this is needed and sort it out
-      consoleOut('observer disconnected in monitorContainer, not sure why this is needed yet');
-      observer.disconnect();
+  addOverlayButtons() {
+    // For every profile image discovered in this.shownProfileImages
+    for (const image of this.shownProfileImages) {
+      // Get the URl for the image
+      // TODO: only add if it's not already there
+      if (image.innerHTML !== '<h1>yeeeeeeet</h1>') {
+        image.innerHTML = '<h1>yeeeeeeet</h1>';
+      }
+    }
+  }
+
+  mutationCallback() {
+    consoleOut('mutationCallback');
+    consoleOut(this.shownProfileImages);
+    this.shownProfileImages = getShownImages();
+    if (this.shownProfileImages.length === 0) {
+      consoleOut('no images');
+      const interval = window.setInterval(() => {
+        this.shownProfileImages = getShownImages();
+        if (this.shownProfileImages.length > 0) {
+          consoleOut('images found');
+          clearInterval(interval);
+          this.addOverlayButtons();
+        }
+      }, 50);
       return;
     }
-    return observer;
-  }
-
-  /**
-   * The mutation observer callback which is put on the profile image container
-   *
-   * @param {MutationRecord} mutationsList The mutation list that has occurred
-   * @param {HTMLElement} container The container on which the observer was observing
-   */
-  profileMutationCallbackOld(mutationsList: MutationRecord[], container: Element) {
-    for (const mutation of mutationsList) {
-      // if "hidden" has changed (the pic displayed has changed)
-      if (mutation.type === 'attributes') {
-        // for every image span (div inside span is image)
-        // check whether or not the image is shown
-        const internalImage = getDomsWithBGImages(container as HTMLElement);
-        if (internalImage.length > 0) {
-          const imageURL = getImageURLfromNode(internalImage[0]);
-          consoleOut(`Now displaying: ${imageURL}`);
-          const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === container);
-
-          if (!containerRecord) return consoleOut('containerRecord not found in profileMutationCallback');
-          // ! somewhere here, there's an error
-          // ! not sure, the image is downloaded and the console outputs the image URL
-          const requestRecord = this.images.find((y) => y.url === imageURL);
-          if (!requestRecord) {
-            consoleOut('request record invalid in monitor container :( running findNodes again, container record:');
-            consoleOut(containerRecord);
-            consoleOut(requestRecord);
-            this.findNodes();
-            return;
-          }
-          const overlay = this.createOverlayNode(requestRecord);
-          const newOverlayBox = overlay.overlayNode;
-          parentNode(containerRecord.overlayBox, 1).replaceChild(newOverlayBox, containerRecord.overlayBox);
-          containerRecord.overlayBox = newOverlayBox;
-          overlay.onPlaced();
-        }
-      }
-    }
-  }
-
-  /**
-   * The mutation observer callback which is put on the profile image container
-   *
-   * @param {MutationRecord} mutationsList The mutation list that has occurred
-   * @param {HTMLElement} container The container on which the observer was observing
-   */
-  profileMutationCallback(mutationsList: MutationRecord[], container: Element) {
-    for (const mutation of mutationsList) {
-      // if "hidden" has changed (the pic displayed has changed)
-      if (mutation.type === 'attributes') {
-        const imagesShown = getProfileImagesShown();
-        consoleOut(imagesShown);
-        if (imagesShown.length > 0) {
-          // TODO: maybe shown[0] or maybe all of them?
-          const image = imagesShown[0];
-          const url = getBackgroundImageFromNode(image);
-          const requestRecord = this.images.find((y) => y.url === url);
-          if (!requestRecord) {
-            consoleOut(`Request record invalid for image ${url} in monitor container :(`);
-            return;
-          }
-          const overlay = this.createOverlayNode(requestRecord);
-          const newOverlayBox = overlay.overlayNode;
-          parentNode(image, 1).replaceChild(newOverlayBox, image);
-          overlay.onPlaced();
-        }
-      }
-    }
-  }
-
-  /**
-   * Set's the profile slider up and adds a new record to the "profileSliderContainers"
-   *
-   * @param {HTMLElement} imgDom The profile element
-   */
-  setupProfileSlider(imgDom: HTMLElement) {
-    const profileImages = getProfileImages(imgDom, this.images);
-    if (profileImages.length > 0) {
-      // this might break, not sure of a better way to do it though! This is most likely to break first
-      let profileImagesContainer = parentNode(profileImages[0].domNode, 2);
-
-      if (profileImagesContainer.nodeName === 'SPAN') profileImagesContainer = parentNode(profileImagesContainer, 1);
-      let overlayBoxDom = parentNode(profileImagesContainer, 1).querySelector('.overlayBox');
-      const containerRecord = this.profileSliderContainers.find((x) => x.containerDOM === profileImagesContainer);
-      // if container record not already in profileSliderContainers array, add it
-      if (!containerRecord) {
-        // TODO: might not always be profileImages[0]
-        const overlay = this.createOverlayNode(profileImages[0].data);
-        overlayBoxDom = overlay.overlayNode;
-        parentNode(profileImagesContainer, 1).appendChild(overlayBoxDom);
-        const observer = this.monitorContainer(profileImagesContainer);
-        if (!observer) return consoleOut('observer not created in setupProfileSlider, monitorContainer returned undefined');
-        overlay.onPlaced();
-        const newRecord = {
-          containerDOM: profileImagesContainer as HTMLElement,
-          observer,
-          overlayBox: overlayBoxDom as HTMLElement,
-        };
-        this.profileSliderContainers.push(newRecord);
-
-        consoleOut('New container found! Record: ');
-        consoleOut(newRecord);
-      }
-    }
+    this.addOverlayButtons();
   }
 
   /**
@@ -230,47 +158,7 @@ class LighterFuel {
     }
     // prune off the old images
     if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
-    window.requestIdleCallback(() => {
-      const pImages = getProfileImages(document, this.images);
-      pImages.forEach((node) => {
-        if (!node.domNode.parentNode) throw new Error('node.domNode.parentNode is null in addNewImage');
-        this.setupProfileSlider(node.domNode.parentNode as HTMLElement);
-      });
-    });
   }
-
-  /**
-   * TODO: TO DEPRECIATE
-   * Sets the mutation observer after the profile images have been identified to exist
-   */
-  findNodes() {
-    this.lookForProfileImages().then((profileImages) => {
-      const config = { attributes: false, childList: true, subtree: true };
-      consoleOut(profileImages);
-      profileImages.forEach((node) => this.setupProfileSlider(node.domNode.parentNode as HTMLElement));
-      this.mainMutationObserver.observe(document.getElementsByClassName('App')[0], config);
-    });
-  }
-
-  /**
-   * Looks for the profile images, if they're not there, sets the windowOnload to it
-   *
-   * @returns {Promise<Array>}
-   */
-  lookForProfileImages(): Promise<ProfileImage[]> {
-    return new Promise((resolve) => {
-      const profileImages = getProfileImages(document, this.images);
-      if (profileImages.length < 1) {
-        resolve(profileImages);
-      } else {
-        window.onload = () => {
-          resolve(this.lookForProfileImages());
-          if (debug) consoleOut('No nodes found, setting window onload event');
-        };
-      }
-    });
-  }
-
   /* ************************************************* */
 
   /**
