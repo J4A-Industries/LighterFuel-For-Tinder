@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Flag from 'react-world-flags';
 import '@/popup/style.css';
 import logo from 'data-base64:~assets/LighterFuel512.png';
@@ -7,6 +7,7 @@ import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-ic
 import { useStorage } from '@plasmohq/storage/hook';
 import { gpt, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
+import 'https://www.googletagmanager.com/gtag/js?id=$PLASMO_PUBLIC_GTAG_ID';
 
 enum menuOptions {
   settings,
@@ -25,6 +26,22 @@ const IndexPopup = () => {
   const [data, setData] = useState('');
   const [menuTab, setMenuTab] = useState<menuOptions>(menuOptions.settings);
   const [showSettings, setShowSettings] = useStorage('showSettings', (x) => (x === undefined ? defaultSettings : x));
+
+  useEffect(() => {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments) // eslint-disable-line
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', process.env.PLASMO_PUBLIC_GTAG_ID, {
+      page_path: '/popup',
+      debug_mode: true,
+    });
+  }, []);
+
+  useEffect(() => {
+    window.gtag('event', 'settings-change', showSettings);
+  }, [showSettings]);
 
   return (
     <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none gap-2 flex flex-col">
