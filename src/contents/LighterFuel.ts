@@ -219,16 +219,15 @@ class LighterFuel {
   /**
    * Creates the overlay element for the photo
    *
-   * @param {String} lastModified The last modified time from the image
-   * @returns {HTMLElement}
+   * @param data The data for the image (using the last modified date and url for reverse lookup)
+    * @returns The element with an onPlaced method
    */
   createOverlayNode(data: ImageType) {
     const { lastModified } = data;
     const overlayNode = document.createElement('p');
     const date = new Date(lastModified);
     const xOld = getTimeOld(date.getTime());
-    const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
-    overlayNode.innerHTML = `${text.overlay.uploadedAt}: ${outFormat}`;
+    overlayNode.innerHTML = `${text.overlay.uploadedAt}: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
     overlayNode.appendChild(createButton(data.url));
     overlayNode.setAttribute('aria-url', data.url);
     const onPlaced = () => {
