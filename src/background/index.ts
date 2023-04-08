@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import type { PlasmoMessaging } from '@plasmohq/messaging';
+import { Storage } from '@plasmohq/storage';
 import { debug } from '@/misc/config';
 import type {
   AISettings, ImageType, ShowSettings,
@@ -70,7 +70,20 @@ class Background {
   }
 }
 
+const setDefaultSettings = async () => {
+  const storage = new Storage();
+  const settings = await storage.get('showSettings');
+  if (settings === undefined) {
+    const defaultSettings = {
+      overlayButton: true,
+      searchButton: true,
+    };
+    await storage.set('showSettings', defaultSettings);
+  }
+};
+
 try {
+  setDefaultSettings();
   const bg = new Background();
   // prints the bg instance to the console for debugging!
   console.log(bg);
