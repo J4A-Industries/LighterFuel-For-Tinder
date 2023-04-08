@@ -1,0 +1,17 @@
+{
+	"donate": {
+		"title": "Donate",
+		"location": "Donations go to the Ukraine Humanitarian Appeal, Slava Ukraini!",
+		"buttonText": "Donate Here"
+	},
+	"enableOverlay": "Enable overlay",
+	"enableSearchButton": "Enable search button",
+	"info": {
+		"title": "Info",
+		"text": "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account and reverse image search your matches photos!"
+	},
+	"reverseImageSearch": {
+		"title": "Reverse image search",
+		"text": "Enable the search button and click on it (only for matches) and see if that image is publicly available online (if it is, they're probably a catfish)"
+	}
+}

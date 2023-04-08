@@ -1,0 +1,87 @@
+{
+	"en-GB": {
+		"donate": {
+			"title": "Donate",
+			"location": "Donations go to the Ukraine Humanitarian Appeal, Slava Ukraini!",
+			"buttonText": "Donate Here"
+		},
+		"enableOverlay": "Enable overlay",
+		"enableSearchButton": "Enable search button",
+		"info": {
+			"title": "Info",
+			"text": "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account and reverse image search your matches photos!"
+		},
+		"reverseImageSearch": {
+			"title": "Reverse image search",
+			"text": "Enable the search button and click on it (only for matches) and see if that image is publicly available online (if it is, they're probably a catfish)"
+		}
+	},
+	"ru": {
+		"donate": {
+			"title": "Пожертвовать",
+			"location": "Пожертвования идут на Гуманитарный призыв Украины, Слава України!",
+			"buttonText": "Пожертвовать здесь"
+		},
+		"enableOverlay": "Включить наложение",
+		"enableSearchButton": "Включить кнопку поиска",
+		"info": {
+			"title": "Информация",
+			"text": "Lighterfuel позволяет вам видеть, когда изображения профилей были загружены, чтобы получить представление о том, когда они создали свою учетную запись, выполнять обратный поиск изображений по фотографиям совпадений и получать фотографии с максимальным разрешением!"
+		},
+		"reverseImageSearch": {
+			"title": "Обратный поиск изображений",
+			"text": "Включите кнопку поиска и нажмите на нее (только для совпадений) и посмотрите, есть ли это изображение в открытом доступе в Интернете (если это так, это, вероятно, сом)"
+		}
+	},
+	"uk": {
+		"donate": {
+			"title": "Пожертвуйте",
+			"location": "Пожертви передаємо до Української гуманітарної акції Слава Україні!",
+			"buttonText": "Пожертвуйте тут"
+		},
+		"enableOverlay": "Увімкнути накладання",
+		"enableSearchButton": "Увімкнути кнопку пошуку",
+		"info": {
+			"title": "Інформація",
+			"text": "Lighterfuel дозволяє вам побачити, коли було завантажено зображення профілю, щоб отримати уявлення про те, коли вони створили свій обліковий запис, здійснювати зворотний пошук зображень за вашими збігами та отримувати фотографії з максимальною роздільною здатністю!"
+		},
+		"reverseImageSearch": {
+			"title": "Зворотний пошук зображень",
+			"text": "Увімкніть кнопку пошуку та натисніть на неї (лише для збігів) і подивіться, чи це зображення є загальнодоступним в Інтернеті (якщо так, це, ймовірно, сом)"
+		}
+	},
+	"zh-cn": {
+		"donate": {
+			"title": "捐",
+			"location": "向乌克兰人道主义呼吁 Slava Ukraini 捐款！",
+			"buttonText": "在这里捐款"
+		},
+		"enableOverlay": "启用覆盖",
+		"enableSearchButton": "启用搜索按钮",
+		"info": {
+			"title": "信息",
+			"text": "Lighterfuel 允许您查看上传个人资料图片的时间，以了解他们创建帐户的时间，反向图像搜索您的匹配照片并获得最高分辨率的照片！"
+		},
+		"reverseImageSearch": {
+			"title": "反向图像搜索",
+			"text": "启用搜索按钮并单击它（仅用于匹配）并查看该图像是否可在线公开获取（如果是，则它们可能是鲶鱼）"
+		}
+	},
+	"zh-tw": {
+		"donate": {
+			"title": "捐",
+			"location": "向烏克蘭人道主義呼籲 Slava Ukraini 捐款！",
+			"buttonText": "在這裡捐款"
+		},
+		"enableOverlay": "啟用覆蓋",
+		"enableSearchButton": "啟用搜索按鈕",
+		"info": {
+			"title": "信息",
+			"text": "Lighterfuel 允許您查看上傳個人資料圖片的時間，以了解他們創建帳戶的時間，反向圖像搜索您的匹配照片並獲得最高分辨率的照片！"
+		},
+		"reverseImageSearch": {
+			"title": "反向圖像搜索",
+			"text": "啟用搜索按鈕並單擊它（僅用於匹配）並查看該圖像是否可在線公開獲取（如果是，則它們可能是鯰魚）"
+		}
+	}
+}

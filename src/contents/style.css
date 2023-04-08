@@ -1,0 +1,80 @@
+@config "./../../tailwind.config.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.overlayBox {
+  background-color: RGBA(255, 255, 255, 0.4);
+  color: black;
+  padding: 0.2em;
+  border-radius: 20px;
+  margin-top: 0.7em;
+  margin-right: 0.2em;
+  margin-left: 0.2em;
+  -webkit-box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
+  box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
+  opacity: 1;
+  z-index: 42069;
+  text-align: left;
+  position: absolute;
+  top: 1px;
+  width: 95%;
+  text-shadow: 0px 0px 4px #ffffff;
+  font-weight: 700;
+  transition: none !important;
+  cursor: default;
+	text-align: center;
+}
+
+.onePic {
+  top: -120%;
+}
+
+.topBox {
+  background-color: RGBA(255, 255, 255, 1);
+  color: black;
+  padding: 0.2em;
+  border-radius: 20px;
+  margin-top: 0.7em;
+  margin-right: 0.2em;
+  margin-left: 0.2em;
+  -webkit-box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
+  box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
+  opacity: 1;
+  z-index: 42069;
+  text-align: left;
+  position: absolute;
+  top: -120px;
+  width: 95%;
+  text-shadow: 0px 0px 4px #ffffff;
+  font-weight: 700;
+  transition: none !important;
+  cursor: default;
+	text-align: center;
+}
+
+.uploadedAt {
+  flex: 1 1 auto;
+}
+
+.xOld {
+  flex: 1 1 auto;
+}
+
+.buttonParent {
+  display: flex;
+  flex-wrap: inherit;
+}
+
+.buttonLF {
+  flex: 50%;
+  height: 25px;
+  text-align: center;
+  background-color: #ffffff;
+  cursor: pointer;
+  border-radius: 5px;
+  border-color: #000000;
+  border-width: 2px;
+	margin: 4px;
+}
