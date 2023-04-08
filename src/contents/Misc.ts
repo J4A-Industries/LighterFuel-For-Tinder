@@ -1,23 +1,23 @@
-import { debug } from '@/misc/config';
+import { debug, text } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
 /**
-   * Used to genereate the buttons
+   * Used to genereate the button
    *
    * @returns The buttons
    */
-export const createButtons = (data: {url: string}): HTMLElement => {
+export const createButton = (url: string): HTMLElement => {
   const parent = document.createElement('div');
   parent.classList.add('buttonParent');
   // * URLs that start with ... are private (their URL can't be passed to any other service)
   // * They are seemingly the profile pictures when swiping
   // * Let's just only allow this on matches for now
-  if (!data.url.startsWith('https://images-ssl.gotinder.com/u/')) {
+  if (!url.startsWith('https://images-ssl.gotinder.com/u/')) {
     const searchButton = document.createElement('div');
-    const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(data.url)}&exph=800&expw=640&vt=2&sim=15`;
+    const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
     searchButton.classList.add('buttonLF');
     searchButton.classList.add('search');
-    searchButton.innerText = 'Search';
+    searchButton.innerText = text.overlay.search;
     searchButton.onclick = () => {
       if (debug) console.log('Searching for', reverseImageUrl);
       const newTab = window.open(reverseImageUrl, '_blank');
@@ -46,43 +46,15 @@ export const getTimeOld = (time: number): string => {
   return `${days} Days`;
 };
 
-/**
- * Gets the images from the profile
- *
- * @param {HTMLElement | Document | Element} doc The parent of the images to search for
- * @param {Array} urlArray The array of URLs that the method searches for
- * @returns An array of images found with the node and the data entry
- */
-export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]): ProfileImage[] => {
-  if (!doc) return [];
-  // The regex to check for the background to match `url(...)`
-  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
-  const outArr = Array.from(
-    Array.from(doc.querySelectorAll('div'))
-      .reduce((collection, node) => {
-        // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
-        const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
-        // match `url(...)`
-        const match = srcChecker.exec(prop);
-        if (match) {
-          // look for the found URL in the URL list
-          const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
-          // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
-          if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
-            // add tothe collection
-            const entry: ProfileImage = { domNode: node, data: urlEntry };
-            collection.add(entry);
-          }
-        }
-        return collection;
-      }, new Set()),
-  );
-  return outArr as ProfileImage[];
+export const getShownImages = () => {
+  const divs = [...document.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
+  return divs.filter((x) => window.getComputedStyle(x, null) // @ts-ignore parentNode.getAttirbute is valid
+    .getPropertyValue('background-image').includes('url("'));
 };
 
 /**
  * This gets all the images shown on the page
- *
+ * @deprecated Use getShownImages instead
  * @returns The array of nodes with a background image
  */
 export const getProfileImagesShown = () => [...document.querySelectorAll('div')]
@@ -175,7 +147,8 @@ export const getTextButtonParent = (): HTMLElement | null => {
   }
   const spanArr = [...document.querySelectorAll('span')];
   const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
-  for (const n of hiddenSpans) {
+  for (let i = 0; i < hiddenSpans.length; i++) {
+    const n = hiddenSpans[i];
     if (n.innerText === 'Vinyl' || n.innerText === 'Sticker' || n.innerText === 'GIF') {
       return parentNode(n, 3);
     }
@@ -189,4 +162,38 @@ export const getTextButtonParent = (): HTMLElement | null => {
 
 export const consoleOut = (message: string | any[] | any) => {
   if (debug) console.log(message);
+};
+
+/**
+ * Gets the images from the profile
+ *
+ * @param doc The parent of the images to search for
+ * @para  urlArray The array of URLs that the method searches for
+ * @returns An array of images found with the node and the data entry
+ */
+export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]): ProfileImage[] => {
+  if (!doc) return [];
+  // The regex to check for the background to match `url(...)`
+  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
+  const outArr = Array.from(
+    Array.from(doc.querySelectorAll('div'))
+      .reduce((collection, node) => {
+        // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
+        const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
+        // match `url(...)`
+        const match = srcChecker.exec(prop);
+        if (match) {
+          // look for the found URL in the URL list
+          const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
+          // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
+          if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
+            // add tothe collection
+            const entry: ProfileImage = { domNode: node, data: urlEntry };
+            collection.add(entry);
+          }
+        }
+        return collection;
+      }, new Set()),
+  );
+  return outArr as ProfileImage[];
 };
