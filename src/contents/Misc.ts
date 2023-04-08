@@ -163,3 +163,37 @@ export const getTextButtonParent = (): HTMLElement | null => {
 export const consoleOut = (message: string | any[] | any) => {
   if (debug) console.log(message);
 };
+
+/**
+ * Gets the images from the profile
+ *
+ * @param doc The parent of the images to search for
+ * @para  urlArray The array of URLs that the method searches for
+ * @returns An array of images found with the node and the data entry
+ */
+export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]): ProfileImage[] => {
+  if (!doc) return [];
+  // The regex to check for the background to match `url(...)`
+  const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
+  const outArr = Array.from(
+    Array.from(doc.querySelectorAll('div'))
+      .reduce((collection, node) => {
+        // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
+        const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
+        // match `url(...)`
+        const match = srcChecker.exec(prop);
+        if (match) {
+          // look for the found URL in the URL list
+          const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
+          // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
+          if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
+            // add tothe collection
+            const entry: ProfileImage = { domNode: node, data: urlEntry };
+            collection.add(entry);
+          }
+        }
+        return collection;
+      }, new Set()),
+  );
+  return outArr as ProfileImage[];
+};
