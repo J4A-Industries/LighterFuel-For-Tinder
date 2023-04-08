@@ -2,19 +2,19 @@ import { debug } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
 /**
-   * Used to genereate the buttons
+   * Used to genereate the button
    *
    * @returns The buttons
    */
-export const createButtons = (data: {url: string}): HTMLElement => {
+export const createButton = (url: string): HTMLElement => {
   const parent = document.createElement('div');
   parent.classList.add('buttonParent');
   // * URLs that start with ... are private (their URL can't be passed to any other service)
   // * They are seemingly the profile pictures when swiping
   // * Let's just only allow this on matches for now
-  if (!data.url.startsWith('https://images-ssl.gotinder.com/u/')) {
+  if (!url.startsWith('https://images-ssl.gotinder.com/u/')) {
     const searchButton = document.createElement('div');
-    const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(data.url)}&exph=800&expw=640&vt=2&sim=15`;
+    const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
     searchButton.classList.add('buttonLF');
     searchButton.classList.add('search');
     searchButton.innerText = 'Search';
@@ -45,7 +45,6 @@ export const getTimeOld = (time: number): string => {
   }
   return `${days} Days`;
 };
-
 
 export const getShownImages = () => {
   const divs = [...document.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
@@ -148,7 +147,8 @@ export const getTextButtonParent = (): HTMLElement | null => {
   }
   const spanArr = [...document.querySelectorAll('span')];
   const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
-  for (const n of hiddenSpans) {
+  for (let i = 0; i < hiddenSpans.length; i++) {
+    const n = hiddenSpans[i];
     if (n.innerText === 'Vinyl' || n.innerText === 'Sticker' || n.innerText === 'GIF') {
       return parentNode(n, 3);
     }

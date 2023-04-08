@@ -5,7 +5,7 @@ import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
 import { createRoot } from 'react-dom/client';
 import {
-  createButtons,
+  createButton,
   getDomsWithBGImages,
   getImageURLfromNode,
   getTimeOld,
@@ -223,7 +223,7 @@ class LighterFuel {
     const xOld = getTimeOld(date.getTime());
     const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
     overlayNode.innerHTML = `Image Uploaded At: ${outFormat}`;
-    overlayNode.appendChild(createButtons(data));
+    overlayNode.appendChild(createButton(data.url));
     console.log(overlayNode);
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
