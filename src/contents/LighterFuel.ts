@@ -57,6 +57,50 @@ class LighterFuel {
     if (debug) this.setCustomFetch();
     this.initialiseMessageListner();
     this.getInitialData();
+    this.startMonitorInterval();
+  }
+
+  startMonitorInterval() {
+    setInterval(() => {
+      const keenSlider = [...document.querySelectorAll('div.keen-slider')];
+      if (keenSlider.length > 0) {
+        // For every slider, make sure there's the overlay
+        for (const slider of keenSlider) {
+          const existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
+          const sliderParent = slider.parentNode;
+          if (!existingOverlay) {
+            // Find the image that's currently shown
+            const currentImage = slider.querySelector('div.StretchedBox');
+            const imageURL = getImageURLfromNode(currentImage);
+            const imageRecord = this.images.find((image) => image.url === imageURL);
+            if (!imageRecord) return consoleOut(`imageRecord not found in startMonitorInterval ${imageURL} ${JSON.stringify(this.images)}`);
+            const overlay = this.createOverlayNode(imageRecord);
+            sliderParent.appendChild(overlay.overlayNode);
+            overlay.onPlaced();
+            consoleOut('Added overlay');
+          } else {
+            // check to see if the overlay 'aria-url' matches the current image
+            const currentImage = slider.querySelector('div.StretchedBox');
+            const imageURL = getImageURLfromNode(currentImage);
+            const imageRecord = this.images.find((image) => image.url === imageURL);
+            if (!imageRecord) return consoleOut(`imageRecord not found in startMonitorInterval ${imageURL} ${JSON.stringify(this.images)}`);
+            // check to see if the overlay 'aria-url' matches the current image
+            if (existingOverlay.getAttribute('aria-url') !== imageRecord.url) {
+              // if not, update the overlay
+              existingOverlay.parentNode.removeChild(existingOverlay);
+              const overlay = this.createOverlayNode(imageRecord);
+              sliderParent.appendChild(overlay.overlayNode);
+              overlay.onPlaced();
+              consoleOut('Updated overlay');
+            }
+          }
+        }
+      }
+      const profileSlideContainer = [...document.querySelectorAll('div.profileCard__slider')];
+      if (profileSlideContainer.length > 0) {
+        // this.monitorContainer(profileSlideContainer[0]);
+      }
+    }, 50);
   }
 
   /**
@@ -208,13 +252,13 @@ class LighterFuel {
     }
     // prune off the old images
     if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
-    window.requestIdleCallback(() => {
+    /* window.requestIdleCallback(() => {
       const pImages = getProfileImages(document, this.images);
       pImages.forEach((node) => {
         if (!node.domNode.parentNode) throw new Error('node.domNode.parentNode is null in addNewImage');
         this.setupProfileSlider(node.domNode.parentNode as HTMLElement);
       });
-    });
+    }); */ // * To remove maybe
   }
 
   /**
@@ -313,7 +357,7 @@ class LighterFuel {
     const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
     overlayNode.innerHTML = `${text.overlay.uploadedAt}: ${outFormat}`;
     overlayNode.appendChild(createButton(data.url));
-    console.log(overlayNode);
+    overlayNode.setAttribute('aria-url', data.url);
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
       // * whenever there's 100px above, we have room to place the box above
