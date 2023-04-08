@@ -12,11 +12,10 @@ import {
   getShownImages,
   getImageURLfromNode,
   getDomsWithBGImages,
-  getProfileImagesShown,
   getProfileImages,
 } from '@/contents/Misc';
 
-import { debug } from '@/misc/config';
+import { debug, text } from '@/misc/config';
 
 import type {
   ImageType,
@@ -67,7 +66,7 @@ class LighterFuel {
    * @returns {MutationObserver} The MutationObserver that has been created
    */
   monitorContainer(container: Element): MutationObserver | undefined {
-    const config = { attributes: true, subtree: true };
+    const config = { attributes: true, subtree: true, childList: true };
 
     const observer = new MutationObserver((mutationsList) => {
       this.profileMutationCallback(mutationsList, container);
@@ -87,6 +86,7 @@ class LighterFuel {
    *
    * @param {MutationRecord} mutationsList The mutation list that has occurred
    * @param {HTMLElement} container The container on which the observer was observing
+   *
    */
   profileMutationCallback(mutationsList: MutationRecord[], container: Element) {
     for (const mutation of mutationsList) {
@@ -95,7 +95,8 @@ class LighterFuel {
         // for every image span (div inside span is image)
         for (const node of container.children) {
           // check whether or not the image is shown
-          if (node.getAttribute('aria-hidden') === 'false') {
+          if (node.getAttribute('aria-hidden') === 'false' || node.parentNode.children.length === 1) { // ! broken, it doesn't always have aria-hidden,
+            // ! sometimes there's only 1 child
             const internalImage = getDomsWithBGImages(node as HTMLElement);
             if (internalImage.length > 0) {
               const imageURL = getImageURLfromNode(internalImage[0]);
@@ -310,7 +311,7 @@ class LighterFuel {
     const date = new Date(lastModified);
     const xOld = getTimeOld(date.getTime());
     const outFormat = `${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} <br>${xOld} Old`;
-    overlayNode.innerHTML = `Image Uploaded At: ${outFormat}`;
+    overlayNode.innerHTML = `${text.overlay.uploadedAt}: ${outFormat}`;
     overlayNode.appendChild(createButton(data.url));
     console.log(overlayNode);
     const onPlaced = () => {
