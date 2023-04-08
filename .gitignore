@@ -40,3 +40,7 @@ keys.json
 
 # typescript
 .tsbuildinfo
+
+*.pem
+
+*.crx
