@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import Collapsible from 'react-collapsible';
+import React, { useState } from 'react';
 import Flag from 'react-world-flags';
-import '@/style.css';
+import '@/popup/style.css';
 import logo from 'data-base64:~assets/LighterFuel512.png';
 import Switch from '@mui/material/Switch';
 import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
-import { Storage } from '@plasmohq/storage';
 import { useStorage } from '@plasmohq/storage/hook';
 import { gpt, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
