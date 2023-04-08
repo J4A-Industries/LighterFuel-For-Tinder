@@ -1,4 +1,4 @@
-import { debug } from '@/misc/config';
+import { debug, text } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
 /**
@@ -17,7 +17,7 @@ export const createButton = (url: string): HTMLElement => {
     const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
     searchButton.classList.add('buttonLF');
     searchButton.classList.add('search');
-    searchButton.innerText = 'Search';
+    searchButton.innerText = text.overlay.search;
     searchButton.onclick = () => {
       if (debug) console.log('Searching for', reverseImageUrl);
       const newTab = window.open(reverseImageUrl, '_blank');

@@ -8,14 +8,24 @@ const findLanguage = (): any => {
   const lang = navigator.language;
   if (lang.startsWith('en')) {
     return languages['en-GB'];
-  } if (lang.startsWith('ru')) {
+  }
+  if (lang.startsWith('ru')) {
     return languages.ru;
-  } if (lang.startsWith('uk')) {
+  }
+  if (lang.startsWith('uk')) {
     return languages.uk;
-  } if (lang.startsWith('zh-tw')) {
-    return languages['zh-tw'];
-  } if (lang.startsWith('zh')) {
-    return languages['zh-cn'];
+  }
+  if (lang.startsWith('zh')) {
+    return languages.zh;
+  }
+  if (lang.startsWith('de')) {
+    return languages.de;
+  }
+  if (lang.startsWith('fr')) {
+    return languages.fr;
+  }
+  if (lang.startsWith('nl')) {
+    return languages.nl;
   }
   return languages['en-GB'];
 };
