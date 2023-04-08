@@ -261,7 +261,7 @@ class LighterFuel {
     styleElem.textContent = `
 .overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
 .topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
-.buttonLF .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
+.search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
     consoleOut(this.showSettings);
   }
 }
