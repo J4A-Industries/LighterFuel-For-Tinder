@@ -2,7 +2,7 @@
   "name": "lighter-fuel-for-tinder",
   "displayName": "LighterFuel for tinder",
   "version": "1.4",
-  "description": "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account and reverse image search your matches photos!",
+  "description": "LighterFuel helps you to identify catfish, letting you see when profile images were uploaded and reverse image search photos!",
   "author": "James",
   "scripts": {
     "dev": "plasmo dev",
