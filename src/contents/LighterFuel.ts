@@ -69,6 +69,7 @@ class LighterFuel {
           const sliderParent = slider.parentNode;
           // check to see if the overlay 'aria-url' matches the current image
           const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
+          if (profileImages.length === 0) return;
           const currentImage = profileImages.reduce((acc, curr) => {
             const firstParent = curr.parentElement.getAttribute('aria-hidden') === 'false';
             const secondParent = curr.parentElement.parentElement.getAttribute('aria-hidden') === 'false';
