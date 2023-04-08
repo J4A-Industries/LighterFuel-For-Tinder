@@ -1,6 +1,6 @@
 import languages from './languages.json';
 
-export const debug = true;
+export const debug = false;
 export const gpt = false;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
