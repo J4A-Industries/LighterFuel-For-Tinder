@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
-import logo from 'data-base64:~assets/LighterFuel512.png';
 import Switch from '@mui/material/Switch';
 import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
 import { useStorage } from '@plasmohq/storage/hook';
+import logo from '~assets/LighterFuel512.png';
 import { gpt, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
 import 'https://www.googletagmanager.com/gtag/js?id=$PLASMO_PUBLIC_GTAG_ID';
