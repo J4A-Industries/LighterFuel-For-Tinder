@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState, useEffect } from 'react';
-import Flag from 'react-world-flags';
+import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
 import logo from 'data-base64:~assets/LighterFuel512.png';
 import Switch from '@mui/material/Switch';
@@ -61,8 +62,8 @@ const IndexPopup = () => {
             <AiOutlineGithub className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.github)} />
           </div>
           <div className="flex align-middle justify-center">
-            <Flag
-              code="UA"
+            <img
+              src={ukraineFlag}
               className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline"
               onClick={() => openTab(links.ukraineAppeal)}
             />
