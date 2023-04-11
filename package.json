@@ -49,7 +49,6 @@
       "*://*.gotinder.com/*"
     ],
     "permissions": [
-      "scripting",
       "webRequest",
       "storage"
     ],
