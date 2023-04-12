@@ -1,33 +1,18 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# LighterFuel For Tinder
+![Chrome Web Store Downloads](https://img.shields.io/chrome-web-store/users/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
+![Chrome Web Store Release](https://img.shields.io/chrome-web-store/v/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
 
-## Getting Started
+![LighterFuel Logo](https://github.com/Acorn221/LighterFuel-For-Tinder/blob/master/src/assets/LighterFuel64.png?raw=true)
 
-First, run the development server:
+This chrome extension was made to improve the experience of tinder users through taking advantage of Tinder sending the "LastModified" date on profile photos.
+It also helps users out by allowing them to reverse image search their matches photos to check whether or not they are who they say they are!
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+[Get it here](https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc?hl=en-GB)
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+# Features
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+- Get the date of when photos are uploaded to a tinder profile
+- Enables quick reverse image searching with your matches profile photos
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
 
-## Making production build
-
-Run the following:
-
-```bash
-pnpm build
-# or
-npm run build
-```
-
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
-
-## Submit to the webstores
-
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+This project is based off of the [Plasmo framework](https://docs.plasmo.com/).
