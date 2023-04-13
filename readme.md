@@ -2,6 +2,10 @@
 ![Chrome Web Store Downloads](https://img.shields.io/chrome-web-store/users/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
 ![Chrome Web Store Release](https://img.shields.io/chrome-web-store/v/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
 
+## Tinder Gold Breaking Ligherfuel For You?
+
+[Download the old version here](https://github.com/Acorn221/LighterFuel-For-Tinder/releases/tag/v1.3)
+
 ![LighterFuel Logo](https://raw.githubusercontent.com/Acorn221/LighterFuel-For-Tinder/d8d8e70551d571790dfbd50326293209f05d5df8/assets/icon.png)
 
 This chrome extension was made to improve the experience of tinder users through taking advantage of Tinder sending the "LastModified" date on profile photos.
