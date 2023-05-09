@@ -1,5 +1,8 @@
-import { debug, text } from '@/misc/config';
+import type { PlasmoCSConfig } from 'plasmo';
+import { debug, text, configImport } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
+
+export const config = configImport;
 
 /**
    * Used to genereate the button

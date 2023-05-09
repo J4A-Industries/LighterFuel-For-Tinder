@@ -15,7 +15,7 @@ import {
   getProfileImages,
 } from '@/contents/Misc';
 
-import { debug, text } from '@/misc/config';
+import { debug, text, configImport } from '@/misc/config';
 
 import type {
   ImageType,
@@ -23,6 +23,8 @@ import type {
   ShowSettings,
   profileSliderContainer,
 } from '@/misc/types';
+
+export const config = configImport;
 
 class LighterFuel {
   images: ImageType[];
