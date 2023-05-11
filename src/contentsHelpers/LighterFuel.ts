@@ -2,7 +2,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
 import browser from 'webextension-polyfill';
-import { Storage } from '@plasmohq/storage';
 
 import {
   createButton,

@@ -101,7 +101,7 @@ const IndexPopup = () => {
             </div>
 
             <Switch
-              checked={showSettings.searchButton}
+              checked={showSettings.debuggingTelemetry}
               onChange={() => setShowSettings({ ...showSettings, debuggingTelemetry: !showSettings.debuggingTelemetry })}
               inputProps={{ 'aria-label': 'controlled' }}
               aria-label={text.enableDebuggingTelemetry}

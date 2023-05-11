@@ -2,11 +2,6 @@ import type { PlasmoCSConfig } from 'plasmo';
 import { debug, text } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
-export const configImport: PlasmoCSConfig = {
-  matches: ['https://tinder.com/*'],
-  run_at: 'document_start',
-  css: ['./style.css'],
-};
 
 /**
    * Used to genereate the button
