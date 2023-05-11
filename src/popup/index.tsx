@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
 import Switch from '@mui/material/Switch';
-import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineInfoCircle } from 'react-icons/ai';
+import { BsDiscord } from 'react-icons/bs';
 import { useStorage } from '@plasmohq/storage/hook';
 import {
   defaultSettings, links, text,
@@ -54,7 +55,7 @@ const IndexPopup = () => {
             <AiOutlineInfoCircle className={`m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer ${(menuTab === menuOptions.info) ? 'bg-slate-500' : 'bg-slate-600'} hover:outline-offset-2 outline-white outline`} onClick={() => setMenuTab(menuOptions.info)} />
           </div>
           <div className="flex align-middle justify-center">
-            <AiOutlineGithub className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.github)} />
+            <BsDiscord className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.discord)} />
           </div>
           <div className="flex align-middle justify-center">
             <img

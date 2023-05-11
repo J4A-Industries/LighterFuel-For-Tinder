@@ -38,6 +38,7 @@ export const links = {
   ukraineAppeal: 'https://donation.dec.org.uk/ukraine-humanitarian-appeal',
   reviews:
     'https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
+  discord: 'https://discord.gg/nHcDMkqYgP',
 };
 
 export const defaultSettings = {
