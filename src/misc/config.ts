@@ -1,3 +1,4 @@
+import type { PlasmoCSConfig } from 'plasmo';
 import languages from './languages.json';
 
 export const debug = false;
@@ -37,4 +38,10 @@ export const links = {
   ukraineAppeal: 'https://donation.dec.org.uk/ukraine-humanitarian-appeal',
   reviews:
     'https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
+};
+
+export const configImport: PlasmoCSConfig = {
+  matches: ['*://*.tinder.com/*'],
+  run_at: 'document_start',
+  css: ['./style.css'],
 };

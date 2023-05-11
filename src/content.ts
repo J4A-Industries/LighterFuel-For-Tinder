@@ -1,6 +1,6 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
-import styleText from 'data-text:./style.css';
-import LighterFuel from '@/contents/LighterFuel';
+import styleText from 'data-text:~src/contentsHelpers/style.css';
+import LighterFuel from '~src/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 
 /**
@@ -8,9 +8,9 @@ import { debug } from '@/misc/config';
  * Running in 'main' world, which means it has access to the DOM
  */
 export const config: PlasmoCSConfig = {
-  matches: ['https://tinder.com/*'],
+  matches: ['*://tinder.com/*'],
   run_at: 'document_start',
-  css: ['./style.css'],
+  css: ['./contentsHelpers/style.css'],
 };
 
 /**
