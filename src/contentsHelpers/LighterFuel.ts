@@ -24,38 +24,30 @@ import type {
   profileSliderContainer,
 } from '@/misc/types';
 
-class LighterFuel {
-  images: ImageType[];
+import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
 
+class LighterFuel extends ImageHandler {
   profileSliderContainers: profileSliderContainer[];
-
-  showSettings: ShowSettings;
 
   mainMutationObserver: MutationObserver;
 
   textContainerObserver: MutationObserver | undefined;
 
-  storage: Storage;
-
   shownProfileImages: Element[];
 
-  /**
-   * @param {Boolean} debug
-   */
   constructor() {
-    this.images = [];
-    this.shownProfileImages = [];
-    this.profileSliderContainers = [];
-    this.showSettings = {
-      overlayButton: true,
-      searchButton: true,
-    };
+    super(); // Call the parent class constructor
 
-    this.storage = new Storage();
+    this.profileSliderContainers = [];
 
     if (debug) this.setCustomFetch();
-    this.initialiseMessageListner();
-    this.getInitialData();
+
+    this.initialiseEventListeners();
+
+    this.initialiseMessageListner = this.initialiseMessageListner.bind(this);
+
+    this.getInitialData = this.getInitialData.bind(this);
+
     this.startMonitorInterval();
   }
 
@@ -115,21 +107,9 @@ class LighterFuel {
     });
   }
 
-  /**
-   * Used to get the initial images/settings from the background
-   */
-  getInitialData() {
-    this.storage.get<ShowSettings>('showSettings').then((c) => {
-      this.showSettings = c;
+  initialiseEventListeners() {
+    this.emitter.on(Events.settingsUpdate, (settings) => {
       this.setDisplayStatus();
-    });
-
-    // watching the storage for changes, for live updating
-    this.storage.watch({
-      showSettings: (c) => {
-        this.showSettings = c.newValue;
-        this.setDisplayStatus();
-      },
     });
   }
 
