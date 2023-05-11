@@ -1,13 +1,17 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
-import styleText from 'data-text:./style.css';
-import LighterFuel from '~src/contents/LighterFuel';
-import { debug, configImport } from '@/misc/config';
+import styleText from 'data-text:~src/contentsHelpers/style.css';
+import LighterFuel from '~src/contentsHelpers/LighterFuel';
+import { debug } from '@/misc/config';
 
 /**
  * Execute the script on the tinder website,
  * Running in 'main' world, which means it has access to the DOM
  */
-export const config = configImport;
+export const config: PlasmoCSConfig = {
+  matches: ['*://tinder.com/*'],
+  run_at: 'document_start',
+  css: ['./contentsHelpers/style.css'],
+};
 
 /**
  * Executing styling on the site, letting me use tailwind

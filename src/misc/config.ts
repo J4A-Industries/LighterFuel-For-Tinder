@@ -41,7 +41,7 @@ export const links = {
 };
 
 export const configImport: PlasmoCSConfig = {
-  matches: ['https://tinder.com/*'],
+  matches: ['*://*.tinder.com/*'],
   run_at: 'document_start',
   css: ['./style.css'],
 };

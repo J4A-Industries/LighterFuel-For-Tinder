@@ -4,6 +4,7 @@
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
 import { createRoot } from 'react-dom/client';
+import type { PlasmoCSConfig } from 'plasmo';
 import {
   createButton,
   getTimeOld,
@@ -13,9 +14,9 @@ import {
   getImageURLfromNode,
   getDomsWithBGImages,
   getProfileImages,
-} from '@/contents/Misc';
+} from '@/contentsHelpers/Misc';
 
-import { debug, text, configImport } from '@/misc/config';
+import { debug, text } from '@/misc/config';
 
 import type {
   ImageType,
@@ -24,7 +25,11 @@ import type {
   profileSliderContainer,
 } from '@/misc/types';
 
-export const config = configImport;
+export const configImport: PlasmoCSConfig = {
+  matches: ['*://*.tinder.com/*'],
+  run_at: 'document_start',
+  css: ['./style.css'],
+};
 
 class LighterFuel {
   images: ImageType[];
