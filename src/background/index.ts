@@ -1,10 +1,11 @@
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
-import { debug } from '@/misc/config';
-import type {
-  AISettings, ImageType, ShowSettings,
+import { debug, defaultSettings } from '@/misc/config';
+import {
+  AISettings, ImageType, ShowSettings, Sites,
 } from '@/misc/types';
 import { sendImageDataToTab } from './Misc';
+import ImageRequestCapturer from './imageRequestCapturer';
 
 class Background {
   images: ImageType[];
@@ -74,17 +75,13 @@ const setDefaultSettings = async () => {
   const storage = new Storage();
   const settings = await storage.get('showSettings');
   if (settings === undefined) {
-    const defaultSettings = {
-      overlayButton: true,
-      searchButton: true,
-    };
     await storage.set('showSettings', defaultSettings);
   }
 };
 
 try {
   setDefaultSettings();
-  const bg = new Background();
+  const bg = new ImageRequestCapturer(['*://*.gotinder.com/*/*.jpg*', '*://*.gotinder.com/*/*.webp*', '*://*.gotinder.com/*/*.mp4*'], Sites.TINDER);
   // prints the bg instance to the console for debugging!
   console.log(bg);
 } catch (err: any) {
