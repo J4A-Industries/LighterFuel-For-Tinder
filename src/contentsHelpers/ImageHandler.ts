@@ -33,8 +33,6 @@ export enum Events {
 class ImageHandler {
   images: ImageType[];
 
-  shownProfileImages: Element[];
-
   emitter: EventEmitter;
 
   showSettings: ShowSettings;
@@ -47,7 +45,6 @@ class ImageHandler {
   constructor() {
     this.emitter = new EventEmitter();
     this.images = [];
-    this.shownProfileImages = [];
 
     this.storage = new Storage();
 
