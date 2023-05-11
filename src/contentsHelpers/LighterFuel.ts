@@ -3,8 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
-import { createRoot } from 'react-dom/client';
-import type { PlasmoCSConfig } from 'plasmo';
+
 import {
   createButton,
   getTimeOld,
@@ -24,12 +23,6 @@ import type {
   ShowSettings,
   profileSliderContainer,
 } from '@/misc/types';
-
-export const configImport: PlasmoCSConfig = {
-  matches: ['*://*.tinder.com/*'],
-  run_at: 'document_start',
-  css: ['./style.css'],
-};
 
 class LighterFuel {
   images: ImageType[];

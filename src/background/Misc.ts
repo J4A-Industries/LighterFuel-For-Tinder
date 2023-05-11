@@ -8,7 +8,7 @@ import { debug } from '@/misc/config';
    */
 export const sendImageDataToTab = (obj: ImageType) => new Promise<void>((resolve) => {
   browser.tabs.query({})// query all tabs
-    .then((x) => x.filter((y) => y.url))// filter to only ones we have permission to look at (all tinder tabs)
+    .then((x) => x.filter((y) => y.url))// filter to only ones we have permission to look at
     .then((tabs) => {
       tabs.forEach((tab) => {
         if (tab.id) {
