@@ -40,8 +40,8 @@ export const links = {
     'https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
 };
 
-export const configImport: PlasmoCSConfig = {
-  matches: ['*://*.tinder.com/*'],
-  run_at: 'document_start',
-  css: ['./style.css'],
+export const defaultSettings = {
+  overlayButton: true,
+  searchButton: true,
+  debuggingTelemetry: true,
 };
