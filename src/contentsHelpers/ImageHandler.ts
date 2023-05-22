@@ -3,6 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import browser, { events } from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
+import { sendToBackground } from '@plasmohq/messaging';
 
 import EventEmitter from 'events';
 import {
@@ -22,6 +23,7 @@ import type {
   ImageType,
   ProfileImage,
   ShowSettings,
+  Sites,
   profileSliderContainer,
 } from '@/misc/types';
 
@@ -29,6 +31,8 @@ export enum Events {
   settingsUpdate = 'settingsUpdate',
   imagesUpdate = 'imagesUpdate',
 }
+
+const imagesToKeep = 300;
 
 class ImageHandler {
   images: ImageType[];
@@ -39,16 +43,21 @@ class ImageHandler {
 
   storage: Storage;
 
+  site: Sites;
+
   /**
    * @param {Boolean} debug
    */
-  constructor() {
+  constructor(site: Sites) {
     this.emitter = new EventEmitter();
     this.images = [];
+    this.site = site;
 
     this.storage = new Storage();
 
+    this.getInitialData();
     this.initialiseMessageListner();
+
   }
 
   /**
@@ -78,7 +87,7 @@ class ImageHandler {
       this.images.push(image);
     }
     // prune off the old images
-    if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
+    if (this.images.length > imagesToKeep) this.images.splice(0, this.images.length - imagesToKeep);
 
     this.emitter.emit(Events.imagesUpdate, this.images);
   }
@@ -98,6 +107,15 @@ class ImageHandler {
         this.showSettings = c.newValue;
         this.emitter.emit(Events.settingsUpdate, this.showSettings);
       },
+    });
+
+    sendToBackground<any>({
+      data: {
+        action: 'get images',
+        site: 
+      }
+    }).then((images) => {
+      this.addNewImage(images);
     });
   }
 }

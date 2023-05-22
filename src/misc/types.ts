@@ -28,7 +28,7 @@ export type ShowSettings = {
 
 export type TabMessage = {
   action: string;
-  data: ImageType | ShowSettings;
+  data: ImageType | ShowSettings | ImageType[];
 };
 
 export type AISettings = {
