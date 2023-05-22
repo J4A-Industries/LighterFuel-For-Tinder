@@ -7,7 +7,7 @@ import type {
 import { sendImageDataToTab } from './Misc';
 
 // the max number of image records to keep
-const maxImages = 250;
+const maxImages = 600;
 
 class ImageRequestCapturer {
   images: ImageType[];
@@ -16,11 +16,14 @@ class ImageRequestCapturer {
 
   site: Sites;
 
-  constructor(urls: string[], siteToListenFor: Sites) {
+  maxImages: number;
+
+  constructor(urls: string[], siteToListenFor: Sites, maxImagesToStore: number = maxImages) {
     this.images = [];
     this.site = siteToListenFor;
     this.urls = urls;
     this.initialiseImageListener();
+    this.maxImages = maxImagesToStore;
   }
 
   /**
@@ -30,6 +33,7 @@ class ImageRequestCapturer {
   initialiseImageListener() {
     browser.webRequest.onCompleted.addListener(
       (details) => {
+        console.log(details);
         const imageInArray = this.images.find((x) => details.url === x.url);
         if (!imageInArray) {
           if (!details.responseHeaders) return;
@@ -56,13 +60,21 @@ class ImageRequestCapturer {
     );
   }
 
+  sendAllImagesToTab() {
+    sendImageDataToTab(this.images).catch((e) => {
+      if (debug) console.log(e);
+    });
+  }
+
   /**
    * Adds an image to the images array, and removes the first element if the array is too long
    */
   addImage(image: ImageType) {
+    if (this.images.find((x) => x.url === image.url)) return;
     this.images.push(image);
-    if (this.images.length > maxImages) {
-      this.images.shift();
+    if (this.images.length > this.maxImages) {
+      const x = this.images.shift();
+      console.log('shifted', x);
     }
   }
 }
