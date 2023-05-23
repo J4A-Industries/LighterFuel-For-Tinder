@@ -3,7 +3,6 @@ import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
 import { debug, defaultSettings } from '@/misc/config';
 import { Sites } from '@/misc/types';
-import { sendImageDataToTab } from './Misc';
 import ImageRequestCapturer from './imageRequestCapturer';
 
 const setDefaultSettings = async () => {
@@ -28,6 +27,7 @@ try {
   console.error(`Error caught in background.js: ${err.stack}`);
 }
 
+// exporting so the message handlers can access the images
 export {
   tinderRequestCap,
   mambaRequestCap,
