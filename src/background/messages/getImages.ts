@@ -10,6 +10,10 @@ export type getImagesResponse = {
 	images: ImageType[];
 };
 
+/**
+ * This handles the getImages request from the CS
+ * It returns all the images for the given site
+ */
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   // get the images from the main thread
   let images = [];

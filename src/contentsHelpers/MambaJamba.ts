@@ -16,6 +16,11 @@ class MambaJamba extends ImageHandler {
     this.initialiseInterval();
   }
 
+  /**
+   * This function is called every x ms, to check if the images on the page have changed
+   * If they have, then it will update the images.
+   * TODO: maybe use intersection observer instead?
+   */
   initialiseInterval() {
     // every 50ms check to see if the images on the image get query selector has changed
     // if it has, then update the images

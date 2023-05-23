@@ -9,6 +9,10 @@ import { sendImageDataToTab } from './Misc';
 // the max number of image records to keep
 const maxImages = 600;
 
+/**
+ * The ImageRequestCapturer class is responsible for monitoring image requests
+ * and storing the image data in the images array, then sending them to the CS upon request
+ */
 class ImageRequestCapturer {
   images: ImageType[];
 
