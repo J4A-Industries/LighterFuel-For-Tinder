@@ -42,8 +42,6 @@ class LighterFuel extends ImageHandler {
 
     if (debug) this.setCustomFetch();
 
-    this.initialiseEventListeners();
-
     this.initialiseMessageListner = this.initialiseMessageListner.bind(this);
 
     this.getInitialData = this.getInitialData.bind(this);
@@ -104,12 +102,6 @@ class LighterFuel extends ImageHandler {
           break;
       }
       sendResponse();
-    });
-  }
-
-  initialiseEventListeners() {
-    this.emitter.on(Events.settingsUpdate, (settings) => {
-      this.setDisplayStatus();
     });
   }
 
@@ -210,25 +202,6 @@ class LighterFuel extends ImageHandler {
     };
 
     return { overlayNode, onPlaced };
-  }
-
-  /**
-   * Sets the overlay display status to shown/hidden
-   *
-   * @param {Boolean} status Whether or not to display the overlay
-   */
-  setDisplayStatus() {
-    let styleElem = document.querySelector('#overlayDisplay');
-    if (!styleElem) {
-      styleElem = document.createElement('style');
-      styleElem.setAttribute('id', 'overlayDisplay');
-      document.head.append(styleElem);
-    }
-    styleElem.textContent = `
-.overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
-.topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
-.search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
-    consoleOut(this.showSettings);
   }
 }
 

@@ -28,13 +28,22 @@ import type {
 } from '@/misc/types';
 import type { getImagesRequest, getImagesResponse } from '@/background/messages/getImages';
 
+// the events that the emmitter can emit
 export enum Events {
   settingsUpdate = 'settingsUpdate',
   imagesUpdate = 'imagesUpdate',
 }
 
+// The number of images records to keep in memory, before shifting the array
 const imagesToKeep = 300;
 
+/**
+ * The ImageHandler class is responsible for monitoring the background communication,
+ * for new image records (image url + timestamps) then it stores them in the images array.
+ *
+ * This class is meant to be extended by the site specific classes, which will then
+ * use the functions in this class to display the image data.
+ */
 class ImageHandler {
   images: ImageType[];
 
@@ -50,12 +59,14 @@ class ImageHandler {
    * @param {Boolean} debug
    */
   constructor(site: Sites) {
+    // the event emmitter is here for flexibility, so that the site specific classes can listen for events
     this.emitter = new EventEmitter();
     this.images = [];
     this.site = site;
 
     this.storage = new Storage();
 
+    this.initialiseEventListeners();
     this.getInitialData();
     this.initialiseMessageListner();
   }
@@ -73,6 +84,15 @@ class ImageHandler {
           break;
       }
       sendResponse();
+    });
+  }
+
+  /**
+   * Sets the display status, if the user updates the settings
+   */
+  initialiseEventListeners() {
+    this.emitter.on(Events.settingsUpdate, (settings) => {
+      this.setDisplayStatus();
     });
   }
 
@@ -96,6 +116,7 @@ class ImageHandler {
    * Used to get the initial images/settings from the background
    */
   async getInitialData() {
+    // gets the initial settings from storage
     this.storage.get<ShowSettings>('showSettings').then((c) => {
       this.showSettings = c;
       this.emitter.emit(Events.settingsUpdate, this.showSettings);
@@ -119,6 +140,25 @@ class ImageHandler {
       if (debug) console.log(`Successfully got images for ${this.site}, ${response.images.length} images`);
       this.addNewImage(response.images);
     });
+  }
+
+  /**
+   * Sets the overlay display status to shown/hidden
+   *
+   * @param {Boolean} status Whether or not to display the overlay
+   */
+  setDisplayStatus() {
+    let styleElem = document.querySelector('#overlayDisplay');
+    if (!styleElem) {
+      styleElem = document.createElement('style');
+      styleElem.setAttribute('id', 'overlayDisplay');
+      document.head.append(styleElem);
+    }
+    styleElem.textContent = `
+  .overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
+  .topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
+  .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
+    consoleOut(this.showSettings);
   }
 }
 
