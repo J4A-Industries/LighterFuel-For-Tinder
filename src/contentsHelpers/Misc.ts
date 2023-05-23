@@ -2,9 +2,12 @@ import type { PlasmoCSConfig } from 'plasmo';
 import { debug, text } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
+// return `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
+const getReverseImageURL = (url: string): string => `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`;
+
 /**
    * Used to genereate the button
-   *
+   * TODO: make platform agnostic
    * @returns The buttons
    */
 export const createButton = (url: string): HTMLElement => {
@@ -15,7 +18,7 @@ export const createButton = (url: string): HTMLElement => {
   // * Let's just only allow this on matches for now
   if (!url.startsWith('https://images-ssl.gotinder.com/u/')) {
     const searchButton = document.createElement('div');
-    const reverseImageUrl = `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
+    const reverseImageUrl = getReverseImageURL(url);
     searchButton.classList.add('buttonLF');
     searchButton.classList.add('search');
     searchButton.innerText = text.overlay.search;
@@ -26,6 +29,29 @@ export const createButton = (url: string): HTMLElement => {
     };
     parent.appendChild(searchButton);
   }
+  return parent;
+};
+
+/**
+ * This function creates a search button for the image
+ *
+ * @param url The url of the image to search for
+ * @returns the button parent
+ */
+export const createSearchButton = (url: string): HTMLElement => {
+  const parent = document.createElement('div');
+  parent.classList.add('buttonParent');
+  const reverseImageUrl = getReverseImageURL(url);
+  const searchButton = document.createElement('div');
+  searchButton.classList.add('buttonLF');
+  searchButton.classList.add('search');
+  searchButton.innerText = text.overlay.search;
+  searchButton.onclick = () => {
+    if (debug) console.log('Searching for', reverseImageUrl);
+    const newTab = window.open(reverseImageUrl, '_blank');
+    if (newTab) newTab.focus();
+  };
+  parent.appendChild(searchButton);
   return parent;
 };
 
@@ -246,6 +272,6 @@ export const createMambaOverlayNode = (image: Element, imageRecord: ImageType) =
   const date = new Date(imageRecord.lastModified);
   const xOld = getTimeOld(date.getTime());
   overlay.innerHTML = `${text.overlay.uploadedAt}: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
-
+  overlay.appendChild(createSearchButton(imageRecord.url));
   return overlay;
 };
