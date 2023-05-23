@@ -23,7 +23,7 @@ try {
   mambaRequestCap = new ImageRequestCapturer(['*://*.wmbcdn.com/*'], Sites.MAMBA, 1000);
 
   // prints the bg instance to the console for debugging!
-  console.log(tinderRequestCap, mambaRequestCap);
+  if (debug) console.log(tinderRequestCap, mambaRequestCap);
 } catch (err: any) {
   console.error(`Error caught in background.js: ${err.stack}`);
 }

@@ -13,9 +13,6 @@ class MambaJamba extends ImageHandler {
   constructor() {
     super(Sites.MAMBA);
     this.imagesOnPage = [];
-    /* this.emitter.on(Events.imagesUpdate, (images) => {
-      console.log(images);
-    }); */
     this.initialiseInterval();
   }
 
@@ -57,19 +54,6 @@ class MambaJamba extends ImageHandler {
     if (!imageRecord) {
       console.log(`imageRecord not found in createOverlayNode ${imageSrc}`);
       return null;
-      /* try {
-        const lastModified = await getImageLastModified(imageSrc);
-        if (!lastModified) throw new Error(`Cannot get last modified for ${imageSrc}`);
-        imageRecord = {
-          url: imageSrc,
-          lastModified: lastModified.toString(),
-          timeAddedToArr: new Date(),
-          site: Sites.MAMBA,
-        };
-        if (!imageRecord) throw new Error(`Cannot get last modified for ${imageSrc}`);
-      } catch (e) {
-        return console.log(e);
-      } */
     }
     const overlayNode = createMambaOverlayNode(image, imageRecord);
     // append the overlay to the parent of the image

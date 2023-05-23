@@ -114,20 +114,6 @@ class LighterFuel extends ImageHandler {
   }
 
   /**
-   * Adds the images to the images array, then it prunes the old ones off (if the array gets to big)
-   */
-  addNewImage(image: ImageType | ImageType[]) {
-    if (!image) return;
-    if (Array.isArray(image)) {
-      this.images.push(...image);
-    } else {
-      this.images.push(image);
-    }
-    // prune off the old images
-    if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
-  }
-
-  /**
    * Looks for the profile images, if they're not there, sets the windowOnload to it
    *
    * @returns {Promise<Array>}

@@ -33,7 +33,7 @@ class ImageRequestCapturer {
   initialiseImageListener() {
     browser.webRequest.onCompleted.addListener(
       (details) => {
-        console.log(details);
+        if (debug) console.log(details);
         const imageInArray = this.images.find((x) => details.url === x.url);
         if (!imageInArray) {
           if (!details.responseHeaders) return;
@@ -73,8 +73,7 @@ class ImageRequestCapturer {
     if (this.images.find((x) => x.url === image.url)) return;
     this.images.push(image);
     if (this.images.length > this.maxImages) {
-      const x = this.images.shift();
-      console.log('shifted', x);
+      this.images.shift();
     }
   }
 }

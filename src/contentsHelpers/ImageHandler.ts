@@ -116,8 +116,7 @@ class ImageHandler {
         site: this.site,
       } as getImagesRequest,
     }).then((response: getImagesResponse) => {
-      console.log(response.images);
-      console.log(`Successfully got images for ${this.site}, ${response.images.length} images`);
+      if (debug) console.log(`Successfully got images for ${this.site}, ${response.images.length} images`);
       this.addNewImage(response.images);
     });
   }
