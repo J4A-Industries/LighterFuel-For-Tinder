@@ -2,9 +2,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
 import browser from 'webextension-polyfill';
-import { Storage } from '@plasmohq/storage';
-import { createRoot } from 'react-dom/client';
-import type { PlasmoCSConfig } from 'plasmo';
+
 import {
   createButton,
   getTimeOld,
@@ -18,51 +16,36 @@ import {
 
 import { debug, text } from '@/misc/config';
 
-import type {
+import {
   ImageType,
   ProfileImage,
   ShowSettings,
+  Sites,
   profileSliderContainer,
 } from '@/misc/types';
 
-export const configImport: PlasmoCSConfig = {
-  matches: ['*://*.tinder.com/*'],
-  run_at: 'document_start',
-  css: ['./style.css'],
-};
+import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
 
-class LighterFuel {
-  images: ImageType[];
-
+class LighterFuel extends ImageHandler {
   profileSliderContainers: profileSliderContainer[];
-
-  showSettings: ShowSettings;
 
   mainMutationObserver: MutationObserver;
 
   textContainerObserver: MutationObserver | undefined;
 
-  storage: Storage;
-
   shownProfileImages: Element[];
 
-  /**
-   * @param {Boolean} debug
-   */
   constructor() {
-    this.images = [];
-    this.shownProfileImages = [];
-    this.profileSliderContainers = [];
-    this.showSettings = {
-      overlayButton: true,
-      searchButton: true,
-    };
+    super(Sites.TINDER); // Call the parent class constructor
 
-    this.storage = new Storage();
+    this.profileSliderContainers = [];
 
     if (debug) this.setCustomFetch();
-    this.initialiseMessageListner();
-    this.getInitialData();
+
+    this.initialiseMessageListner = this.initialiseMessageListner.bind(this);
+
+    this.getInitialData = this.getInitialData.bind(this);
+
     this.startMonitorInterval();
   }
 
@@ -120,38 +103,6 @@ class LighterFuel {
       }
       sendResponse();
     });
-  }
-
-  /**
-   * Used to get the initial images/settings from the background
-   */
-  getInitialData() {
-    this.storage.get<ShowSettings>('showSettings').then((c) => {
-      this.showSettings = c;
-      this.setDisplayStatus();
-    });
-
-    // watching the storage for changes, for live updating
-    this.storage.watch({
-      showSettings: (c) => {
-        this.showSettings = c.newValue;
-        this.setDisplayStatus();
-      },
-    });
-  }
-
-  /**
-   * Adds the images to the images array, then it prunes the old ones off (if the array gets to big)
-   */
-  addNewImage(image: ImageType | ImageType[]) {
-    if (!image) return;
-    if (Array.isArray(image)) {
-      this.images.push(...image);
-    } else {
-      this.images.push(image);
-    }
-    // prune off the old images
-    if (this.images.length > 50) this.images.splice(0, this.images.length - 50);
   }
 
   /**
@@ -251,25 +202,6 @@ class LighterFuel {
     };
 
     return { overlayNode, onPlaced };
-  }
-
-  /**
-   * Sets the overlay display status to shown/hidden
-   *
-   * @param {Boolean} status Whether or not to display the overlay
-   */
-  setDisplayStatus() {
-    let styleElem = document.querySelector('#overlayDisplay');
-    if (!styleElem) {
-      styleElem = document.createElement('style');
-      styleElem.setAttribute('id', 'overlayDisplay');
-      document.head.append(styleElem);
-    }
-    styleElem.textContent = `
-.overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
-.topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
-.search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
-    consoleOut(this.showSettings);
   }
 }
 

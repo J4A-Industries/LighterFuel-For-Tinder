@@ -38,10 +38,11 @@ export const links = {
   ukraineAppeal: 'https://donation.dec.org.uk/ukraine-humanitarian-appeal',
   reviews:
     'https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
+  discord: 'https://discord.gg/nHcDMkqYgP',
 };
 
-export const configImport: PlasmoCSConfig = {
-  matches: ['*://*.tinder.com/*'],
-  run_at: 'document_start',
-  css: ['./style.css'],
+export const defaultSettings = {
+  overlayButton: true,
+  searchButton: true,
+  debuggingTelemetry: true,
 };

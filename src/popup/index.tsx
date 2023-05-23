@@ -3,10 +3,15 @@ import React, { useState, useEffect } from 'react';
 import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
 import Switch from '@mui/material/Switch';
-import { AiOutlineSetting, AiOutlineInfoCircle, AiOutlineGithub } from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineInfoCircle } from 'react-icons/ai';
+import { BsDiscord } from 'react-icons/bs';
 import { useStorage } from '@plasmohq/storage/hook';
+import {
+  debug,
+  defaultSettings, links, text,
+} from '@/misc/config';
 import logo from '~assets/LighterFuel512.png';
-import { gpt, links, text } from '@/misc/config';
+
 import { openTab } from '@/misc/utils';
 import 'https://www.googletagmanager.com/gtag/js?id=$PLASMO_PUBLIC_GTAG_ID';
 
@@ -14,14 +19,6 @@ enum menuOptions {
   settings,
   info,
 }
-
-/**
- * Default settings for the extension, if no settings are found in storage
- */
-const defaultSettings = {
-  overlayButton: true,
-  searchButton: true,
-};
 
 const IndexPopup = () => {
   const [data, setData] = useState('');
@@ -33,10 +30,9 @@ const IndexPopup = () => {
     window.gtag = function gtag() {
       window.dataLayer.push(arguments) // eslint-disable-line
     };
-    window.gtag('js', new Date());
     window.gtag('config', process.env.PLASMO_PUBLIC_GTAG_ID, {
       page_path: '/popup',
-      debug_mode: true,
+      debug_mode: debug,
     });
   }, []);
 
@@ -59,7 +55,7 @@ const IndexPopup = () => {
             <AiOutlineInfoCircle className={`m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer ${(menuTab === menuOptions.info) ? 'bg-slate-500' : 'bg-slate-600'} hover:outline-offset-2 outline-white outline`} onClick={() => setMenuTab(menuOptions.info)} />
           </div>
           <div className="flex align-middle justify-center">
-            <AiOutlineGithub className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.github)} />
+            <BsDiscord className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.discord)} />
           </div>
           <div className="flex align-middle justify-center">
             <img
@@ -99,6 +95,19 @@ const IndexPopup = () => {
               className="m-auto"
             />
           </div>
+          {/* <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
+            <div>
+              {text.enableDebuggingTelemetry}
+            </div>
+
+            <Switch
+              checked={showSettings.debuggingTelemetry}
+              onChange={() => setShowSettings({ ...showSettings, debuggingTelemetry: !showSettings.debuggingTelemetry })}
+              inputProps={{ 'aria-label': 'controlled' }}
+              aria-label={text.enableDebuggingTelemetry}
+              className="m-auto"
+            />
+          </div> */}
         </div>
       )}
 

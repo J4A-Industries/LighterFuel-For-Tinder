@@ -1,7 +1,19 @@
+export enum Sites {
+  TINDER,
+  BUMBLE,
+  HINGE,
+  BADOO,
+  OKCUPID,
+  MAMBA,
+  ZOOSK,
+  MATCH,
+}
+
 export type ImageType = {
   url: string;
   lastModified: string;
   timeAddedToArr: Date;
+  site?: Sites;
 }
 
 export type ProfileImage = {
@@ -16,7 +28,7 @@ export type ShowSettings = {
 
 export type TabMessage = {
   action: string;
-  data: ImageType | ShowSettings;
+  data: ImageType | ShowSettings | ImageType[];
 };
 
 export type AISettings = {

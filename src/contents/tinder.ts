@@ -1,6 +1,6 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
 import styleText from 'data-text:~src/contentsHelpers/style.css';
-import LighterFuel from '~src/contentsHelpers/LighterFuel';
+import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 
 /**
@@ -10,7 +10,7 @@ import { debug } from '@/misc/config';
 export const config: PlasmoCSConfig = {
   matches: ['*://tinder.com/*'],
   run_at: 'document_start',
-  css: ['./contentsHelpers/style.css'],
+  css: ['./../contentsHelpers/style.css'],
 };
 
 /**
