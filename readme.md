@@ -16,3 +16,14 @@ It also helps users out by allowing them to reverse image search their matches p
 
 
 This project is based off of the [Plasmo framework](https://docs.plasmo.com/).
+
+# How to build
+
+Run these commands to create a build, to see the other available commands, look in package.json
+```
+pnpm i
+
+pnpm run build-chrome
+
+pnpm run build-firefox
+```
