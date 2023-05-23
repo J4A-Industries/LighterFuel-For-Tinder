@@ -6,7 +6,8 @@
   "author": "James",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build",
+    "build-chrome": "plasmo build",
+    "build-firefox": "plasmo build --target=firefox-mv2",
     "package": "plasmo package"
   },
   "dependencies": {
@@ -62,6 +63,11 @@
         "*://tinder.com/*",
         "*://*.mamba.ru/*"
       ]
+    },
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "your-id@example.com"
+      }
     }
   },
   "postcss": {
