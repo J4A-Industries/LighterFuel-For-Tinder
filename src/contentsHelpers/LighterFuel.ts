@@ -16,10 +16,11 @@ import {
 
 import { debug, text } from '@/misc/config';
 
-import type {
+import {
   ImageType,
   ProfileImage,
   ShowSettings,
+  Sites,
   profileSliderContainer,
 } from '@/misc/types';
 
@@ -35,7 +36,7 @@ class LighterFuel extends ImageHandler {
   shownProfileImages: Element[];
 
   constructor() {
-    super(); // Call the parent class constructor
+    super(Sites.TINDER); // Call the parent class constructor
 
     this.profileSliderContainers = [];
 

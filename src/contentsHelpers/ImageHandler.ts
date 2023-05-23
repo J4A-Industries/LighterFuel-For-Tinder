@@ -26,6 +26,7 @@ import type {
   Sites,
   profileSliderContainer,
 } from '@/misc/types';
+import type { getImagesRequest, getImagesResponse } from '@/background/messages/getImages';
 
 export enum Events {
   settingsUpdate = 'settingsUpdate',
@@ -57,7 +58,6 @@ class ImageHandler {
 
     this.getInitialData();
     this.initialiseMessageListner();
-
   }
 
   /**
@@ -95,7 +95,7 @@ class ImageHandler {
   /**
    * Used to get the initial images/settings from the background
    */
-  getInitialData() {
+  async getInitialData() {
     this.storage.get<ShowSettings>('showSettings').then((c) => {
       this.showSettings = c;
       this.emitter.emit(Events.settingsUpdate, this.showSettings);
@@ -109,13 +109,16 @@ class ImageHandler {
       },
     });
 
-    sendToBackground<any>({
-      data: {
-        action: 'get images',
-        site: 
-      }
-    }).then((images) => {
-      this.addNewImage(images);
+    // TODO: fix name as never? some weird TS error
+    sendToBackground({
+      name: 'getImages' as never,
+      body: {
+        site: this.site,
+      } as getImagesRequest,
+    }).then((response: getImagesResponse) => {
+      console.log(response.images);
+      console.log(`Successfully got images for ${this.site}, ${response.images.length} images`);
+      this.addNewImage(response.images);
     });
   }
 }

@@ -11,7 +11,7 @@ class MambaJamba extends ImageHandler {
   imagesOnPage: Element[];
 
   constructor() {
-    super();
+    super(Sites.MAMBA);
     this.imagesOnPage = [];
     /* this.emitter.on(Events.imagesUpdate, (images) => {
       console.log(images);
@@ -53,10 +53,11 @@ class MambaJamba extends ImageHandler {
 
   async createOverlay(image: Element) {
     const imageSrc = image.getAttribute('src');
-    let imageRecord = this.images.find((x) => x.url === imageSrc);
+    const imageRecord = this.images.find((x) => x.url === imageSrc);
     if (!imageRecord) {
-      console.log(`imageRecord not found in createOverlayNode ${imageSrc}, creating new record`);
-      try {
+      console.log(`imageRecord not found in createOverlayNode ${imageSrc}`);
+      return;
+      /* try {
         const lastModified = await getImageLastModified(imageSrc);
         if (!lastModified) throw new Error(`Cannot get last modified for ${imageSrc}`);
         imageRecord = {
@@ -68,7 +69,7 @@ class MambaJamba extends ImageHandler {
         if (!imageRecord) throw new Error(`Cannot get last modified for ${imageSrc}`);
       } catch (e) {
         return console.log(e);
-      }
+      } */
     }
     const overlayNode = createMambaOverlayNode(image, imageRecord);
     // append the overlay to the parent of the image
