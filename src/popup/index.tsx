@@ -7,6 +7,7 @@ import { AiOutlineSetting, AiOutlineInfoCircle } from 'react-icons/ai';
 import { BsDiscord } from 'react-icons/bs';
 import { useStorage } from '@plasmohq/storage/hook';
 import {
+  debug,
   defaultSettings, links, text,
 } from '@/misc/config';
 import logo from '~assets/LighterFuel512.png';
@@ -29,10 +30,9 @@ const IndexPopup = () => {
     window.gtag = function gtag() {
       window.dataLayer.push(arguments) // eslint-disable-line
     };
-    window.gtag('js', new Date());
     window.gtag('config', process.env.PLASMO_PUBLIC_GTAG_ID, {
       page_path: '/popup',
-      debug_mode: true,
+      debug_mode: debug,
     });
   }, []);
 
@@ -95,7 +95,7 @@ const IndexPopup = () => {
               className="m-auto"
             />
           </div>
-          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
+          {/* <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
             <div>
               {text.enableDebuggingTelemetry}
             </div>
@@ -107,7 +107,7 @@ const IndexPopup = () => {
               aria-label={text.enableDebuggingTelemetry}
               className="m-auto"
             />
-          </div>
+          </div> */}
         </div>
       )}
 
