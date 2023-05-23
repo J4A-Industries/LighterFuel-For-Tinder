@@ -24,18 +24,18 @@ class MambaJamba extends ImageHandler {
     // if it has, then update the images
     setInterval(() => {
       const imagesOnPage = [...document.querySelectorAll('img')].filter((x) => {
-        const type = x.getAttribute('type');
-        return type === 'squareLarge' || type === 'huge';
+        const src = x.getAttribute('src');
+        return src.includes('square_large.jpg') || src.includes('huge.jpg');
       });
       this.imagesOnPage = imagesOnPage;
       this.handleImageOverlay();
-    }, 5000);
+    }, 50);
   }
 
   handleImageOverlay() {
     for (let i = 0; i < this.imagesOnPage.length; i++) {
       const image = this.imagesOnPage[i];
-      const existingOverlay = image.parentElement.parentElement.querySelector('div.overlayBox, div.topBox');
+      const existingOverlay = image.parentElement.querySelector('div.overlayBox, div.topBox');
       if (!existingOverlay) {
         this.createOverlay(image);
       } else {
@@ -51,12 +51,12 @@ class MambaJamba extends ImageHandler {
     }
   }
 
-  async createOverlay(image: Element) {
+  async createOverlay(image: Element): Promise<Element | null> {
     const imageSrc = image.getAttribute('src');
     const imageRecord = this.images.find((x) => x.url === imageSrc);
     if (!imageRecord) {
       console.log(`imageRecord not found in createOverlayNode ${imageSrc}`);
-      return;
+      return null;
       /* try {
         const lastModified = await getImageLastModified(imageSrc);
         if (!lastModified) throw new Error(`Cannot get last modified for ${imageSrc}`);
