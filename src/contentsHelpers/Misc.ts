@@ -186,7 +186,6 @@ export const getTextButtonParent = (): HTMLElement | null => {
 /**
 * a console log facade for the debug bool
 */
-
 export const consoleOut = (message: string | any[] | any) => {
   if (debug) console.log(message);
 };
@@ -258,7 +257,7 @@ export const getImageLastModified = async (url: string): Promise<Date | null> =>
 };
 
 /**
- * Used
+ * Used to create the mamba overlay for the image
  *
  * @param image The image to create the overlay for
  * @param imageRecord The image record to get the last modified date from
