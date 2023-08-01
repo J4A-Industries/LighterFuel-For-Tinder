@@ -1,7 +1,7 @@
 # LighterFuel For Tinder
 ![Chrome Web Store Downloads](https://img.shields.io/chrome-web-store/users/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
 ![Chrome Web Store Release](https://img.shields.io/chrome-web-store/v/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
-![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/acogoebfegcdkabddmpomnhafncmehkd)
+![Chrome Web Store Rating](https://img.shields.io/chrome-web-store/rating/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc)
 
 ![LighterFuel Logo](https://raw.githubusercontent.com/Acorn221/LighterFuel-For-Tinder/d8d8e70551d571790dfbd50326293209f05d5df8/assets/icon.png)
 
