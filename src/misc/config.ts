@@ -1,7 +1,6 @@
-import type { PlasmoCSConfig } from 'plasmo';
 import languages from './languages.json';
 
-export const debug = false;
+export const debug = process.env.PLASMO_PUBLIC_DEBUG.toLowerCase() === 'true';
 export const gpt = false;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
