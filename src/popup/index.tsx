@@ -38,7 +38,16 @@ const IndexPopup = () => {
   }, []);
 
   useEffect(() => {
-    window.gtag('event', 'settings-change', showSettings);
+    AnalyticsEvent([
+      {
+        name: 'event',
+        params: {
+          event_category: 'settings',
+          event_label: 'settings-change',
+          value: JSON.stringify(showSettings),
+        },
+      },
+    ]);
   }, [showSettings]);
 
   return (
