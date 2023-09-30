@@ -42,7 +42,6 @@
   box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
   opacity: 1;
   z-index: 42069;
-  text-align: left;
   position: absolute;
   top: -120px;
   width: 95%;
@@ -50,6 +49,7 @@
   font-weight: 700;
   transition: none !important;
   cursor: default;
+  text-align: center;
 }
 
 .uploadedAt {
