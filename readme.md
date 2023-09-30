@@ -28,3 +28,8 @@ pnpm run build-chrome
 
 pnpm run build-firefox
 ```
+
+# TODO
+
+- [ ] Remove consent page for updates (after current version)
+- [ ] Bumble support
