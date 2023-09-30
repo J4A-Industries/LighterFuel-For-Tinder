@@ -70,6 +70,7 @@ browser.runtime.onInstalled.addListener(async (object) => {
       ]);
     }
   }
+  chrome.runtime.setUninstallURL('https://j4a.uk/projects/lighterfuel/uninstall');
   // TODO: keep this in for 1 update, then remove it for the rest
   const consentUrl = browser.runtime.getURL('tabs/consent.html');
   browser.tabs.create({ url: consentUrl });

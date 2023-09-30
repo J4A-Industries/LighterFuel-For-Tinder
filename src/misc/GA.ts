@@ -43,7 +43,7 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
     await storage.set('clientId', clientId);
   }
 
-  const fetched = await fetch(
+  await fetch(
     `${GA_ENDPOINT}?measurement_id=${gtagId}&api_secret=${secretApiKey}`,
     {
       method: 'POST',
