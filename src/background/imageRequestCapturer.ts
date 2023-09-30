@@ -13,8 +13,10 @@ const maxImages = 600;
  * The ImageRequestCapturer class is responsible for monitoring image requests
  * and storing the image data in the images array, then sending them to the CS upon request
  */
-class ImageRequestCapturer {
-  images: ImageType[];
+class ImageRequestCapturer extends EventTarget {
+  images: ImageType[] = [];
+
+  lastImageGetTime: Date = new Date(0);
 
   urls: string[];
 
@@ -23,7 +25,7 @@ class ImageRequestCapturer {
   maxImages: number;
 
   constructor(urls: string[], siteToListenFor: Sites, maxImagesToStore: number = maxImages) {
-    this.images = [];
+    super();
     this.site = siteToListenFor;
     this.urls = urls;
     this.initialiseImageListener();
@@ -52,6 +54,10 @@ class ImageRequestCapturer {
             site: this.site,
           };
           this.addImage(data);
+
+          const newImageEvent = new CustomEvent('new image');
+          this.dispatchEvent(newImageEvent);
+
           sendImageDataToTab(data).catch((e) => {
             if (debug) console.log(e);
           });
@@ -79,6 +85,26 @@ class ImageRequestCapturer {
     if (this.images.length > this.maxImages) {
       this.images.shift();
     }
+  }
+
+  getAllImages() {
+    this.lastImageGetTime = new Date();
+    return this.images;
+  }
+
+  async getNewImages() {
+    // filter the images array to only include images added after the last time the CS got images
+    const newImages = this.images.filter((x) => x.timeAddedToArr > this.lastImageGetTime);
+    // if there are no new images, then wait for a new image to be added
+    if (newImages.length === 0) {
+      await new Promise<void>((resolve) => {
+        this.addEventListener('new image', () => {
+          resolve();
+        });
+      });
+    }
+    this.lastImageGetTime = new Date();
+    return newImages;
   }
 }
 
