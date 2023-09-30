@@ -21,11 +21,13 @@ const setupSentry = async () => {
     area: 'sync',
   });
   const sentryConsent = await storage.get('sentryConsent');
-  if (sentryConsent.toLowerCase() === 'true') {
-    Sentry.init({
-      dsn: SENTRY_DSN,
-      integrations: [],
-    });
+  if (sentryConsent) {
+    if (sentryConsent.toLowerCase() === 'true') {
+      Sentry.init({
+        dsn: SENTRY_DSN,
+        integrations: [],
+      });
+    }
   }
 };
 
