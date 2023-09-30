@@ -14,7 +14,7 @@ import {
 import logo from '~assets/LighterFuel512.png';
 
 import { openTab } from '@/misc/utils';
-import 'https://www.googletagmanager.com/gtag/js?id=$PLASMO_PUBLIC_GTAG_ID';
+import { AnalyticsEvent } from '@/misc/GA';
 
 enum menuOptions {
   settings,
@@ -27,14 +27,14 @@ const IndexPopup = () => {
   const [showSettings, setShowSettings] = useStorage('showSettings', (x) => (x === undefined ? defaultSettings : x));
 
   useEffect(() => {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag() {
-      window.dataLayer.push(arguments) // eslint-disable-line
-    };
-    window.gtag('config', process.env.PLASMO_PUBLIC_GTAG_ID, {
-      page_path: '/popup',
-      debug_mode: debug,
-    });
+    AnalyticsEvent([
+      {
+        name: 'page_view',
+        params: {
+          page_title: 'popup',
+        },
+      },
+    ]);
   }, []);
 
   useEffect(() => {

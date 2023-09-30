@@ -27,6 +27,7 @@ import {
   type profileSliderContainer,
 } from '@/misc/types';
 import type { getImagesRequest, getImagesResponse } from '@/background/messages/getImages';
+import { AnalyticsEvent } from '@/misc/GA';
 
 // the events that the emmitter can emit
 export enum Events {
@@ -70,6 +71,15 @@ class ImageHandler {
     this.initialiseEventListeners();
     this.getData();
     // this.initialiseMessageListner();
+    AnalyticsEvent([
+      {
+        name: 'LighterFuel',
+        params: {
+          action: 'loaded',
+          platform: Sites[this.site],
+        },
+      },
+    ]);
   }
 
   /**
