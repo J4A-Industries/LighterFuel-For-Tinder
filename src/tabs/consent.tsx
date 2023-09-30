@@ -28,12 +28,16 @@ const Consent = () => {
           This data will be used to help improve the extension and will never be sold or shared with any third parties.
           {' '}
           <br />
-          If you want to turn this off, you can do so here at any time, or on the extension popup.
+          If you want to turn this off, you can do so here at any time.
           {' '}
           <br />
           Analytics are used to help us understand how many people are using the extension, and how they are using it.
           <br />
+          This is done via Google Analytics.
+          <br />
           Error reporting is used to help us understand what errors are happening, and how to fix them.
+          <br />
+          This is done via Sentry.io.
           <br />
           This will make lighterfuel work more reliably and consistently for everyone.
         </p>
