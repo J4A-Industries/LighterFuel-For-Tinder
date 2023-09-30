@@ -19,12 +19,12 @@ import {
 
 import { debug, text } from '@/misc/config';
 
-import type {
-  ImageType,
-  ProfileImage,
-  ShowSettings,
+import {
   Sites,
-  profileSliderContainer,
+  type ImageType,
+  type ProfileImage,
+  type ShowSettings,
+  type profileSliderContainer,
 } from '@/misc/types';
 import type { getImagesRequest, getImagesResponse } from '@/background/messages/getImages';
 
@@ -66,13 +66,15 @@ class ImageHandler {
 
     this.storage = new Storage();
 
+    this.getSettings();
     this.initialiseEventListeners();
-    this.getInitialData();
-    this.initialiseMessageListner();
+    this.getData();
+    // this.initialiseMessageListner();
   }
 
   /**
    * Listens for messages from the background
+   * @depreciated - this is now handled by the getImages request
    */
   initialiseMessageListner() {
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -112,10 +114,7 @@ class ImageHandler {
     this.emitter.emit(Events.imagesUpdate, this.images);
   }
 
-  /**
-   * Used to get the initial images/settings from the background
-   */
-  async getInitialData() {
+  getSettings() {
     // gets the initial settings from storage
     this.storage.get<ShowSettings>('showSettings').then((c) => {
       this.showSettings = c;
@@ -129,17 +128,26 @@ class ImageHandler {
         this.emitter.emit(Events.settingsUpdate, this.showSettings);
       },
     });
+  }
 
-    // TODO: fix name as never? some weird TS error
-    sendToBackground({
-      name: 'getImages' as never,
-      body: {
-        site: this.site,
-      } as getImagesRequest,
-    }).then((response: getImagesResponse) => {
-      if (debug) console.log(`Successfully got images for ${this.site}, ${response.images.length} images`);
-      this.addNewImage(response.images);
-    });
+  /**
+   * Used to get the images from the background
+   * constantly is recieving or awaiting for new images.
+   */
+  async getData() {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      const imageData = await sendToBackground({
+        name: 'getImages',
+        body: {
+          site: this.site,
+          complete: this.images.length === 0,
+        } as getImagesRequest,
+      });
+      if (debug) console.log(`Successfully got images for ${Sites[this.site]}, ${imageData.images.length} images`);
+      this.addNewImage(imageData.images);
+    }
   }
 
   /**

@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
 import { debug } from '@/misc/config';
@@ -70,12 +71,6 @@ class ImageRequestCapturer extends EventTarget {
     );
   }
 
-  sendAllImagesToTab() {
-    sendImageDataToTab(this.images).catch((e) => {
-      if (debug) console.log(e);
-    });
-  }
-
   /**
    * Adds an image to the images array, and removes the first element if the array is too long
    */
@@ -94,14 +89,19 @@ class ImageRequestCapturer extends EventTarget {
 
   async getNewImages() {
     // filter the images array to only include images added after the last time the CS got images
-    const newImages = this.images.filter((x) => x.timeAddedToArr > this.lastImageGetTime);
+    let newImages = this.images.filter((x) => x.timeAddedToArr > this.lastImageGetTime);
     // if there are no new images, then wait for a new image to be added
-    if (newImages.length === 0) {
+    while (newImages.length === 0) {
       await new Promise<void>((resolve) => {
         this.addEventListener('new image', () => {
           resolve();
         });
       });
+      newImages = this.images.filter((x) => x.timeAddedToArr > this.lastImageGetTime);
+      /// delaying the loop by 10ms, to prevent the it from slowing down the browser
+      if (newImages.length === 0) {
+        await new Promise<void>((resolve) => { setTimeout(() => resolve(), 10); });
+      }
     }
     this.lastImageGetTime = new Date();
     return newImages;

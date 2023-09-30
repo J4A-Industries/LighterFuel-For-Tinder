@@ -42,7 +42,7 @@ class LighterFuel extends ImageHandler {
 
     this.initialiseMessageListner = this.initialiseMessageListner.bind(this);
 
-    this.getInitialData = this.getInitialData.bind(this);
+    this.getData = this.getData.bind(this);
 
     this.startMonitorInterval();
   }
@@ -66,7 +66,11 @@ class LighterFuel extends ImageHandler {
           });
           const imageURL = getImageURLfromNode(currentImage);
           const imageRecord = this.images.find((image) => image.url === imageURL);
-          if (!imageRecord) throw new Error(`imageRecord not found in startMonitorInterval ${imageURL}`);
+
+          // this doesn't seem to be problematic, it sometimes just doesn't find the image
+          if (!imageRecord) {
+            break;
+          }
 
           if (!existingOverlay) {
             const overlay = this.createOverlayNode(imageRecord);
@@ -85,22 +89,6 @@ class LighterFuel extends ImageHandler {
         }
       }
     }, 50);
-  }
-
-  /**
-   * Listens for messages from the background
-   */
-  initialiseMessageListner() {
-    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      switch (request.action) {
-        case 'new image':
-          this.addNewImage(request.data);
-          break;
-        default:
-          throw new Error(`Unknown action: ${request.action}`);
-      }
-      sendResponse();
-    });
   }
 
   /* ************************************************ */
