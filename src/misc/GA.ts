@@ -53,6 +53,4 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
       }),
     },
   );
-
-  return fetched;
 };
