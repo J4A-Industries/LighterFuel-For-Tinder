@@ -81,7 +81,7 @@ class ImageHandler {
           this.addNewImage(request.data);
           break;
         default:
-          break;
+          throw new Error(`Unknown action: ${request.action}`);
       }
       sendResponse();
     });
