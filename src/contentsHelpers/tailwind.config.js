@@ -2,7 +2,7 @@
 module.exports = {
   mode: 'jit',
   darkMode: 'class',
-  content: ['./src/**/*.tsx'],
+  content: ['./src/contents/*.tsx', './src/contentsHelpers/*.tsx'],
   plugins: [],
   compilerOptions: {
     baseUrl: 'src/',

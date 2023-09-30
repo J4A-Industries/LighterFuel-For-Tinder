@@ -25,3 +25,7 @@ export const sendImageDataToTab = (obj: ImageType | ImageType[]) => new Promise<
       resolve();
     });
 });
+
+if (!process.env.PLASMO_PUBLIC_SENTRY_DSN) throw new Error('Missing Sentry DSN');
+
+export const SENTRY_DSN = process.env.PLASMO_PUBLIC_SENTRY_DSN;
