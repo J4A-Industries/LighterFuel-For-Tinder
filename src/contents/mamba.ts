@@ -1,7 +1,9 @@
 import styleText from 'data-text:~src/contentsHelpers/style.css';
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
+import * as Sentry from '@sentry/browser';
 import { debug } from '@/misc/config';
 import MambaJamba from '@/contentsHelpers/MambaJamba';
+import { SENTRY_DSN } from '@/background/Misc';
 
 /**
  * Execute the script on the tinder website,
@@ -22,9 +24,20 @@ export const getStyle: PlasmoGetStyle = () => {
   return style;
 };
 
+Sentry.init({
+  dsn: SENTRY_DSN,
+  integrations: [
+    new Sentry.Replay(),
+  ],
+  // Session Replay
+  replaysSessionSampleRate: 1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+});
+
 try {
   const MJ = new MambaJamba();
   if (debug) console.log(MJ);
 } catch (err) {
   console.error(err);
+  Sentry.captureException(err);
 }
