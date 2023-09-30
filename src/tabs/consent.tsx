@@ -1,4 +1,5 @@
 import { useStorage } from '@plasmohq/storage/hook';
+import { Storage } from '@plasmohq/storage';
 import './style.css';
 import { Switch } from '@mui/material';
 import logo from '~assets/LighterFuel512.png';
@@ -9,8 +10,19 @@ const consentText = {
 };
 
 const Consent = () => {
-  const [analyticsConsent, setAnalyticsConsent] = useStorage('analyticsConsent', true);
-  const [sentryConsent, setSentryConsent] = useStorage('sentryConsent', true);
+  const [analyticsConsent, setAnalyticsConsent] = useStorage({
+    key: 'analyticsConsent',
+    instance: new Storage({
+      area: 'sync',
+    }),
+  });
+
+  const [sentryConsent, setSentryConsent] = useStorage({
+    key: 'sentryConsent',
+    instance: new Storage({
+      area: 'sync',
+    }),
+  });
 
   return (
     <div className="min-h-screen w-screen bg-base-100 flex justify-center align-middle">

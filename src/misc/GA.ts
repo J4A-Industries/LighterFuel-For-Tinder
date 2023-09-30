@@ -35,6 +35,10 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
     return;
   }
 
+  if (analyticsConsent !== 'true') {
+    return;
+  }
+
   let clientId = await storage.get('clientId');
 
   // Just incase the client ID was not set on install.

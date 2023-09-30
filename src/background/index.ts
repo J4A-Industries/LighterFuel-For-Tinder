@@ -14,6 +14,15 @@ const setDefaultSettings = async () => {
   if (settings === undefined) {
     await storage.set('showSettings', defaultSettings);
   }
+
+  const analyticsConsent = await storage.get('analyticsConsent');
+  if (analyticsConsent === undefined) {
+    await storage.set('analyticsConsent', 'true');
+  }
+  const sentryConsent = await storage.get('sentryConsent');
+  if (sentryConsent === undefined) {
+    await storage.set('sentryConsent', 'true');
+  }
 };
 
 const setupSentry = async () => {
