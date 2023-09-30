@@ -4,8 +4,9 @@ import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
 import Switch from '@mui/material/Switch';
 import { AiOutlineSetting, AiOutlineInfoCircle } from 'react-icons/ai';
-import { BsDiscord } from 'react-icons/bs';
+import { DiGoogleAnalytics } from 'react-icons/di';
 import { useStorage } from '@plasmohq/storage/hook';
+import browser from 'webextension-polyfill';
 import {
   debug,
   defaultSettings, links, text,
@@ -55,7 +56,7 @@ const IndexPopup = () => {
             <AiOutlineInfoCircle className={`m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer ${(menuTab === menuOptions.info) ? 'bg-slate-500' : 'bg-slate-600'} hover:outline-offset-2 outline-white outline`} onClick={() => setMenuTab(menuOptions.info)} />
           </div>
           <div className="flex align-middle justify-center">
-            <BsDiscord className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(links.discord)} />
+            <DiGoogleAnalytics className="m-auto w-20 h-20 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline" onClick={() => openTab(browser.runtime.getURL('tabs/consent.html'))} />
           </div>
           <div className="flex align-middle justify-center">
             <img
@@ -95,19 +96,6 @@ const IndexPopup = () => {
               className="m-auto"
             />
           </div>
-          {/* <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
-            <div>
-              {text.enableDebuggingTelemetry}
-            </div>
-
-            <Switch
-              checked={showSettings.debuggingTelemetry}
-              onChange={() => setShowSettings({ ...showSettings, debuggingTelemetry: !showSettings.debuggingTelemetry })}
-              inputProps={{ 'aria-label': 'controlled' }}
-              aria-label={text.enableDebuggingTelemetry}
-              className="m-auto"
-            />
-          </div> */}
         </div>
       )}
 
