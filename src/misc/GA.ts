@@ -1,4 +1,5 @@
 import { Storage } from '@plasmohq/storage';
+import { uuid } from 'uuidv4';
 
 if (!process.env.PLASMO_PUBLIC_GTAG_ID) {
   throw new Error('PLASMO_PUBLIC_GTAG_ID environment variable not set.');
@@ -43,18 +44,21 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
 
   // Just incase the client ID was not set on install.
   if (!clientId) {
-    clientId = self.crypto.randomUUID();
+    clientId = uuid();
     await storage.set('clientId', clientId);
   }
-
-  await fetch(
-    `${GA_ENDPOINT}?measurement_id=${gtagId}&api_secret=${secretApiKey}`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        client_id: clientId,
-        events,
-      }),
-    },
-  );
+  try {
+    await fetch(
+      `${GA_ENDPOINT}?measurement_id=${gtagId}&api_secret=${secretApiKey}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          client_id: clientId,
+          events,
+        }),
+      },
+    );
+  } catch (e) {
+    throw new Error('Failed to send analytics event.');
+  }
 };
