@@ -17,7 +17,7 @@ import {
   getProfileImages,
 } from '@/contentsHelpers/Misc';
 
-import { debug, text } from '@/misc/config';
+import { debug, defaultSettings, text } from '@/misc/config';
 
 import {
   Sites,
@@ -50,7 +50,7 @@ class ImageHandler {
 
   emitter: EventEmitter;
 
-  showSettings: ShowSettings;
+  showSettings: ShowSettings = defaultSettings;
 
   storage: Storage;
 
@@ -127,6 +127,7 @@ class ImageHandler {
   getSettings() {
     // gets the initial settings from storage
     this.storage.get<ShowSettings>('showSettings').then((c) => {
+      if (c === undefined) return;
       this.showSettings = c;
       this.emitter.emit(Events.settingsUpdate, this.showSettings);
     });
@@ -134,6 +135,7 @@ class ImageHandler {
     // watching the storage for changes, for live updating
     this.storage.watch({
       showSettings: (c) => {
+        if (c === undefined) return;
         this.showSettings = c.newValue;
         this.emitter.emit(Events.settingsUpdate, this.showSettings);
       },
