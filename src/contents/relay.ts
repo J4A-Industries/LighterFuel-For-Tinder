@@ -6,8 +6,18 @@ relay<string, getImagesRequest, getImagesResponse>(
   {
     name: 'getImages',
   },
-  (req) => sendToBackground({
-    name: 'getImages',
-    body: req.body,
-  }),
+  async (req) => {
+    let res: getImagesResponse = {
+      images: [],
+    };
+    try {
+      res = await sendToBackground({
+        name: 'getImages',
+        body: req.body,
+      });
+    } catch (e) {
+      console.log(`Error thrown in getData, it's probably fine ${e}`);
+    }
+    return res;
+  },
 );
