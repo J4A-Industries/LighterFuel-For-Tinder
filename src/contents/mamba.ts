@@ -1,6 +1,7 @@
 import styleText from 'data-text:~src/contentsHelpers/style.css';
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
 import * as Sentry from '@sentry/browser';
+import { CaptureConsole } from '@sentry/integrations';
 import { debug } from '@/misc/config';
 import MambaJamba from '@/contentsHelpers/MambaJamba';
 import { SENTRY_DSN } from '@/background/Misc';
@@ -28,6 +29,9 @@ Sentry.init({
   dsn: SENTRY_DSN,
   integrations: [
     new Sentry.Replay(),
+    new CaptureConsole({
+      levels: ['error'],
+    }),
   ],
   // Session Replay
   replaysSessionSampleRate: 1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
