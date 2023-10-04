@@ -134,6 +134,9 @@ export const getImageURLfromNode = (node: Element): string => {
   // get background image from node
   const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
   const match = srcChecker.exec(prop);
+  if(!match) {
+    console.error('No match found for node', node);
+  }
   return match ? match[1] : '';
 };
 
@@ -152,6 +155,7 @@ export const parentNode = (node: HTMLElement, count: number): HTMLElement => {
 /**
  * ! Highly likely to break if tinder makes changes, this is the best I can do to keep it going
  * It gets the container for the buttons so they can be added
+ * @depreciated
  * @returns {HTMLElement} The parent node for the buttons
  */
 export const getTextButtonParent = (): HTMLElement | null => {
@@ -217,6 +221,8 @@ export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray
             // add tothe collection
             const entry: ProfileImage = { domNode: node, data: urlEntry };
             collection.add(entry);
+          } else {
+            console.error('URL not found in array', match[1]);
           }
         }
         return collection;
