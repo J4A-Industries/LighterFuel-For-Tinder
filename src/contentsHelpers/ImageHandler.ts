@@ -46,7 +46,7 @@ const imagesToKeep = 300;
  * use the functions in this class to display the image data.
  */
 class ImageHandler {
-  images: ImageType[];
+  images: ImageType[] = [];
 
   emitter: EventEmitter;
 
@@ -62,7 +62,6 @@ class ImageHandler {
   constructor(site: Sites) {
     // the event emmitter is here for flexibility, so that the site specific classes can listen for events
     this.emitter = new EventEmitter();
-    this.images = [];
     this.site = site;
 
     this.storage = new Storage();
@@ -71,15 +70,16 @@ class ImageHandler {
     this.initialiseEventListeners();
     this.getData();
     // this.initialiseMessageListner();
-    AnalyticsEvent([
-      {
-        name: 'LighterFuel',
+    sendToBackground({
+      name: 'sendAnalyticsEvent',
+      body: {
+        name: `LighterFuel ${Sites[this.site]}`,
         params: {
           action: 'loaded',
           platform: Sites[this.site],
         },
       },
-    ]);
+    });
   }
 
   /**
@@ -146,17 +146,23 @@ class ImageHandler {
    */
   async getData() {
     // eslint-disable-next-line no-constant-condition
-    while (true) {
-      // eslint-disable-next-line no-await-in-loop
-      const imageData = await sendToBackground({
-        name: 'getImages',
-        body: {
-          site: this.site,
-          complete: this.images.length === 0,
-        } as getImagesRequest,
-      });
-      if (debug) console.log(`Successfully got images for ${Sites[this.site]}, ${imageData.images.length} images`);
-      this.addNewImage(imageData.images);
+    try {
+      while (true) {
+        // eslint-disable-next-line no-await-in-loop
+        const imageData = await sendToBackground({
+          name: 'getImages',
+          body: {
+            site: this.site,
+            complete: this.images.length === 0,
+          } as getImagesRequest,
+        });
+        if (debug) console.log(`Successfully got images for ${Sites[this.site]}, ${imageData.images.length} images`);
+        if (imageData) {
+          this.addNewImage(imageData.images);
+        }
+      }
+    } catch (e) {
+      console.log(`Error thrown in getData, it's probably fine ${e}`);
     }
   }
 
