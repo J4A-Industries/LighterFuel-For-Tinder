@@ -57,6 +57,7 @@ class LighterFuel extends ImageHandler {
           const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
           if (profileImages.length === 0) {
             console.error('No profile images found :(');
+            break;
           }
           const currentImage = profileImages.reduce((acc, curr) => {
             const firstParent = curr.parentElement.getAttribute('aria-hidden') === 'false';
