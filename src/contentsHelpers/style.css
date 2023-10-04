@@ -15,7 +15,7 @@
   -webkit-box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
   box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
   opacity: 1;
-  z-index: 10;
+  z-index: 1000000000000000;
   position: absolute;
   top: 1px;
   width: 95%;
@@ -41,7 +41,7 @@
   -webkit-box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
   box-shadow: 0px 0px 12px -2px rgba(0, 0, 0, 0.84);
   opacity: 1;
-  z-index: 42069;
+  z-index: 1000000000000000;
   position: absolute;
   top: -120px;
   width: 95%;

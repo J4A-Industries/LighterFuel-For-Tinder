@@ -2,6 +2,7 @@ import { useStorage } from '@plasmohq/storage/hook';
 import { Storage } from '@plasmohq/storage';
 import './style.css';
 import { Switch } from '@mui/material';
+import { useEffect } from 'react';
 import logo from '~assets/LighterFuel512.png';
 
 const consentText = {
@@ -23,6 +24,12 @@ const Consent = () => {
       area: 'sync',
     }),
   });
+
+  // sometimes analytics consent is undefined, so we set it to true
+  useEffect(() => {
+    if (analyticsConsent === undefined) setAnalyticsConsent(true);
+    if (sentryConsent === undefined) setSentryConsent(true);
+  }, []);
 
   return (
     <div className="min-h-screen w-screen bg-base-100 flex justify-center align-middle">

@@ -53,11 +53,12 @@ class LighterFuel extends ImageHandler {
       if (keenSlider.length > 0) {
         // For every slider, make sure there's the overlay
         for (const slider of keenSlider) {
-          const existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
-          const sliderParent = slider.parentNode;
           // check to see if the overlay 'aria-url' matches the current image
           const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
-          if (profileImages.length === 0) return;
+          if (profileImages.length === 0) {
+            console.error('No profile images found :(');
+            break;
+          }
           const currentImage = profileImages.reduce((acc, curr) => {
             const firstParent = curr.parentElement.getAttribute('aria-hidden') === 'false';
             const secondParent = curr.parentElement.parentElement.getAttribute('aria-hidden') === 'false';
@@ -71,6 +72,9 @@ class LighterFuel extends ImageHandler {
           if (!imageRecord) {
             break;
           }
+
+          const existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
+          const sliderParent = slider.parentNode;
 
           if (!existingOverlay) {
             const overlay = this.createOverlayNode(imageRecord);

@@ -8,7 +8,7 @@ import ImageRequestCapturer from './imageRequestCapturer';
 import { SENTRY_DSN } from './Misc';
 import { AnalyticsEvent } from '~src/misc/GA';
 
-const setDefaultSettings = async () => {
+const setAndCheckDefaultSettings = async () => {
   const storage = new Storage();
   const settings = await storage.get('showSettings');
   if (settings === undefined) {
@@ -45,7 +45,7 @@ let mambaRequestCap: ImageRequestCapturer;
 
 try {
   setupSentry();
-  setDefaultSettings();
+  setAndCheckDefaultSettings();
 
   tinderRequestCap = new ImageRequestCapturer(['*://*.gotinder.com/*/*.jpg*', '*://*.gotinder.com/*/*.webp*', '*://*.gotinder.com/*/*.mp4*'], Sites.TINDER);
   mambaRequestCap = new ImageRequestCapturer(['*://*.wmbcdn.com/*'], Sites.MAMBA, 1000);
