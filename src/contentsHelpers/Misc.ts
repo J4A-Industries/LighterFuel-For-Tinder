@@ -107,6 +107,7 @@ export const getDomsWithBGImages = (doc: HTMLElement): Element[] => {
   if (!doc) return [];
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   const arr: Array<Element> = Array.from(doc.querySelectorAll('*'));
+  if (arr.length === 0) return [];
   const imageArray = arr.reduce((collection: Set<Element>, node: Element) => {
     const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
     const match = srcChecker.exec(prop);
