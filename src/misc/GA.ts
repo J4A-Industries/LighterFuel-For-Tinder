@@ -59,6 +59,6 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
       },
     );
   } catch (e) {
-    throw new Error('Failed to send analytics event.');
+    throw new Error(`Failed to send analytics event.${e}`);
   }
 };
