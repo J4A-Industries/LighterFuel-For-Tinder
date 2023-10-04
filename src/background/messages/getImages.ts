@@ -30,6 +30,10 @@ const handler: PlasmoMessaging.MessageHandler<getImagesRequest, getImagesRespons
     default:
       break;
   }
+
+  if (images === undefined) {
+    images = [];
+  }
   res.send({
     images,
   });
