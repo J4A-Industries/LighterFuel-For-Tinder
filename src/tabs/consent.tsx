@@ -59,6 +59,10 @@ const Consent = () => {
           This is done via Sentry.io.
           <br />
           This will make lighterfuel work more reliably and consistently for everyone.
+          <br />
+          <a href="https://j4a.uk/privacy-policy">
+            Click Here For The Privacy Policy
+          </a>
         </p>
         <div className="flex gap-4">
           <div className="flex flex-col justify-center m-auto bg-slate-800 text-center text-2xl flex-1">
