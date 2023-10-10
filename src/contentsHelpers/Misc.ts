@@ -1,4 +1,3 @@
-import type { PlasmoCSConfig } from 'plasmo';
 import { debug, text } from '@/misc/config';
 import type { ImageType, ProfileImage } from '@/misc/types';
 
@@ -134,7 +133,7 @@ export const getImageURLfromNode = (node: Element): string => {
   // get background image from node
   const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
   const match = srcChecker.exec(prop);
-  if(!match) {
+  if (!match && debug) {
     console.error('No match found for node', node);
   }
   return match ? match[1] : '';
