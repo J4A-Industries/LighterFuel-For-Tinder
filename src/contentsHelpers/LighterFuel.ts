@@ -81,13 +81,18 @@ class LighterFuel extends ImageHandler {
           let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
           const sliderParent = slider.parentNode;
 
-          const existingOverlayInCorrectPlace = (existingOverlay.parentNode as HTMLElement).classList.contains('keen-slider');
+          if (existingOverlay) {
+            if (existingOverlay.parentNode) {
+              const existingOverlayInCorrectPlace = (existingOverlay.parentNode as HTMLElement).classList.contains('keen-slider')
+                || (existingOverlay.parentNode as HTMLElement).classList.contains('tappable-view');
 
-          if (!existingOverlayInCorrectPlace) {
-            existingOverlay.parentNode.removeChild(existingOverlay);
-            existingOverlay = undefined;
-            if (debug) {
-              console.log('Existing overlay not in correct place, removing it');
+              if (!existingOverlayInCorrectPlace) {
+                existingOverlay.parentNode.removeChild(existingOverlay);
+                existingOverlay = undefined;
+                if (debug) {
+                  console.log('Existing overlay not in correct place, removing it');
+                }
+              }
             }
           }
 

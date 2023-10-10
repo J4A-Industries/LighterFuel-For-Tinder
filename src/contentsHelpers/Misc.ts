@@ -128,7 +128,7 @@ export const getDomsWithBGImages = (doc: HTMLElement): Element[] => {
  * @param {HTMLElement} node
  * @returns the URL from the node
  */
-export const getImageURLfromNode = (node: Element): string => {
+export const getImageURLfromNode = (node: Element): string | undefined => {
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   // get background image from node
   const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
@@ -136,7 +136,7 @@ export const getImageURLfromNode = (node: Element): string => {
   if (!match && debug) {
     console.error('No match found for node', node);
   }
-  return match ? match[1] : '';
+  return match ? match[1] : undefined;
 };
 
 /**
