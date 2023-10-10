@@ -65,6 +65,12 @@ class LighterFuel extends ImageHandler {
             return acc;
           });
           const imageURL = getImageURLfromNode(currentImage);
+          if (!imageURL) {
+            if (debug) {
+              console.log('getImageURLfromNode returned undefined, skipping this image');
+            }
+            break;
+          }
           const imageRecord = this.images.find((image) => imageURL.includes(image.url));
 
           // this doesn't seem to be problematic, it sometimes just doesn't find the image
@@ -72,8 +78,18 @@ class LighterFuel extends ImageHandler {
             break;
           }
 
-          const existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
+          let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
           const sliderParent = slider.parentNode;
+
+          const existingOverlayInCorrectPlace = (existingOverlay.parentNode as HTMLElement).classList.contains('keen-slider');
+
+          if (!existingOverlayInCorrectPlace) {
+            existingOverlay.parentNode.removeChild(existingOverlay);
+            existingOverlay = undefined;
+            if (debug) {
+              console.log('Existing overlay not in correct place, removing it');
+            }
+          }
 
           if (!existingOverlay) {
             const overlay = this.createOverlayNode(imageRecord);
