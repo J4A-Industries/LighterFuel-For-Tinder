@@ -65,7 +65,7 @@ class LighterFuel extends ImageHandler {
             return acc;
           });
           const imageURL = getImageURLfromNode(currentImage);
-          const imageRecord = this.images.find((image) => image.url === imageURL);
+          const imageRecord = this.images.find((image) => imageURL.includes(image.url));
 
           // this doesn't seem to be problematic, it sometimes just doesn't find the image
           if (!imageRecord) {
