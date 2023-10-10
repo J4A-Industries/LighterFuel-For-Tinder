@@ -30,7 +30,7 @@ const setupSentry = async () => {
     area: 'sync',
   });
   const sentryConsent = await storage.get('sentryConsent');
-  if (sentryConsent) {
+  if (sentryConsent && typeof sentryConsent === 'string') {
     if (sentryConsent.toLowerCase() === 'true') {
       Sentry.init({
         dsn: SENTRY_DSN,
@@ -81,6 +81,15 @@ browser.runtime.onInstalled.addListener(async (object) => {
   }
   chrome.runtime.setUninstallURL('https://j4a.uk/projects/lighterfuel/uninstall');
   // TODO: keep this in for 1 update, then remove it for the rest
-  const consentUrl = browser.runtime.getURL('tabs/consent.html');
-  browser.tabs.create({ url: consentUrl });
+
+  const storage = new Storage({
+    area: 'sync',
+  });
+  const sentryConsent = await storage.get('sentryConsent');
+  const analyticsConsent = await storage.get('analyticsConsent');
+
+  if (sentryConsent === undefined || analyticsConsent === undefined) {
+    const consentUrl = browser.runtime.getURL('tabs/consent.html');
+    browser.tabs.create({ url: consentUrl });
+  }
 });
