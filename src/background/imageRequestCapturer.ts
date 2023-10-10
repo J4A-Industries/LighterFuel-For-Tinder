@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import browser from 'webextension-polyfill';
-import { Storage } from '@plasmohq/storage';
 import { debug } from '@/misc/config';
 import type {
   AISettings, ImageType, ShowSettings, Sites,
@@ -59,9 +58,11 @@ class ImageRequestCapturer extends EventTarget {
           const newImageEvent = new CustomEvent('new image');
           this.dispatchEvent(newImageEvent);
 
-          sendImageDataToTab(data).catch((e) => {
-            if (debug) console.log(e);
-          });
+          try {
+            sendImageDataToTab(data);
+          } catch (err) {
+            console.error(err);
+          }
 
           if (debug) console.log(details);
         }
