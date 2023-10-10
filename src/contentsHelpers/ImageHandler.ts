@@ -1,33 +1,23 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
-import browser, { events } from 'webextension-polyfill';
+import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
 import { sendToBackground } from '@plasmohq/messaging';
 
 import EventEmitter from 'events';
 import {
-  createButton,
-  getTimeOld,
-  parentNode,
   consoleOut,
-  getShownImages,
-  getImageURLfromNode,
-  getDomsWithBGImages,
-  getProfileImages,
 } from '@/contentsHelpers/Misc';
 
-import { debug, defaultSettings, text } from '@/misc/config';
+import { debug, defaultSettings } from '@/misc/config';
 
 import {
   Sites,
   type ImageType,
-  type ProfileImage,
   type ShowSettings,
-  type profileSliderContainer,
 } from '@/misc/types';
-import type { getImagesRequest, getImagesResponse } from '@/background/messages/getImages';
-import { AnalyticsEvent } from '@/misc/GA';
+import type { getImagesRequest } from '@/background/messages/getImages';
 
 // the events that the emmitter can emit
 export enum Events {
