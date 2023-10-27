@@ -47,18 +47,8 @@ relay<string, getImageInfoRequest, getImageInfoResponse>(
   {
     name: 'getImageInfo',
   },
-  async (req) => {
-    let res = {
-      info: undefined,
-    };
-    try {
-      res = await sendToBackground<getImageInfoRequest, getImageInfoResponse>({
-        name: 'getImageInfo',
-        body: req.body,
-      });
-    } catch (e) {
-      console.log(`Error thrown in getImageInfo relay, ${e}`);
-    }
-    return res;
-  },
+  async (req) => sendToBackground<getImageInfoRequest, getImageInfoResponse>({
+    name: 'getImageInfo',
+    body: req.body,
+  }),
 );
