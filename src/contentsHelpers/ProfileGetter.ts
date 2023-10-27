@@ -1,37 +1,15 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import type { Match, Person } from '~src/misc/tinderTypes';
-
-const dateFromObjectId = (objectId) => new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
-
-const extractRecPhotoId = (url: string) => {
-  const regex = /\/u\/([^/]+)/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-};
-
-// this gets the uuid of the photo from the url
-const extractUuidFromUrl = (url) => {
-  const regex = /_(.*?)\./;
-  const match = url.match(regex);
-  if (match && match[1]) {
-    const uuid = match[1].replace(/^(\d+)_/, '');
-    return uuid;
-  }
-  return null;
-};
 
 type rec = {
 	user: Person;
 };
 
 class ProfileGetter {
-  matches: Match[] = [];
-
   people: Person[] = [];
-
-  matchData: any;
 
   constructor() {
     this.setCustomFetch();
@@ -103,6 +81,15 @@ class ProfileGetter {
     });
   }
 
+  sendPeopleToBackground(people: Person[]) {
+    sendToBackgroundViaRelay({
+      name: 'getPeople',
+      body: {
+        people,
+      },
+    });
+  }
+
   handleNewCore(jsonOut: any) {
     console.log('core recs', jsonOut);
     if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid core response');
@@ -149,43 +136,6 @@ class ProfileGetter {
   //     }
   //   });
   // }
-  /**
-	 * This
-	 * @param url the photo URL attached to the account
-	 */
-  infoFromPhoto(url: string) {
-    // search through all of the people
-    for (const person of this.people) {
-      let found: Person | undefined;
-      if (person.type === 'match') {
-        const photoId = extractUuidFromUrl(url);
-        // search through person's photos
-        for (const photo of person.photos) {
-          if (photo.id === photoId) {
-            // return photoRecord details immediately when you get a match
-            return {
-              hqUrl: photo.url,
-              accountCreated: dateFromObjectId(person._id),
-            };
-          }
-        }
-      } else if (person.type === 'rec') {
-        const id = extractRecPhotoId(url);
-        // search through person's photos
-        for (const photo of person.photos) {
-          if (extractRecPhotoId(photo.url) === id) {
-            // return photoRecord details immediately when you get a match
-            return {
-              hqUrl: photo.url,
-              accountCreated: dateFromObjectId(person._id),
-            };
-          }
-        }
-      }
-    }
-
-    return undefined;
-  }
 }
 
 export default ProfileGetter;
