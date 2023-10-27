@@ -242,7 +242,7 @@ class LighterFuel {
     const overlayNode = document.createElement('p');
     const date = new Date(data.accountCreated);
     const xOld = getTimeOld(date.getTime());
-    overlayNode.innerHTML = `${text.overlay.createdAt}: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
+    overlayNode.innerHTML = `${text.overlay.createdAt}: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Ago`;
     if (!data.hqUrl) {
       console.log('no hqUrl', data);
     }

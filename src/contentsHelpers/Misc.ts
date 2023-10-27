@@ -35,6 +35,7 @@ export const createButton = (url: string): HTMLElement => {
   openHighQuality.style.color = 'black';
   openHighQuality.href = url;
   openHighQuality.innerText = 'Open High Quality';
+  openHighQuality.style.outline = 'black solid 1px';
   openHighQuality.target = '_blank';
 
   parent.appendChild(openHighQuality);
