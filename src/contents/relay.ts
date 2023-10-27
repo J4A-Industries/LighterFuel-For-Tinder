@@ -1,6 +1,7 @@
 import { relay } from '@plasmohq/messaging/relay';
 import { sendToBackground } from '@plasmohq/messaging';
 import type { getImagesRequest, getImagesResponse } from '~src/background/messages/getImages';
+import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 
 relay<string, getImagesRequest, getImagesResponse>(
   {
@@ -37,6 +38,26 @@ relay<string, any, any>(
       });
     } catch (e) {
       console.log(`Error thrown in getPeople relay, ${e}`);
+    }
+    return res;
+  },
+);
+
+relay<string, getImageInfoRequest, getImageInfoResponse>(
+  {
+    name: 'getImageInfo',
+  },
+  async (req) => {
+    let res = {
+      info: undefined,
+    };
+    try {
+      res = await sendToBackground<getImageInfoRequest, getImageInfoResponse>({
+        name: 'getImageInfo',
+        body: req.body,
+      });
+    } catch (e) {
+      console.log(`Error thrown in getImageInfo relay, ${e}`);
     }
     return res;
   },
