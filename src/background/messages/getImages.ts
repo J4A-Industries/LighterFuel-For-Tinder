@@ -1,5 +1,5 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
-import { tinderRequestCap, mambaRequestCap } from '@/background/index';
+import { mambaRequestCap } from '@/background/index';
 import { type ImageType, Sites } from '@/misc/types';
 
 export type getImagesRequest = {
@@ -21,9 +21,6 @@ const handler: PlasmoMessaging.MessageHandler<getImagesRequest, getImagesRespons
   let images = [];
 
   switch (req.body.site) {
-    case Sites.TINDER:
-      images = complete ? tinderRequestCap.getAllImages() : await tinderRequestCap.getNewImages();
-      break;
     case Sites.MAMBA:
       images = complete ? mambaRequestCap.getAllImages() : await mambaRequestCap.getNewImages();
       break;
