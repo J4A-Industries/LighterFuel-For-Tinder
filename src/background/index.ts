@@ -7,6 +7,7 @@ import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
 import { SENTRY_DSN } from './Misc';
 import { AnalyticsEvent } from '~src/misc/GA';
+import { PeopleHandler } from './PeopleHandler';
 
 const setAndCheckDefaultSettings = async () => {
   const storage = new Storage();
@@ -40,25 +41,27 @@ const setupSentry = async () => {
   }
 };
 
-let tinderRequestCap: ImageRequestCapturer;
 let mambaRequestCap: ImageRequestCapturer;
+let peopleHandler: PeopleHandler;
 
 try {
   setupSentry();
   setAndCheckDefaultSettings();
 
-  tinderRequestCap = new ImageRequestCapturer(['*://*.gotinder.com/*/*.jpg*', '*://*.gotinder.com/*/*.webp*', '*://*.gotinder.com/*/*.mp4*'], Sites.TINDER);
+  peopleHandler = new PeopleHandler();
+
   mambaRequestCap = new ImageRequestCapturer(['*://*.wmbcdn.com/*'], Sites.MAMBA, 1000);
 
   // prints the bg instance to the console for debugging!
-  if (debug) console.log(tinderRequestCap, mambaRequestCap);
+  if (debug) console.log(mambaRequestCap);
+  if (debug) console.log('people handler', peopleHandler);
 } catch (err: any) {
   console.error(`Error caught in background.js: ${err.stack}`);
 }
 
 // exporting so the message handlers can access the images
 export {
-  tinderRequestCap,
+  peopleHandler,
   mambaRequestCap,
 };
 

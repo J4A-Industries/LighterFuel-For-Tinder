@@ -1,8 +1,8 @@
 {
   "name": "lighter-fuel-for-tinder",
   "displayName": "LighterFuel for tinder",
-  "version": "1.4.7",
-  "description": "LighterFuel helps you to identify catfish, letting you see when profile images were uploaded and reverse image search photos!",
+  "version": "1.4.8",
+  "description": "LighterFuel helps you see when accounts were created, see enlarged photos and reverse image search photos!",
   "author": "James",
   "scripts": {
     "dev": "plasmo dev",
