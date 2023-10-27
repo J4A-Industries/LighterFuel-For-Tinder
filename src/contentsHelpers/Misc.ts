@@ -28,6 +28,17 @@ export const createButton = (url: string): HTMLElement => {
     };
     parent.appendChild(searchButton);
   }
+
+  const openHighQuality = document.createElement('a');
+  openHighQuality.classList.add('buttonLF');
+  openHighQuality.classList.add('search');
+  openHighQuality.style.color = 'black';
+  openHighQuality.href = url;
+  openHighQuality.innerText = 'Open High Quality';
+  openHighQuality.target = '_blank';
+
+  parent.appendChild(openHighQuality);
+
   return parent;
 };
 
@@ -191,7 +202,7 @@ export const getTextButtonParent = (): HTMLElement | null => {
 * a console log facade for the debug bool
 */
 export const consoleOut = (message: string | any[] | any) => {
-  if (debug) console.log(message);
+  // if (debug) console.log(message);
 };
 
 /**
@@ -276,7 +287,7 @@ export const createMambaOverlayNode = (image: Element, imageRecord: ImageType) =
   overlay.setAttribute('aria-label', imageRecord.url);
   const date = new Date(imageRecord.lastModified);
   const xOld = getTimeOld(date.getTime());
-  overlay.innerHTML = `${text.overlay.uploadedAt}: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
+  overlay.innerHTML = `Uploaded At: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
   overlay.appendChild(createSearchButton(imageRecord.url));
   return overlay;
 };
