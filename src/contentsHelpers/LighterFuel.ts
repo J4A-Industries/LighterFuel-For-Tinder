@@ -30,6 +30,27 @@ import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 
+/**
+ * Returns visibility ratio of element within viewport.
+ *
+ * @param {Element} target - DOM element to observe
+ * @return {Promise<number>} Promise that resolves with visibility ratio
+ */
+const getVisibility = (target: Element) => new Promise((resolve) => {
+  const options = {
+    root: null, // viewport
+    rootMargin: '0px',
+    threshold: 0, // get ratio, even if only 1px is in view
+  };
+
+  const observer = new IntersectionObserver(([entry]) => {
+    resolve(entry.intersectionRatio);
+    observer.disconnect();
+  }, options);
+
+  observer.observe(target);
+});
+
 class LighterFuel {
   showSettings: ShowSettings = defaultSettings;
 
@@ -112,17 +133,40 @@ class LighterFuel {
     return res.info;
   }
 
+  // startMonitorInterval() {
+  //   setInterval(async () => {
+  //     const images = [...document.querySelectorAll('div .profileCard__slider__img, StretchedBox')].filter((x) => {
+  //       const src = x.style.backgroundImage;
+  //       return src.includes('https://images-ssl.gotinder.com/u/') || src.includes('https://images-ssl.gotinder.com/');
+  //     });
+
+  //     images.forEach((image) => {
+  //       getVisibility(image).then((ratio: number) => {
+  //         const imageURL = getImageURLfromNode(image);
+  //         console.log(`${imageURL} is ${ratio * 100}% visible`);
+  //       });
+  //     });
+  //   }, 50);
+  // }
+
   startMonitorInterval() {
     setInterval(async () => {
-      let keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')];
+      const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
 
-      if (keenSlider.length === 2) {
-        keenSlider = [keenSlider[1]];
-      }
+      const shown = await Promise.all(keenSlider.map(async (slider) => {
+        const ratio = await getVisibility(slider);
+        return {
+          slider,
+          ratio,
+        };
+      }));
 
-      if (keenSlider.length > 0) {
+      // filter out the ones that are not visible
+      const visible = shown.filter((x) => (x.ratio as number) > 0).map((x) => x.slider);
+
+      if (visible.length > 0) {
         // For every slider, make sure there's the overlay
-        for (const slider of keenSlider) {
+        for (const slider of visible) {
           // check to see if the overlay 'aria-url' matches the current image
           const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
           if (profileImages.length === 0) {
