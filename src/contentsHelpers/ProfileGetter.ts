@@ -9,8 +9,6 @@ type rec = {
 };
 
 class ProfileGetter {
-  people: Person[] = [];
-
   constructor() {
     this.setCustomFetch();
   }
@@ -67,18 +65,34 @@ class ProfileGetter {
 
     const newMatches: Match[] = jsonOut.data.matches;
 
+    const people = [];
+
     newMatches.forEach((match) => {
       // getting the person from the match
       const { person } = match;
-
-      // look for duplicates, if there are any, drop this person
-      const existingPersonIndex = this.people.findIndex((p) => p._id === person._id);
-
-      if (existingPersonIndex === -1) {
-        person.type = 'match';
-        this.people.push(person);
-      }
+      person.type = 'match';
+      people.push(person);
     });
+
+    this.sendPeopleToBackground(people);
+  }
+
+  handleNewCore(jsonOut: any) {
+    console.log('core recs', jsonOut);
+    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid core response');
+
+    const newRecs: rec[] = jsonOut.data.results;
+    const people = [];
+
+    newRecs.forEach((rec) => {
+      const person = rec.user;
+
+      person.type = 'rec';
+      people.push(person);
+      console.log('new person added from core!', person);
+    });
+
+    this.sendPeopleToBackground(people);
   }
 
   sendPeopleToBackground(people: Person[]) {
@@ -87,26 +101,6 @@ class ProfileGetter {
       body: {
         people,
       },
-    });
-  }
-
-  handleNewCore(jsonOut: any) {
-    console.log('core recs', jsonOut);
-    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid core response');
-
-    const newRecs: rec[] = jsonOut.data.results;
-
-    newRecs.forEach((rec) => {
-      const person = rec.user;
-
-      // look for duplicates, if there are any, drop this person
-      const existingPersonIndex = this.people.findIndex((p) => p._id === person._id);
-
-      if (existingPersonIndex === -1) {
-        person.type = 'rec';
-        this.people.push(person);
-        console.log('new person added from core!', person);
-      }
     });
   }
 
