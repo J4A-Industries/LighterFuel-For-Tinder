@@ -141,7 +141,7 @@ class ImageHandler {
     try {
       while (true) {
         // eslint-disable-next-line no-await-in-loop
-        const imageData = await sendToBackgroundViaRelay({
+        const imageData = await sendToBackground({
           name: 'getImages',
           body: {
             site: this.site,
