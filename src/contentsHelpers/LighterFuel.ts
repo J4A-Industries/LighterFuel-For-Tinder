@@ -5,6 +5,7 @@ import browser from 'webextension-polyfill';
 
 import { Storage } from '@plasmohq/storage';
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import EventEmitter from 'events';
 import {
   createButton,
   getTimeOld,
@@ -44,10 +45,60 @@ class LighterFuel {
 
   shownProfileImages: Element[];
 
+  emitter: EventEmitter;
+
   constructor() {
     this.profileSliderContainers = [];
 
     this.startMonitorInterval();
+
+    this.emitter = new EventEmitter();
+    this.storage = new Storage();
+    this.initialiseEventListeners();
+    this.getSettings();
+  }
+
+  getSettings() {
+    // gets the initial settings from storage
+    this.storage.get<ShowSettings>('showSettings').then((c) => {
+      if (c === undefined) return;
+      this.showSettings = c;
+      this.emitter.emit(Events.settingsUpdate, this.showSettings);
+    });
+
+    // watching the storage for changes, for live updating
+    this.storage.watch({
+      showSettings: (c) => {
+        if (c === undefined) return;
+        this.showSettings = c.newValue;
+        this.emitter.emit(Events.settingsUpdate, this.showSettings);
+      },
+    });
+  }
+
+  /**
+   * Sets the overlay display status to shown/hidden
+   *
+   * @param {Boolean} status Whether or not to display the overlay
+   */
+  setDisplayStatus() {
+    let styleElem = document.querySelector('#overlayDisplay');
+    if (!styleElem) {
+      styleElem = document.createElement('style');
+      styleElem.setAttribute('id', 'overlayDisplay');
+      document.head.append(styleElem);
+    }
+    styleElem.textContent = `
+  .overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
+  .topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
+  .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
+    consoleOut(this.showSettings);
+  }
+
+  initialiseEventListeners() {
+    this.emitter.on(Events.settingsUpdate, (settings) => {
+      this.setDisplayStatus();
+    });
   }
 
   async getImageInfo(url: string) {
