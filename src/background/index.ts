@@ -7,6 +7,7 @@ import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
 import { SENTRY_DSN } from './Misc';
 import { AnalyticsEvent } from '~src/misc/GA';
+import { PeopleHandler } from './PeopleHandler';
 
 const setAndCheckDefaultSettings = async () => {
   const storage = new Storage();

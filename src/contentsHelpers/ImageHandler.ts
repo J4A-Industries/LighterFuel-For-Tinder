@@ -3,7 +3,7 @@
 /* eslint-disable no-restricted-syntax */
 import browser from 'webextension-polyfill';
 import { Storage } from '@plasmohq/storage';
-import { sendToBackground } from '@plasmohq/messaging';
+import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
 
 import EventEmitter from 'events';
 import {
@@ -141,7 +141,7 @@ class ImageHandler {
     try {
       while (true) {
         // eslint-disable-next-line no-await-in-loop
-        const imageData = await sendToBackground({
+        const imageData = await sendToBackgroundViaRelay({
           name: 'getImages',
           body: {
             site: this.site,

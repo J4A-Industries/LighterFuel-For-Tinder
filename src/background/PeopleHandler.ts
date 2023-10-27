@@ -1,10 +1,12 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
 import type { Person } from '~src/misc/tinderTypes';
 
-type photoInfo = {
+export type photoInfo = {
 	hqUrl: string;
-	accountCreated: Date;
+	accountCreated: number;
+	original: string;
 } | undefined;
 
 const dateFromObjectId = (objectId) => new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
@@ -27,7 +29,7 @@ const extractUuidFromUrl = (url) => {
 };
 
 export class PeopleHandler {
-  people: Person[];
+  people: Person[] = [];
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
@@ -35,6 +37,8 @@ export class PeopleHandler {
         this.people.push(person);
       }
     });
+
+    console.log('people', this.people);
   }
 
   /**
@@ -51,8 +55,9 @@ export class PeopleHandler {
           if (photo.id === photoId) {
             // return photoRecord details immediately when you get a match
             return {
+              original: url,
               hqUrl: photo.url,
-              accountCreated: dateFromObjectId(person._id),
+              accountCreated: dateFromObjectId(person._id).getTime(),
             };
           }
         }
@@ -61,16 +66,19 @@ export class PeopleHandler {
         // search through person's photos
         for (const photo of person.photos) {
           if (extractRecPhotoId(photo.url) === id) {
+            if (!photo.url) console.error('no photo url, recs', photo);
+
             // return photoRecord details immediately when you get a match
             return {
+              original: url,
               hqUrl: photo.url,
-              accountCreated: dateFromObjectId(person._id),
+              accountCreated: dateFromObjectId(person._id).getTime(),
             };
           }
         }
       }
     }
-
+    console.error('no match found for url', url);
     return undefined;
   }
 }
