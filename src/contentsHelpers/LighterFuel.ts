@@ -180,7 +180,7 @@ class LighterFuel {
           });
 
           const imageURL = getImageURLfromNode(currentImage);
-          console.log('currentImage', imageURL);
+          if (debug) console.log('currentImage', imageURL);
           if (!imageURL) {
             if (debug) {
               console.log('getImageURLfromNode returned undefined, skipping this image');
@@ -190,6 +190,7 @@ class LighterFuel {
 
           this.getImageInfo(imageURL).then((info) => {
             if (!info) {
+              if (debug) console.log('No info for', imageURL);
               return;
             }
             let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
@@ -211,17 +212,13 @@ class LighterFuel {
             }
 
             if (!existingOverlay) {
-              const overlay = this.createOverlayNode(info);
-              sliderParent.appendChild(overlay.overlayNode);
-              overlay.onPlaced();
+              this.createOverlayNode(info, sliderParent);
               consoleOut('Added overlay');
             } else // check to see if the overlay 'aria-url' matches the current image
               if (existingOverlay.getAttribute('aria-url') !== info.original) {
                 // if not, update the overlay
                 existingOverlay.parentNode.removeChild(existingOverlay);
-                const overlay = this.createOverlayNode(info);
-                sliderParent.appendChild(overlay.overlayNode);
-                overlay.onPlaced();
+                this.createOverlayNode(info, sliderParent);
                 consoleOut('Updated overlay');
               }
           });
@@ -238,7 +235,7 @@ class LighterFuel {
    * @param data The data for the image (using the last modified date and url for reverse lookup)
     * @returns The element with an onPlaced method
    */
-  createOverlayNode(data: photoInfo) {
+  createOverlayNode(data: photoInfo, parentElement: ParentNode) {
     const overlayNode = document.createElement('p');
     const date = new Date(data.accountCreated);
     const xOld = getTimeOld(date.getTime());
@@ -261,7 +258,21 @@ class LighterFuel {
       }
     };
 
-    return { overlayNode, onPlaced };
+    parentElement.appendChild(overlayNode);
+
+    onPlaced();
+
+    // check to see if the element is visible or not
+
+    getVisibility(overlayNode).then((ratio: number) => {
+      // if it's not visible and it's a top box, change it to an overlay box
+      if (ratio === 0 && overlayNode.classList.contains('topBox')) {
+        overlayNode.classList.remove('topBox');
+        overlayNode.classList.add('overlayBox');
+      }
+    });
+
+    return overlayNode;
   }
 }
 
