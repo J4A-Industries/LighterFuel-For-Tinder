@@ -212,15 +212,13 @@ class LighterFuel {
             }
 
             if (!existingOverlay) {
-              const overlay = this.createOverlayNode(info, sliderParent);
-              overlay.onPlaced();
+              this.createOverlayNode(info, sliderParent);
               consoleOut('Added overlay');
             } else // check to see if the overlay 'aria-url' matches the current image
               if (existingOverlay.getAttribute('aria-url') !== info.original) {
                 // if not, update the overlay
                 existingOverlay.parentNode.removeChild(existingOverlay);
-                const overlay = this.createOverlayNode(info, sliderParent);
-                overlay.onPlaced();
+                this.createOverlayNode(info, sliderParent);
                 consoleOut('Updated overlay');
               }
           });
@@ -262,6 +260,8 @@ class LighterFuel {
 
     parentElement.appendChild(overlayNode);
 
+    onPlaced();
+
     // check to see if the element is visible or not
 
     getVisibility(overlayNode).then((ratio: number) => {
@@ -272,7 +272,7 @@ class LighterFuel {
       }
     });
 
-    return { overlayNode, onPlaced };
+    return overlayNode;
   }
 }
 
