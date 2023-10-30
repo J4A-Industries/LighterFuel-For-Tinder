@@ -133,22 +133,6 @@ class LighterFuel {
     return res.info;
   }
 
-  // startMonitorInterval() {
-  //   setInterval(async () => {
-  //     const images = [...document.querySelectorAll('div .profileCard__slider__img, StretchedBox')].filter((x) => {
-  //       const src = x.style.backgroundImage;
-  //       return src.includes('https://images-ssl.gotinder.com/u/') || src.includes('https://images-ssl.gotinder.com/');
-  //     });
-
-  //     images.forEach((image) => {
-  //       getVisibility(image).then((ratio: number) => {
-  //         const imageURL = getImageURLfromNode(image);
-  //         console.log(`${imageURL} is ${ratio * 100}% visible`);
-  //       });
-  //     });
-  //   }, 50);
-  // }
-
   startMonitorInterval() {
     setInterval(async () => {
       const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
