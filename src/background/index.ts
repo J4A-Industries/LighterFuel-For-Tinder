@@ -80,6 +80,8 @@ browser.runtime.onInstalled.addListener(async (object) => {
           },
         },
       ]);
+    } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+      browser.tabs.create({ url: browser.runtime.getURL('tabs/review.html') });
     }
   }
   chrome.runtime.setUninstallURL('https://j4a.uk/projects/lighterfuel/uninstall');

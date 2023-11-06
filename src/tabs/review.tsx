@@ -7,7 +7,25 @@ const Review = () => (
       <img src={logo} className="m-auto max-h-[20em] max-w-[20em]" alt="logo" />
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
-        <div className="text-xl">
+        <div className="text-xl overflow-auto max-h-96">
+          <b>v1.5.0:</b>
+          <br />
+          <br />
+          I&apos;ve fixed the bug that was causing the extension to not work for non english speaking users.
+          <br />
+          <br />
+          If Lighterfuel was broken for you and now works, please leave a positive review!
+          <br />
+          <br />
+
+          If you are still encountering errors, tell me via the feedback button in the extension, or emailing
+          {' '}
+          <a href="mailto:help@j4a.uk">help@j4a.uk</a>
+          .
+          <br />
+          <br />
+          <b>v1.4.9:</b>
+          <br />
           Hi Everyone, Tinder has stopped sending the dates of when the photos were uploaded, however the account creation date is still being sent, so the age of the account is still accurate.
           <br />
           <br />
@@ -20,8 +38,9 @@ const Review = () => (
           <br />
           <br />
         </div>
-        <a href="https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews" target="_blank" rel="noreferrer" className="btn btn-lg btn-wide btn-success m-auto hover:scale-105">
-          Leave a review
+        <a href="https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews" target="_blank" rel="noreferrer" className="btn btn-lg btn-wide btn-success m-auto hover:scale-105 flex justify-center align-middle flex-col gap-4">
+          <div className="m-auto">Leave a review</div>
+          <img className="m-auto" src="https://camo.githubusercontent.com/0b3c88f2d028d56528ad864625393d63fbadc239d643db76e789ed88fa11aaae/68747470733a2f2f696d672e736869656c64732e696f2f6368726f6d652d7765622d73746f72652f73746172732f626d636e62686e706d626b63706b686e6d6b6e6d6e6b6764656f64666c6a6e63" />
         </a>
       </div>
 
