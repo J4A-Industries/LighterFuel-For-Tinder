@@ -36,7 +36,6 @@ Sentry.init({
 
 try {
   const lf = new LighterFuel();
-  // prints the lf instance to the console for debugging!
   if (debug) console.log(lf);
 } catch (err) {
   console.error(err);
