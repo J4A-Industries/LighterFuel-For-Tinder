@@ -136,7 +136,6 @@ class LighterFuel {
   startMonitorInterval() {
     setInterval(async () => {
       const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
-
       const shown = await Promise.all(keenSlider.map(async (slider) => {
         const ratio = await getVisibility(slider);
         return {
