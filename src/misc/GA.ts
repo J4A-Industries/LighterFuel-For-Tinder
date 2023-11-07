@@ -32,7 +32,6 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
   });
 
   const analyticsConsent = await storage.get<boolean | string>('analyticsConsent');
-  console.log('AnalyticsConsent', analyticsConsent);
 
   if (typeof analyticsConsent === 'string') {
     if (analyticsConsent.toLowerCase() !== 'true') {
