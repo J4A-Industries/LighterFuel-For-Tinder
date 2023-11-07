@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
+import { debug } from '~src/misc/config';
 import type { Person } from '~src/misc/tinderTypes';
 
 export type photoInfo = {
@@ -38,7 +39,7 @@ export class PeopleHandler {
       }
     });
 
-    console.log('people', this.people);
+    if (debug) console.log('people', this.people);
   }
 
   /**
