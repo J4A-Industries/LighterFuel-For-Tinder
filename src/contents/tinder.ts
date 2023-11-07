@@ -1,6 +1,7 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
 import styleText from 'data-text:~src/contentsHelpers/style.css';
 import * as Sentry from '@sentry/browser';
+import { sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import { SENTRY_DSN } from '@/background/Misc';
@@ -40,4 +41,14 @@ try {
 } catch (err) {
   console.error(err);
   Sentry.captureException(err);
+  sendToBackground({
+    name: 'sendAnalyticsEvent',
+    body: {
+      name: 'Error',
+      params: {
+        action: 'error',
+        description: `Error thrown in tinder.ts, ${err}`,
+      },
+    },
+  });
 }

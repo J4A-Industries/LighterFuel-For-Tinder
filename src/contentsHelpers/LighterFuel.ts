@@ -4,7 +4,7 @@
 import browser from 'webextension-polyfill';
 
 import { Storage } from '@plasmohq/storage';
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import EventEmitter from 'events';
 import {
   createButton,
@@ -77,6 +77,16 @@ class LighterFuel {
     this.storage = new Storage();
     this.initialiseEventListeners();
     this.getSettings();
+    sendToBackgroundViaRelay({
+      name: 'sendAnalyticsEvent',
+      body: {
+        name: 'LighterFuel',
+        params: {
+          action: 'loaded',
+          platform: 'TINDER',
+        },
+      },
+    });
   }
 
   getSettings() {
