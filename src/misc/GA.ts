@@ -1,5 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 import { uuid } from 'uuidv4';
+import { debug } from '~src/misc/config';
 
 if (!process.env.PLASMO_PUBLIC_GTAG_ID) {
   throw new Error('PLASMO_PUBLIC_GTAG_ID environment variable not set.');
@@ -30,13 +31,15 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
     area: 'sync',
   });
 
-  const analyticsConsent = await storage.get('analyticsConsent');
+  const analyticsConsent = await storage.get<boolean | string>('analyticsConsent');
+  console.log('AnalyticsConsent', analyticsConsent);
 
-  if (!analyticsConsent) {
-    return;
+  if (typeof analyticsConsent === 'string') {
+    if (analyticsConsent.toLowerCase() !== 'true') {
+      return;
+    }
   }
-
-  if (analyticsConsent !== 'true') {
+  if (analyticsConsent !== true) {
     return;
   }
 
@@ -57,7 +60,9 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
           events,
         }),
       },
-    );
+    ).then((res) => {
+      if (debug) console.log('GA response', res);
+    });
   } catch (e) {
     throw new Error(`Failed to send analytics event.${e}`);
   }
