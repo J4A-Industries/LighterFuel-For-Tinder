@@ -11,22 +11,17 @@ import {
   getTimeOld,
   parentNode,
   consoleOut,
-  getShownImages,
   getImageURLfromNode,
-  getDomsWithBGImages,
-  getProfileImages,
 } from '@/contentsHelpers/Misc';
 import { debug, defaultSettings, text } from '@/misc/config';
 
 import {
-  type ImageType,
-  type ProfileImage,
   type ShowSettings,
   Sites,
   type profileSliderContainer,
 } from '@/misc/types';
 
-import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
+import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 
@@ -77,10 +72,14 @@ class LighterFuel {
     this.storage = new Storage();
     this.initialiseEventListeners();
     this.getSettings();
-    sendToBackgroundViaRelay({
+    this.sendLoadedEvent();
+  }
+
+  async sendLoadedEvent() {
+    await sendToBackground({
       name: 'sendAnalyticsEvent',
       body: {
-        name: 'LighterFuel',
+        name: 'Loaded Tinder',
         params: {
           action: 'loaded',
           platform: 'TINDER',
@@ -133,7 +132,7 @@ class LighterFuel {
   }
 
   async getImageInfo(url: string) {
-    const res = await sendToBackgroundViaRelay<getImageInfoRequest, getImageInfoResponse>({
+    const res = await sendToBackground<getImageInfoRequest, getImageInfoResponse>({
       name: 'getImageInfo',
       body: {
         url,

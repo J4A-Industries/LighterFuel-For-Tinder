@@ -50,5 +50,7 @@ try {
         description: `Error thrown in tinder.ts, ${err}`,
       },
     },
+  }).then((res) => {
+    if (debug) console.log(res);
   });
 }
