@@ -60,7 +60,11 @@ class ImageHandler {
     this.initialiseEventListeners();
     this.getData();
     // this.initialiseMessageListner();
-    sendToBackground({
+    this.sendLoadedEvent();
+  }
+
+  async sendLoadedEvent() {
+    await sendToBackground({
       name: 'sendAnalyticsEvent',
       body: {
         name: `LighterFuel ${Sites[this.site]}`,

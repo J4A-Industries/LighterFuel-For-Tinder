@@ -1,5 +1,6 @@
 import type { PlasmoCSConfig } from 'plasmo';
 import ProfileGetter from '~src/contentsHelpers/ProfileGetter';
+import { debug } from '~src/misc/config';
 
 export const config: PlasmoCSConfig = {
   matches: ['*://tinder.com/*'],
@@ -10,7 +11,7 @@ export const config: PlasmoCSConfig = {
 try {
   const getter = new ProfileGetter();
 
-  console.log('Getter created!');
+  if (debug) console.log('Getter created!', getter);
 } catch (e) {
   console.error(`Error in profile getter: ${e}`);
 }

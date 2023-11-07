@@ -4,29 +4,24 @@
 import browser from 'webextension-polyfill';
 
 import { Storage } from '@plasmohq/storage';
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import EventEmitter from 'events';
 import {
   createButton,
   getTimeOld,
   parentNode,
   consoleOut,
-  getShownImages,
   getImageURLfromNode,
-  getDomsWithBGImages,
-  getProfileImages,
 } from '@/contentsHelpers/Misc';
 import { debug, defaultSettings, text } from '@/misc/config';
 
 import {
-  type ImageType,
-  type ProfileImage,
   type ShowSettings,
   Sites,
   type profileSliderContainer,
 } from '@/misc/types';
 
-import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
+import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 
@@ -77,6 +72,20 @@ class LighterFuel {
     this.storage = new Storage();
     this.initialiseEventListeners();
     this.getSettings();
+    this.sendLoadedEvent();
+  }
+
+  async sendLoadedEvent() {
+    await sendToBackground({
+      name: 'sendAnalyticsEvent',
+      body: {
+        name: 'Loaded Tinder',
+        params: {
+          action: 'loaded',
+          platform: 'TINDER',
+        },
+      },
+    });
   }
 
   getSettings() {
@@ -123,7 +132,7 @@ class LighterFuel {
   }
 
   async getImageInfo(url: string) {
-    const res = await sendToBackgroundViaRelay<getImageInfoRequest, getImageInfoResponse>({
+    const res = await sendToBackground<getImageInfoRequest, getImageInfoResponse>({
       name: 'getImageInfo',
       body: {
         url,

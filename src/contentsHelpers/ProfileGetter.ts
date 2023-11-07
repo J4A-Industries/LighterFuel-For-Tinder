@@ -2,6 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { debug } from '~src/misc/config';
 import type { Match, Person } from '~src/misc/tinderTypes';
 
 type rec = {
@@ -78,7 +79,7 @@ class ProfileGetter {
   }
 
   handleNewCore(jsonOut: any) {
-    console.log('core recs', jsonOut);
+    if (debug) console.log('core recs', jsonOut);
     if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid core response');
 
     const newRecs: rec[] = jsonOut.data.results;
@@ -89,7 +90,7 @@ class ProfileGetter {
 
       person.type = 'rec';
       people.push(person);
-      console.log('new person added from core!', person);
+      if (debug) console.log('new person added from core!', person);
     });
 
     this.sendPeopleToBackground(people);
@@ -103,33 +104,6 @@ class ProfileGetter {
       },
     });
   }
-
-  // infoFromPhoto(url: string) {
-  //   // search through all of the matches for the photo with the same URL
-  //   return this.people.find((person) => {
-  //     let found: Person | undefined;
-  //     if (person.type === 'match') {
-  //       const photoId = extractUuidFromUrl(url);
-  //       const photoRecord = person.photos.find((photo) => photo.id === photoId);
-
-  //       if (photoRecord) {
-  //         return {
-  //           hqUrl: photoRecord.url,
-  //           accountCreated: dateFromObjectId(person._id),
-  //         };
-  //       }
-  //     } else if (person.type === 'rec') {
-  //       const id = extractRecPhotoId(url);
-  //       const photoRecord = person.photos.find((photo) => extractRecPhotoId(photo.url) === id);
-  //       if (photoRecord) {
-  //         return {
-  //           hqUrl: photoRecord.url,
-  //           accountCreated: dateFromObjectId(person._id),
-  //         };
-  //       }
-  //     }
-  //   });
-  // }
 }
 
 export default ProfileGetter;

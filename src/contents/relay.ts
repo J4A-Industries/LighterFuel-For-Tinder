@@ -52,3 +52,13 @@ relay<string, getImageInfoRequest, getImageInfoResponse>(
     body: req.body,
   }),
 );
+
+relay<string, any, any>(
+  {
+    name: 'sendAnalyticsEvent',
+  },
+  async (req) => sendToBackground({
+    name: 'sendAnalyticsEvent',
+    body: req.body,
+  }),
+);
