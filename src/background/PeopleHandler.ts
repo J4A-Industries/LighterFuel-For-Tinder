@@ -30,14 +30,31 @@ const extractUuidFromUrl = (url) => {
 };
 
 export class PeopleHandler {
-  people: Person[] = [];
+  people: (Person & {addedAt: number})[] = [];
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
       if (!this.people.find((p) => p._id === person._id)) {
-        this.people.push(person);
+        this.people.push(
+          {
+            ...person,
+            addedAt: Date.now(),
+          },
+        );
       }
     });
+
+    // if there are over 100 people in the array who are recs, remove the oldest ones
+
+    if (this.people.length > 100) {
+      const recs = this.people.filter((person) => person.type === 'rec')
+        .sort((a, b) => a.addedAt - b.addedAt);
+
+      while (recs.length > 100) {
+        const oldestPerson = recs.shift();
+        this.people = this.people.filter((person) => person._id !== oldestPerson._id);
+      }
+    }
 
     if (debug) console.log('people', this.people);
   }
