@@ -80,9 +80,10 @@ browser.runtime.onInstalled.addListener(async (object) => {
           },
         },
       ]);
-    } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-      browser.tabs.create({ url: browser.runtime.getURL('tabs/review.html') });
     }
+    // else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    //   browser.tabs.create({ url: browser.runtime.getURL('tabs/review.html') });
+    // }
   }
   chrome.runtime.setUninstallURL('https://j4a.uk/projects/lighterfuel/uninstall');
   // TODO: keep this in for 1 update, then remove it for the rest
