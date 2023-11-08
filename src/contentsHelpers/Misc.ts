@@ -1,6 +1,7 @@
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import { debug, text } from '@/misc/config';
 import { Sites, type ImageType, type ProfileImage } from '@/misc/types';
+import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
 // return `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
 const getReverseImageURL = (url: string): string => `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`;
@@ -26,13 +27,13 @@ export const createButton = (url: string): HTMLElement => {
       if (debug) console.log('Searching for', reverseImageUrl);
       const newTab = window.open(reverseImageUrl, '_blank');
       if (newTab) newTab.focus();
-      sendToBackgroundViaRelay({
+      sendToBackgroundViaRelay<sendAnalyticsEventRequest>({
         name: 'sendAnalyticsEvent',
         body: {
-          name: 'LighterFuel',
+          name: 'search_click',
           params: {
-            action: 'search',
-            platform: 'TINDER',
+            event_title: 'search',
+            event_platform: 'TINDER',
           },
         },
       });
@@ -50,13 +51,13 @@ export const createButton = (url: string): HTMLElement => {
   openHighQuality.target = '_blank';
 
   openHighQuality.onclick = () => {
-    sendToBackgroundViaRelay({
+    sendToBackgroundViaRelay<sendAnalyticsEventRequest>({
       name: 'sendAnalyticsEvent',
       body: {
-        name: 'LighterFuel',
+        name: 'high_quality_click',
         params: {
-          action: 'highQuality',
-          platform: 'TINDER',
+          event_title: 'highQuality',
+          event_platform: 'TINDER',
         },
       },
     });

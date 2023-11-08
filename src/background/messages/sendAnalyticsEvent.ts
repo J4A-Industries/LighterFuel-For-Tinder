@@ -3,7 +3,7 @@ import { AnalyticsEvent } from '~src/misc/GA';
 import { debug } from '~src/misc/config';
 
 export type sendAnalyticsEventRequest = {
-	event: string;
+	name: string;
 	params?: any;
 };
 
@@ -14,7 +14,7 @@ export type sendAnalyticsEventResponse = {
 const handler: PlasmoMessaging.MessageHandler<sendAnalyticsEventRequest, sendAnalyticsEventResponse> = async (req, res) => {
   try {
     await AnalyticsEvent([{
-      name: req.body.event,
+      name: req.body.name,
       params: req.body.params,
     }]);
     if (debug) console.log('analytics event sent');

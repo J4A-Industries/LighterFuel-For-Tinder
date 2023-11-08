@@ -5,6 +5,7 @@ import { sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import { SENTRY_DSN } from '@/background/Misc';
+import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
 /**
  * Execute the script on the tinder website,
@@ -41,13 +42,13 @@ try {
 } catch (err) {
   console.error(err);
   Sentry.captureException(err);
-  sendToBackground({
+  sendToBackground<sendAnalyticsEventRequest>({
     name: 'sendAnalyticsEvent',
     body: {
       name: 'Error',
       params: {
-        action: 'error',
-        description: `Error thrown in tinder.ts, ${err}`,
+        event_title: 'error',
+        value: `Error thrown in tinder.ts, ${err}`,
       },
     },
   }).then((res) => {

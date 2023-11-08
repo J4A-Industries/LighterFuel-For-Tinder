@@ -18,6 +18,7 @@ import {
   type ShowSettings,
 } from '@/misc/types';
 import type { getImagesRequest } from '@/background/messages/getImages';
+import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
 // the events that the emmitter can emit
 export enum Events {
@@ -64,13 +65,13 @@ class ImageHandler {
   }
 
   async sendLoadedEvent() {
-    await sendToBackground({
+    await sendToBackground<sendAnalyticsEventRequest>({
       name: 'sendAnalyticsEvent',
       body: {
-        name: `LighterFuel ${Sites[this.site]}`,
+        name: `LighterFuel_${Sites[this.site]}`,
         params: {
-          action: 'loaded',
-          platform: Sites[this.site],
+          event_title: 'loaded',
+          event_platform: Sites[this.site],
         },
       },
     });

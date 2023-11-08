@@ -24,6 +24,7 @@ import {
 import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
+import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
 /**
  * Returns visibility ratio of element within viewport.
@@ -76,13 +77,13 @@ class LighterFuel {
   }
 
   async sendLoadedEvent() {
-    await sendToBackground({
+    await sendToBackground<sendAnalyticsEventRequest>({
       name: 'sendAnalyticsEvent',
       body: {
-        name: 'Loaded Tinder',
+        name: 'Loaded_Tinder',
         params: {
-          action: 'loaded',
-          platform: 'TINDER',
+          event_title: 'loaded',
+          event_platform: 'TINDER',
         },
       },
     });

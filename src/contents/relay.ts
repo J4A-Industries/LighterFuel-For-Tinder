@@ -2,6 +2,7 @@ import { relay } from '@plasmohq/messaging/relay';
 import { sendToBackground } from '@plasmohq/messaging';
 import type { getImagesRequest, getImagesResponse } from '~src/background/messages/getImages';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
+import type { sendAnalyticsEventRequest, sendAnalyticsEventResponse } from '~src/background/messages/sendAnalyticsEvent';
 
 relay<string, getImagesRequest, getImagesResponse>(
   {
@@ -53,11 +54,11 @@ relay<string, getImageInfoRequest, getImageInfoResponse>(
   }),
 );
 
-relay<string, any, any>(
+relay<string, sendAnalyticsEventRequest, sendAnalyticsEventResponse>(
   {
     name: 'sendAnalyticsEvent',
   },
-  async (req) => sendToBackground({
+  async (req) => sendToBackground<sendAnalyticsEventRequest>({
     name: 'sendAnalyticsEvent',
     body: req.body,
   }),
