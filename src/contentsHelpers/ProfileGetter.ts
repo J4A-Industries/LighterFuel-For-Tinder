@@ -53,7 +53,8 @@ class ProfileGetter {
         this.handleNewMatches(jsonOut);
       } else if (args[0].match(regexChecks.core)) {
         this.handleNewCore(jsonOut);
-        // TODO: handle core recs
+      } else if (args[0].match(regexChecks.profile)) {
+        this.handleProfile(jsonOut);
       }
     } catch (e) {
       console.error(e);
@@ -94,6 +95,19 @@ class ProfileGetter {
     });
 
     this.sendPeopleToBackground(people);
+  }
+
+  handleProfile(jsonOut: any) {
+    if (debug) console.log('profile', jsonOut);
+    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid profile response');
+
+    if (!jsonOut.data.user) return;
+
+    const person = jsonOut.data.user;
+
+    person.type = 'profile';
+
+    this.sendPeopleToBackground([person]);
   }
 
   sendPeopleToBackground(people: Person[]) {
