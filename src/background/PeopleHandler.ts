@@ -66,7 +66,7 @@ export class PeopleHandler {
   getInfoFromPhoto(url: string): photoInfo {
     // search through all of the people
     for (const person of this.people) {
-      if (person.type === 'match') {
+      if (person.type === 'match' || person.type === 'profile') {
         const photoId = extractUuidFromUrl(url);
         // search through person's photos
         for (const photo of person.photos) {

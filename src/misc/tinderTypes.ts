@@ -159,7 +159,7 @@ export interface Person {
 	name: string;
 	photos: Photos[];
 	userResults?: UserResults;
-	type?: 'match' | 'rec';
+	type?: 'match' | 'rec' | 'profile';
 }
 
 export interface liked_content_child {
