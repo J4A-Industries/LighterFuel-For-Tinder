@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
@@ -173,7 +174,7 @@ class LighterFuel {
           });
 
           const imageURL = getImageURLfromNode(currentImage);
-          if (debug) console.log('currentImage', imageURL);
+          if (debug) console.log('currentImage', imageURL, (await this.getImageInfo(imageURL)));
           if (!imageURL) {
             if (debug) {
               console.log('getImageURLfromNode returned undefined, skipping this image');
