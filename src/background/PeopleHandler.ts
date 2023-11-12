@@ -65,12 +65,16 @@ export class PeopleHandler {
 	 */
   getInfoFromPhoto(url: string): photoInfo {
     // search through all of the people
+
+    // ! This is a hacky way to check if the url is a person rec or not
+    const personRec = url.includes('https://images-ssl.gotinder.com/u/');
+
     for (const person of this.people) {
-      if (person.type === 'match' || person.type === 'profile') {
+      if ((person.type === 'match' || person.type === 'profile') && !personRec) {
         const photoId = extractUuidFromUrl(url);
         // search through person's photos
         for (const photo of person.photos) {
-          if (photo.id === photoId) {
+          if (extractUuidFromUrl(photo.url) === photoId) {
             // return photoRecord details immediately when you get a match
             return {
               original: url,
