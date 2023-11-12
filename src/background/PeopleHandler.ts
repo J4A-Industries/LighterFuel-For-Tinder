@@ -8,6 +8,7 @@ export type photoInfo = {
 	hqUrl: string;
 	accountCreated: number;
 	original: string;
+  type: 'match' | 'rec' | 'profile';
 } | undefined;
 
 const dateFromObjectId = (objectId) => new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
@@ -18,15 +19,17 @@ const extractRecPhotoId = (url: string) => {
   return match ? match[1] : null;
 };
 
-// this gets the uuid of the photo from the url
-const extractUuidFromUrl = (url) => {
-  const regex = /_(.*?)\./;
-  const match = url.match(regex);
-  if (match && match[1]) {
-    const uuid = match[1].replace(/^(\d+)_/, '');
-    return uuid;
+const extractUuidFromUrl = (inUrl: string) => {
+  const url = new URL(inUrl);
+  const path = url.pathname.split('/');
+  const fileName = path[path.length - 1];
+  const regex = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
+  const match = fileName.match(regex);
+
+  if (!match || match.length === 0) {
+    return null;
   }
-  return null;
+  return match[0];
 };
 
 export class PeopleHandler {
@@ -80,6 +83,7 @@ export class PeopleHandler {
               original: url,
               hqUrl: photo.url,
               accountCreated: dateFromObjectId(person._id).getTime(),
+              type: person.type,
             };
           }
         }
@@ -95,6 +99,7 @@ export class PeopleHandler {
               original: url,
               hqUrl: photo.url,
               accountCreated: dateFromObjectId(person._id).getTime(),
+              type: person.type,
             };
           }
         }
