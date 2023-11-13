@@ -8,6 +8,16 @@ const Review = () => (
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
         <div className="text-xl overflow-auto max-h-96">
+          <b>v1.5.4</b>
+          <br />
+          <br />
+          The overlay should now flicker less and always show the age of the account, before it had been inconsistently flickering between different accounts.
+          <br />
+          If this has fixed lighterfuel for you, please leave positive review! Otherwise, if you&apos;re still having issues, please email me at
+          {' '}
+          <a href="mailto:help@j4a.uk">help@j4a.uk</a>
+          <br />
+          <br />
           <b>v1.5.0:</b>
           <br />
           <br />
