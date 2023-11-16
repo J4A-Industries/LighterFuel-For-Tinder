@@ -142,5 +142,12 @@
       "no-restricted-globals": 0,
       "no-undef": 0
     }
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss@<8.4.31": ">=8.4.31",
+      "@babel/traverse@<7.23.2": ">=7.23.2",
+      "sharp@<0.32.6": ">=0.32.6"
+    }
   }
 }
