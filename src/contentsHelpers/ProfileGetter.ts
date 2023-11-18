@@ -41,6 +41,7 @@ class ProfileGetter {
     const regexChecks = {
       matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
       myLikes: /https:\/\/api.gotinder.com\/v2\/my-likes\?/g,
+      fastMatch: /https:\/\/api.gotinder.com\/v2\/fast-match\?/g,
       core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
       profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
       user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
@@ -56,11 +57,30 @@ class ProfileGetter {
         this.handleNewCore(jsonOut);
       } else if (args[0].match(regexChecks.profile)) {
         this.handleProfile(jsonOut);
+      } else if (args[0].match(regexChecks.fastMatch)) {
+        this.handleFastMatch(jsonOut);
       }
     } catch (e) {
       console.error(e);
       // if the response is not json, ignore it
     }
+  }
+
+  handleFastMatch(jsonOut: any) {
+    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid fast match response');
+
+    const newRecs: rec[] = jsonOut.data.results;
+    const people = [];
+
+    newRecs.forEach((rec) => {
+      const person = rec.user;
+
+      person.type = 'rec';
+      people.push(person);
+      if (debug) console.log('new person added from fast match!', person);
+    });
+
+    this.sendPeopleToBackground(people);
   }
 
   handleNewMatches(jsonOut: any) {
