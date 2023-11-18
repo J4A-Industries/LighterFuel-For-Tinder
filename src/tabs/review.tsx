@@ -8,6 +8,14 @@ const Review = () => (
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
         <div className="text-xl overflow-auto max-h-96">
+          <b>v1.5.5</b>
+          <br />
+          <br />
+          LighterFuel now works for tinder premium users on the &quot;your likes&quot; page!
+          <br />
+          If this has fixed lighterfuel for you, please leave positive review!
+          <br />
+          <br />
           <b>v1.5.4</b>
           <br />
           <br />
