@@ -40,6 +40,7 @@ class ProfileGetter {
   async handleFetchResponse(result: Response, args: any[]) {
     const regexChecks = {
       matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
+      updates: /https:\/\/api.gotinder.com\/updates\?/g, // https://api.gotinder.com/updates?locale=en-GB
       myLikes: /https:\/\/api.gotinder.com\/v2\/my-likes\?/g,
       fastMatch: /https:\/\/api.gotinder.com\/v2\/fast-match\?/g,
       core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
@@ -87,6 +88,23 @@ class ProfileGetter {
     if (!Array.isArray(jsonOut?.data?.matches)) console.error('Invalid matches response');
 
     const newMatches: Match[] = jsonOut.data.matches;
+
+    const people = [];
+
+    newMatches.forEach((match) => {
+      // getting the person from the match
+      const { person } = match;
+      person.type = 'match';
+      people.push(person);
+    });
+
+    this.sendPeopleToBackground(people);
+  }
+
+  handleNewUpdates(jsonOut: any) {
+    if (!Array.isArray(jsonOut?.matches)) console.error('Invalid updates response');
+
+    const newMatches: Match[] = jsonOut.matches;
 
     const people = [];
 
