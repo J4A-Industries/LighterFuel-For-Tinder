@@ -27,6 +27,8 @@ import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
+let imageConsoleLogMod = 0;
+
 /**
  * Returns visibility ratio of element within viewport.
  *
@@ -174,7 +176,8 @@ class LighterFuel {
           });
 
           const imageURL = getImageURLfromNode(currentImage);
-          if (debug) console.log('currentImage', imageURL, (await this.getImageInfo(imageURL)));
+          if (debug && (imageConsoleLogMod % 50 === 0)) console.log('currentImage', imageURL, (await this.getImageInfo(imageURL)));
+          imageConsoleLogMod++;
           if (!imageURL) {
             if (debug) {
               console.log('getImageURLfromNode returned undefined, skipping this image');
