@@ -21,7 +21,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.6",
     "daisyui": "^3.9.4",
-    "plasmo": "^0.83.1",
+    "plasmo": "^0.84.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.12.0",
