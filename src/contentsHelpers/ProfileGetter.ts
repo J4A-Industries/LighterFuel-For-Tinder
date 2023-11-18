@@ -40,6 +40,7 @@ class ProfileGetter {
   async handleFetchResponse(result: Response, args: any[]) {
     const regexChecks = {
       matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
+      myLikes: /https:\/\/api.gotinder.com\/v2\/my-likes\?/g,
       core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
       profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
       user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
@@ -51,7 +52,7 @@ class ProfileGetter {
 
       if (args[0].match(regexChecks.matches)) {
         this.handleNewMatches(jsonOut);
-      } else if (args[0].match(regexChecks.core)) {
+      } else if (args[0].match(regexChecks.core) || args[0].match(regexChecks.myLikes)) {
         this.handleNewCore(jsonOut);
       } else if (args[0].match(regexChecks.profile)) {
         this.handleProfile(jsonOut);
