@@ -19,6 +19,11 @@ const extractRecPhotoId = (url: string) => {
   return match ? match[1] : null;
 };
 
+const checkForRec = (input: string) => {
+  const regex = /https:\/\/images-ssl\.gotinder\.com\/u\/[A-Za-z0-9]+\/([A-Za-z0-9]+(\.[A-Za-z0-9]+)+)/i;
+  return regex.test(input);
+};
+
 const extractUuidFromUrl = (inUrl: string) => {
   const url = new URL(inUrl);
   const path = url.pathname.split('/');
@@ -70,24 +75,10 @@ export class PeopleHandler {
     // search through all of the people
 
     // ! This is a hacky way to check if the url is a person rec or not
-    const personRec = url.includes('https://images-ssl.gotinder.com/u/');
+    const personRec = checkForRec(url);
 
-    for (const person of this.people) {
-      if ((person.type === 'match' || person.type === 'profile') && !personRec) {
-        const photoId = extractUuidFromUrl(url);
-        // search through person's photos
-        for (const photo of person.photos) {
-          if (extractUuidFromUrl(photo.url) === photoId) {
-            // return photoRecord details immediately when you get a match
-            return {
-              original: url,
-              hqUrl: photo.url,
-              accountCreated: dateFromObjectId(person._id).getTime(),
-              type: person.type,
-            };
-          }
-        }
-      } else if (person.type === 'rec') {
+    if (personRec) {
+      for (const person of this.people) {
         const id = extractRecPhotoId(url);
         // search through person's photos
         for (const photo of person.photos) {
@@ -104,7 +95,24 @@ export class PeopleHandler {
           }
         }
       }
+    } else {
+      for (const person of this.people) {
+        const photoId = extractUuidFromUrl(url);
+        // search through person's photos
+        for (const photo of person.photos) {
+          if (extractUuidFromUrl(photo.url) === photoId) {
+            // return photoRecord details immediately when you get a match
+            return {
+              original: url,
+              hqUrl: photo.url,
+              accountCreated: dateFromObjectId(person._id).getTime(),
+              type: person.type,
+            };
+          }
+        }
+      }
     }
+
     console.error('no match found for url', url);
     return undefined;
   }
