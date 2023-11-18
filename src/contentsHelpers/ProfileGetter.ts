@@ -93,9 +93,16 @@ class ProfileGetter {
 
     newMatches.forEach((match) => {
       // getting the person from the match
-      const { person } = match;
-      person.type = 'match';
-      people.push(person);
+
+      if ('user' in match) {
+        const { user } = match as any;
+        user.type = 'match';
+        people.push(user);
+      } else if ('person' in match) {
+        const { person } = match;
+        person.type = 'match';
+        people.push(person);
+      }
     });
 
     this.sendPeopleToBackground(people);
