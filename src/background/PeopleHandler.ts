@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
@@ -42,7 +43,7 @@ export class PeopleHandler {
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
-      if (!this.people.find((p) => p._id === person._id)) {
+      if (!this.people.find((p) => p._id === person._id && p.type === person.type)) {
         this.people.push(
           {
             ...person,
@@ -79,10 +80,11 @@ export class PeopleHandler {
 
     if (personRec) {
       for (const person of this.people) {
+        if (person.type !== 'rec') continue;
         const id = extractRecPhotoId(url);
         // search through person's photos
         for (const photo of person.photos) {
-          if (extractRecPhotoId(photo.url) === id) {
+          if (extractRecPhotoId(photo.url) === id || photo?.id === id) {
             if (!photo.url) console.error('no photo url, recs', photo);
 
             // return photoRecord details immediately when you get a match
@@ -96,11 +98,12 @@ export class PeopleHandler {
         }
       }
     } else {
+      const photoId = extractUuidFromUrl(url);
       for (const person of this.people) {
-        const photoId = extractUuidFromUrl(url);
         // search through person's photos
         for (const photo of person.photos) {
-          if (extractUuidFromUrl(photo.url) === photoId) {
+          if (person.type === 'rec') continue;
+          if (extractUuidFromUrl(photo.url) === photoId || photo?.id === photoId) {
             // return photoRecord details immediately when you get a match
             return {
               original: url,
