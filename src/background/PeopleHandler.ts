@@ -2,6 +2,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
+import { Storage } from '@plasmohq/storage';
 import { debug } from '~src/misc/config';
 import type { Person } from '~src/misc/tinderTypes';
 
@@ -38,8 +39,27 @@ const extractUuidFromUrl = (inUrl: string) => {
   return match[0];
 };
 
+type PersonWithAddedAt = Person & {addedAt: number};
+
 export class PeopleHandler {
-  people: (Person & {addedAt: number})[] = [];
+  people: PersonWithAddedAt[] = [];
+
+  storage: Storage;
+
+  lastSavedTime = Date.now();
+
+  constructor() {
+    // get people from storage
+    this.storage = new Storage({
+      area: 'local',
+    });
+
+    this.storage.get<{people: PersonWithAddedAt[]}>('people').then((data) => {
+      if (data.people) {
+        this.people = data.people;
+      }
+    });
+  }
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
@@ -66,6 +86,10 @@ export class PeopleHandler {
     }
 
     if (debug) console.log('people', this.people);
+    if (Date.now() - this.lastSavedTime > 1000 * 60 * 5) {
+      this.savePeople();
+      this.lastSavedTime = Date.now();
+    }
   }
 
   /**
@@ -118,5 +142,9 @@ export class PeopleHandler {
 
     console.error('no match found for url', url);
     return undefined;
+  }
+
+  async savePeople() {
+    await this.storage.set('people', this.people);
   }
 }
