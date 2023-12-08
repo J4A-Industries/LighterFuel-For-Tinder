@@ -157,12 +157,14 @@ class ProfileGetter {
   }
 
   sendPeopleToBackground(people: Person[]) {
-    sendToBackgroundViaRelay({
-      name: 'getPeople',
-      body: {
-        people,
-      },
-    });
+    if (chrome.runtime?.id) {
+      sendToBackgroundViaRelay({
+        name: 'getPeople',
+        body: {
+          people,
+        },
+      });
+    }
   }
 }
 
