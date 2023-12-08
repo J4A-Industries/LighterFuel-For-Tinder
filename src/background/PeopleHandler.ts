@@ -6,6 +6,8 @@ import { Storage } from '@plasmohq/storage';
 import { debug } from '~src/misc/config';
 import type { Person } from '~src/misc/tinderTypes';
 
+const maxPeopleToStore = 1000;
+
 export type photoInfo = {
 	hqUrl: string;
 	accountCreated: number;
@@ -75,11 +77,11 @@ export class PeopleHandler {
 
     // if there are over 100 people in the array who are recs, remove the oldest ones
 
-    if (this.people.length > 100) {
+    if (this.people.length > maxPeopleToStore) {
       const recs = this.people.filter((person) => person.type === 'rec')
         .sort((a, b) => a.addedAt - b.addedAt);
 
-      while (recs.length > 100) {
+      while (recs.length > maxPeopleToStore) {
         const oldestPerson = recs.shift();
         this.people = this.people.filter((person) => person._id !== oldestPerson._id);
       }
