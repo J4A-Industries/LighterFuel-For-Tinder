@@ -63,3 +63,13 @@ relay<string, sendAnalyticsEventRequest, sendAnalyticsEventResponse>(
     body: req.body,
   }),
 );
+
+relay<string, any, any>(
+  {
+    name: 'pong',
+  },
+  async (req) => sendToBackground({
+    name: 'pong',
+    body: req.body,
+  }),
+);
