@@ -159,15 +159,13 @@ class ProfileGetter {
   }
 
   sendPeopleToBackground(people: Person[]) {
-    if (chrome.runtime?.id) {
-      sendToBackgroundViaRelay({
-        name: 'getPeople',
-        body: {
-          people,
-        },
-      });
-      this.lastPingTime = Date.now();
-    }
+    sendToBackgroundViaRelay({
+      name: 'getPeople',
+      body: {
+        people,
+      },
+    });
+    this.lastPingTime = Date.now();
   }
 
   beginPingPongLoop() {
@@ -179,12 +177,10 @@ class ProfileGetter {
   }
 
   ping() {
-    if (chrome.runtime?.id) {
-      sendToBackgroundViaRelay({
-        name: 'pong',
-      });
-      this.lastPingTime = Date.now();
-    }
+    sendToBackgroundViaRelay({
+      name: 'pong',
+    });
+    this.lastPingTime = Date.now();
   }
 }
 
