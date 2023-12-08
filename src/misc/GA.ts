@@ -1,6 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 import { uuid } from 'uuidv4';
-import { debug } from '~src/misc/config';
+import { chromeStore, debug } from '~src/misc/config';
 
 if (!process.env.PLASMO_PUBLIC_GTAG_ID) {
   throw new Error('PLASMO_PUBLIC_GTAG_ID environment variable not set.');
@@ -43,6 +43,19 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
   }
 
   let clientId = await storage.get('clientId');
+  const manifest = chrome.runtime.getManifest();
+
+  const appVersion = manifest.version;
+
+  const newEvents = [];
+
+  for (let i = 0; i < events.length; i++) {
+    newEvents[i].params = {
+      ...events[i].params,
+      app_version: appVersion,
+      source: chromeStore ? 'chrome_store' : 'package',
+    };
+  }
 
   // Just incase the client ID was not set on install.
   if (!clientId) {
@@ -56,7 +69,7 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
         method: 'POST',
         body: JSON.stringify({
           client_id: clientId,
-          events,
+          events: newEvents,
         }),
       },
     ).then((res) => {

@@ -2,8 +2,11 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
+import { Storage } from '@plasmohq/storage';
 import { debug } from '~src/misc/config';
 import type { Person } from '~src/misc/tinderTypes';
+
+const maxPeopleToStore = 1000;
 
 export type photoInfo = {
 	hqUrl: string;
@@ -25,21 +28,46 @@ const checkForRec = (input: string) => {
   return regex.test(input);
 };
 
-const extractUuidFromUrl = (inUrl: string) => {
-  const url = new URL(inUrl);
-  const path = url.pathname.split('/');
-  const fileName = path[path.length - 1];
-  const regex = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
-  const match = fileName.match(regex);
+const extractUuidFromUrl = (inUrl: string): string | undefined => {
+  try {
+    const url = new URL(inUrl);
+    const path = url.pathname.split('/');
+    const fileName = path[path.length - 1];
+    const regex = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
+    const match = fileName.match(regex);
 
-  if (!match || match.length === 0) {
-    return null;
+    if (!match || match.length === 0) {
+      return undefined;
+    }
+    return match[0];
+  } catch (e) {
+    console.error('error extracting uuid from url', inUrl, e);
   }
-  return match[0];
+  return undefined;
 };
 
+type PersonWithAddedAt = Person & {addedAt: number};
+
 export class PeopleHandler {
-  people: (Person & {addedAt: number})[] = [];
+  people: PersonWithAddedAt[] = [];
+
+  storage: Storage;
+
+  lastSavedTime = Date.now();
+
+  constructor() {
+    // get people from storage
+    this.storage = new Storage({
+      area: 'local',
+    });
+
+    this.storage.get<{people: PersonWithAddedAt[]}>('people').then((data) => {
+      if (!data) return;
+      if (data.people) {
+        this.people = [...this.people, ...data.people];
+      }
+    });
+  }
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
@@ -55,17 +83,21 @@ export class PeopleHandler {
 
     // if there are over 100 people in the array who are recs, remove the oldest ones
 
-    if (this.people.length > 100) {
+    if (this.people.length > maxPeopleToStore) {
       const recs = this.people.filter((person) => person.type === 'rec')
         .sort((a, b) => a.addedAt - b.addedAt);
 
-      while (recs.length > 100) {
+      while (recs.length > maxPeopleToStore) {
         const oldestPerson = recs.shift();
         this.people = this.people.filter((person) => person._id !== oldestPerson._id);
       }
     }
 
     if (debug) console.log('people', this.people);
+    if (Date.now() - this.lastSavedTime > 1000 * 60 * 5) {
+      this.savePeople();
+      this.lastSavedTime = Date.now();
+    }
   }
 
   /**
@@ -118,5 +150,9 @@ export class PeopleHandler {
 
     console.error('no match found for url', url);
     return undefined;
+  }
+
+  async savePeople() {
+    await this.storage.set('people', this.people);
   }
 }

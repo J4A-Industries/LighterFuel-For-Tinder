@@ -68,7 +68,7 @@ class ImageHandler {
     await sendToBackground<sendAnalyticsEventRequest>({
       name: 'sendAnalyticsEvent',
       body: {
-        name: `LighterFuel_${Sites[this.site]}`,
+        name: `LighterFuel_${Sites[this.site]}`,// TODO: change this to "Loaded"
         params: {
           event_title: 'loaded',
           event_platform: Sites[this.site],

@@ -10,6 +10,8 @@ type rec = {
 };
 
 class ProfileGetter {
+  lastPingTime = Date.now();
+
   constructor() {
     this.setCustomFetch();
   }
@@ -163,6 +165,22 @@ class ProfileGetter {
         people,
       },
     });
+    this.lastPingTime = Date.now();
+  }
+
+  beginPingPongLoop() {
+    setInterval(() => {
+      if (Date.now() - this.lastPingTime > 1000 * 60 * 4) {
+        this.ping();
+      }
+    }, 1000 * 60);
+  }
+
+  ping() {
+    sendToBackgroundViaRelay({
+      name: 'pong',
+    });
+    this.lastPingTime = Date.now();
   }
 }
 
