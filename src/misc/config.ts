@@ -3,6 +3,8 @@ import languages from './languages.json';
 export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';
 export const gpt = false;
 
+export const chromeStore = process.env.PLASMO_PUBLICPLASMO_PUBLIC_DEV_ID === chrome.runtime.id;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const findLanguage = (): any => {
   const lang = navigator.language;
