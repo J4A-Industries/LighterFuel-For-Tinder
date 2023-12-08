@@ -28,17 +28,22 @@ const checkForRec = (input: string) => {
   return regex.test(input);
 };
 
-const extractUuidFromUrl = (inUrl: string) => {
-  const url = new URL(inUrl);
-  const path = url.pathname.split('/');
-  const fileName = path[path.length - 1];
-  const regex = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
-  const match = fileName.match(regex);
+const extractUuidFromUrl = (inUrl: string): string | undefined => {
+  try {
+    const url = new URL(inUrl);
+    const path = url.pathname.split('/');
+    const fileName = path[path.length - 1];
+    const regex = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})/;
+    const match = fileName.match(regex);
 
-  if (!match || match.length === 0) {
-    return null;
+    if (!match || match.length === 0) {
+      return undefined;
+    }
+    return match[0];
+  } catch (e) {
+    console.error('error extracting uuid from url', inUrl, e);
   }
-  return match[0];
+  return undefined;
 };
 
 type PersonWithAddedAt = Person & {addedAt: number};
@@ -57,8 +62,9 @@ export class PeopleHandler {
     });
 
     this.storage.get<{people: PersonWithAddedAt[]}>('people').then((data) => {
+      if (!data) return;
       if (data.people) {
-        this.people = data.people;
+        this.people = [...this.people, ...data.people];
       }
     });
   }
