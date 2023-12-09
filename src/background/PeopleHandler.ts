@@ -4,7 +4,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Storage } from '@plasmohq/storage';
 import { debug } from '~src/misc/config';
-import type { Person } from '~src/misc/tinderTypes';
+import type { Person, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
 
 const maxPeopleToStore = 1000;
 
@@ -44,6 +44,12 @@ const extractUuidFromUrl = (inUrl: string): string | undefined => {
     console.error('error extracting uuid from url', inUrl, e);
   }
   return undefined;
+};
+
+const calculateAge = (birthday) => { // birthday is a date
+  const ageDifMs = Date.now() - birthday;
+  const ageDate = new Date(ageDifMs); // miliseconds from epoch
+  return Math.abs(ageDate.getUTCFullYear() - 1970);
 };
 
 type PersonWithAddedAt = Person & {addedAt: number};
@@ -154,5 +160,43 @@ export class PeopleHandler {
 
   async savePeople() {
     await this.storage.set('people', this.people);
+  }
+
+  async handleProfile(profile: ProfileResponseData) {
+    if (debug) console.log('got new profile!', profile);
+    const person: Person = profile.user;
+    person.type = 'profile';
+    this.handleNewPeople([person]);
+
+    // add the country and other misc info to the analytics
+    const { cc } = profile.user.pos_info.country;
+    const premium = profile.purchase.purchases.length > 0;
+    const age = calculateAge(new Date(profile.user.birth_date));
+    const ageMax = profile.user.age_filter_max;
+    const ageMin = profile.user.age_filter_min;
+    const genderCode = profile.user.gender;
+
+    let gender = '';
+
+    if (genderCode === 0) {
+      gender = 'male';
+    } else if (genderCode === 1) {
+      gender = 'female';
+    } else {
+      gender = 'other';
+    }
+
+    const storage = new Storage({
+      area: 'sync',
+    });
+
+    await storage.set('userStats', {
+      cc,
+      premium,
+      age,
+      ageMax,
+      ageMin,
+      gender,
+    } satisfies UserStats);
   }
 }
