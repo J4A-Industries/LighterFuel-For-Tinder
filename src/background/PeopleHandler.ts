@@ -67,11 +67,9 @@ export class PeopleHandler {
       area: 'local',
     });
 
-    this.storage.get<{people: PersonWithAddedAt[]}>('people').then((data) => {
+    this.storage.get<PersonWithAddedAt[]>('people').then((data) => {
       if (!data) return;
-      if (data.people) {
-        this.people = [...this.people, ...data.people];
-      }
+      this.people = [...this.people, ...data];
     });
   }
 
@@ -100,7 +98,7 @@ export class PeopleHandler {
     }
 
     if (debug) console.log('people', this.people);
-    if (Date.now() - this.lastSavedTime > 1000 * 60 * 5) {
+    if (Date.now() - this.lastSavedTime > 1000 * 5) {
       this.savePeople();
       this.lastSavedTime = Date.now();
     }
