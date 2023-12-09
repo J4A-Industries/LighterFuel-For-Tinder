@@ -1,6 +1,5 @@
 import { Storage } from '@plasmohq/storage';
-import { uuid } from 'uuidv4';
-import { PeopleHandler } from '~src/background/PeopleHandler';
+import { v4 as uuid } from 'uuid';
 import { chromeStore, debug } from '~src/misc/config';
 import type { UserStats } from './tinderTypes';
 
