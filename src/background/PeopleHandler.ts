@@ -152,7 +152,7 @@ export class PeopleHandler {
       }
     }
 
-    console.error('no match found for url', url);
+    if (debug) console.error('no match found for url', url);
     return undefined;
   }
 
