@@ -7,6 +7,7 @@ import { debug } from '~src/misc/config';
 import type { Person, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
 
 const maxPeopleToStore = 1000;
+const maxPeopleToSave = 100;
 
 export type photoInfo = {
 	hqUrl: string;
@@ -69,7 +70,7 @@ export class PeopleHandler {
 
     this.storage.get<PersonWithAddedAt[]>('people').then((data) => {
       if (!data) return;
-      this.people = [...this.people, ...data];
+      this.handleNewPeople(data);
     });
   }
 
@@ -157,7 +158,11 @@ export class PeopleHandler {
   }
 
   async savePeople() {
-    await this.storage.set('people', this.people);
+    // storage limit of 5MB so we can't save everyone ;(
+    const peopleToSave = this.people
+      .sort((a, b) => b.addedAt - a.addedAt)
+      .slice(0, maxPeopleToSave);
+    await this.storage.set('people', peopleToSave);
   }
 
   async handleProfile(profile: ProfileResponseData) {
