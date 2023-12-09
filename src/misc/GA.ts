@@ -56,7 +56,7 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
       ...event.params,
       app_version: appVersion,
       source: chromeStore ? 'chrome_store' : 'package',
-      userStats,
+      ...userStats,
     },
   }));
 
