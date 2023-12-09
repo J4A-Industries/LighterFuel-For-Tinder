@@ -43,6 +43,8 @@ const setupSentry = async () => {
 let mambaRequestCap: ImageRequestCapturer;
 let peopleHandler: PeopleHandler;
 
+const rubiksEventTarget = new EventTarget();
+
 try {
   setupSentry();
   setAndCheckDefaultSettings();
@@ -60,6 +62,7 @@ try {
 
 // exporting so the message handlers can access the images
 export {
+  rubiksEventTarget,
   peopleHandler,
   mambaRequestCap,
 };
