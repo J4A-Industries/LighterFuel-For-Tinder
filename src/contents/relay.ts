@@ -73,3 +73,13 @@ relay<string, any, any>(
     body: req.body,
   }),
 );
+
+relay<string, any, any>(
+  {
+    name: 'getProfile',
+  },
+  async (req) => sendToBackground({
+    name: 'getProfile',
+    body: req.body,
+  }),
+);

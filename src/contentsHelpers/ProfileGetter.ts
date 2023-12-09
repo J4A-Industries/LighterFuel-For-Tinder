@@ -151,11 +151,14 @@ class ProfileGetter {
 
     if (!jsonOut.data.user) return;
 
-    const person = jsonOut.data.user;
+    const profile = jsonOut.data;
 
-    person.type = 'profile';
-
-    this.sendPeopleToBackground([person]);
+    sendToBackgroundViaRelay({
+      name: 'getProfile',
+      body: {
+        profile,
+      },
+    });
   }
 
   sendPeopleToBackground(people: Person[]) {

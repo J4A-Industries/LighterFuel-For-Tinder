@@ -43,7 +43,6 @@ export type album = {
 };
 
 export type spotify_artist = {
-	// todo
 	id: string;
 	images: {
 		height: number;
@@ -198,4 +197,106 @@ export interface Match {
 	harassing_message_id: string;
 	liked_content: liked_content;
 	is_archived: boolean;
+}
+
+export interface Country {
+	name: string;
+	cc: string;
+	alpha3: string;
+}
+
+export interface PosInfo {
+	country: Country;
+	timezone: string;
+}
+
+export interface LanguagePreference {
+	language: string;
+	is_selected: boolean;
+}
+
+export interface GlobalMode {
+	language_preferences: LanguagePreference[];
+}
+
+export interface AllInGender {
+	id: string;
+	name: string;
+}
+
+export interface ShowSameOrientationFirst {
+	checked: boolean;
+	should_show_option: boolean;
+}
+
+export interface User {
+	_id: string;
+	age_filter_max: number;
+	age_filter_min: number;
+	birth_date: string;
+	create_date: string;
+	crm_id: string;
+	pos_info: PosInfo;
+	discoverable: boolean;
+	distance_filter: number;
+	global_mode: GlobalMode;
+	auto_expansion: any;
+	gender: number;
+	all_in_gender: AllInGender[];
+	gender_filter: number;
+	show_gender_on_profile: boolean;
+	name: string;
+	photos: Photos[];
+	photos_processing: boolean;
+	photo_optimizer_enabled: boolean;
+	ping_time: string;
+	schools: any[];
+	badges: any[];
+	phone_id: string;
+	interested_in: number[];
+	interested_in_genders: number[];
+	pos: any;
+	billing_info: any;
+	autoplay_video: string;
+	top_picks_discoverable: boolean;
+	photo_tagging_enabled: boolean;
+	show_orientation_on_profile: boolean;
+	show_same_orientation_first: ShowSameOrientationFirst;
+	sexual_orientations: AllInGender[];
+	user_interests: any;
+	recommended_sort_discoverable: boolean;
+	selfie_verification: string;
+	id_dob_verification: string;
+	noonlight_protected: boolean;
+	sync_swipe_enabled: boolean;
+	sparks_quizzes: any[];
+	selected_descriptors: any[];
+	preference_filters: any;
+	mm_enabled: boolean;
+	user_prompts: any;
+}
+
+export interface Purchase {
+	purchases: any[];
+	subscription_expired: boolean;
+	payment_state: number;
+}
+
+export interface ProfileResponseData {
+	likes: any;
+	offerings: any;
+	paywalls: any[];
+	plus_control: any;
+	purchase: Purchase;
+	user: User;
+	misc_merchandising: any;
+}
+
+export interface UserStats {
+	cc: string;
+	premium: boolean;
+	age: number;
+	ageMax: number;
+	ageMin: number;
+	gender: string;
 }
