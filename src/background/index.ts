@@ -1,7 +1,6 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
 import * as Sentry from '@sentry/browser';
-import browser from 'webextension-polyfill';
 import { debug, defaultSettings } from '@/misc/config';
 import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
@@ -68,23 +67,21 @@ export {
 /**
  * When the user first installs the extension, open the main page
  */
-browser.runtime.onInstalled.addListener(async (object) => {
-  if (chrome) {
-    if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-      const platform = await browser.runtime.getPlatformInfo();
-      AnalyticsEvent([
-        {
-          name: 'install',
-          params: {
-            platform: platform.os,
-          },
+chrome.runtime.onInstalled.addListener(async (object) => {
+  if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    const platform = await chrome.runtime.getPlatformInfo();
+    const clientId = await AnalyticsEvent([
+      {
+        name: 'install',
+        params: {
+          platform: platform.os,
         },
-      ]);
-    } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-      browser.tabs.create({ url: browser.runtime.getURL('tabs/review.html') });
-    }
+      },
+    ]);
+    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
+  } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    // chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
   }
-  chrome.runtime.setUninstallURL('https://j4a.uk/projects/lighterfuel/uninstall');
 
   const storage = new Storage({
     area: 'sync',
@@ -93,7 +90,7 @@ browser.runtime.onInstalled.addListener(async (object) => {
   const analyticsConsent = await storage.get('analyticsConsent');
 
   if (sentryConsent === undefined || analyticsConsent === undefined) {
-    const consentUrl = browser.runtime.getURL('tabs/consent.html');
-    browser.tabs.create({ url: consentUrl });
+    const consentUrl = chrome.runtime.getURL('tabs/consent.html');
+    chrome.tabs.create({ url: consentUrl });
   }
 });

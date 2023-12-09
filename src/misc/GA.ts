@@ -37,11 +37,11 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
 
   if (typeof analyticsConsent === 'string') {
     if (analyticsConsent.toLowerCase() !== 'true') {
-      return;
+      return undefined;
     }
   }
   if (analyticsConsent !== true) {
-    return;
+    return undefined;
   }
 
   let clientId = await storage.get('clientId');
@@ -83,4 +83,6 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
   } catch (e) {
     throw new Error(`Failed to send analytics event.${e}`);
   }
+
+  return clientId;
 };
