@@ -1,6 +1,8 @@
 import { Storage } from '@plasmohq/storage';
 import { uuid } from 'uuidv4';
+import { PeopleHandler } from '~src/background/PeopleHandler';
 import { chromeStore, debug } from '~src/misc/config';
+import type { UserStats } from './tinderTypes';
 
 if (!process.env.PLASMO_PUBLIC_GTAG_ID) {
   throw new Error('PLASMO_PUBLIC_GTAG_ID environment variable not set.');
@@ -43,25 +45,28 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
   }
 
   let clientId = await storage.get('clientId');
+
+  const userStats = await storage.get<UserStats | undefined>('userStats') || undefined;
   const manifest = chrome.runtime.getManifest();
 
   const appVersion = manifest.version;
 
-  const newEvents = [];
-
-  for (let i = 0; i < events.length; i++) {
-    newEvents[i].params = {
-      ...events[i].params,
+  const newEvents = events.map((event) => ({
+    ...event,
+    params: {
+      ...event.params,
       app_version: appVersion,
       source: chromeStore ? 'chrome_store' : 'package',
-    };
-  }
+      userStats,
+    },
+  }));
 
   // Just incase the client ID was not set on install.
   if (!clientId) {
     clientId = uuid();
     await storage.set('clientId', clientId);
   }
+
   try {
     await fetch(
       `${GA_ENDPOINT}?measurement_id=${gtagId}&api_secret=${secretApiKey}`,
