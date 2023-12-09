@@ -6,6 +6,7 @@ import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import { SENTRY_DSN } from '@/background/Misc';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
+import RubiksCube from '~src/contentsHelpers/rubiksCube/RubiksCube';
 
 /**
  * Execute the script on the tinder website,
@@ -38,6 +39,7 @@ Sentry.init({
 
 try {
   const lf = new LighterFuel();
+  const cube = new RubiksCube();
   if (debug) console.log(lf);
 } catch (err) {
   console.error(err);
