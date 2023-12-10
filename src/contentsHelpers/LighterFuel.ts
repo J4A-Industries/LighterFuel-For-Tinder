@@ -106,6 +106,7 @@ class LighterFuel {
         if (c === undefined) return;
         this.showSettings = c.newValue;
         this.emitter.emit(Events.settingsUpdate, this.showSettings);
+        console.log('settings updated', this.showSettings);
       },
     });
   }
@@ -125,7 +126,25 @@ class LighterFuel {
     styleElem.textContent = `
   .overlayBox {  ${this.showSettings.overlayButton ? '' : 'display: none'} }
   .topBox { ${this.showSettings.overlayButton ? '' : 'display: none'} }
-  .search { ${this.showSettings.searchButton ? '' : 'display: none'} }`;
+  .search { ${this.showSettings.searchButton ? '' : 'display: none'} }
+  ${this.showSettings.streamerMode ? `
+  .keen-slider {
+    filter: blur(10px) !important;
+  }
+  .Typs\\(display-1-strong\\) {
+    filter: blur(10px) !important;
+  }
+  .Typs\\(body-1-regular\\) {
+    filter: blur(10px) !important;
+  }
+  .Typs\\(button-1\\) {
+    filter: blur(10px) !important;
+  }
+  .matchListItem {
+    filter: blur(10px) !important;
+  }
+  
+  ` : ''}`;
     consoleOut(this.showSettings);
   }
 
