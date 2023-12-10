@@ -50,6 +50,12 @@ const IndexPopup = () => {
     ]);
   }, [showSettings]);
 
+  useEffect(() => {
+    // fill in any of the blanks with the actual settings and new defaults
+    const newSettings = { ...defaultSettings, ...showSettings };
+    setShowSettings(newSettings);
+  }, []);
+
   return (
     <div className="App text-center w-[280px] font['Roboto', sans-serif] text-2xl font-light bg-slate-900 text-white p-5 select-none gap-2 flex flex-col">
       <div className="grid justify-center cursor-pointer" onClick={() => openTab(links.reviews)}>
@@ -102,6 +108,19 @@ const IndexPopup = () => {
               onChange={() => setShowSettings({ ...showSettings, searchButton: !showSettings.searchButton })}
               inputProps={{ 'aria-label': 'controlled' }}
               aria-label={text.enableSearchButton}
+              className="m-auto"
+            />
+          </div>
+          <div className="flex flex-col justify-center m-auto bg-slate-800 w-44 hover:outline-offset-2 outline-white outline">
+            <div>
+              {text.enableStreamerMode}
+            </div>
+
+            <Switch
+              checked={showSettings.streamerMode}
+              onChange={() => setShowSettings({ ...showSettings, streamerMode: !showSettings.streamerMode })}
+              inputProps={{ 'aria-label': 'controlled' }}
+              aria-label={text.enableStreamerMode}
               className="m-auto"
             />
           </div>

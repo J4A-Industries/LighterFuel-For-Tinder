@@ -28,4 +28,5 @@ export const defaultSettings = {
   overlayButton: true,
   searchButton: true,
   debuggingTelemetry: true,
+  streamerMode: false,
 };

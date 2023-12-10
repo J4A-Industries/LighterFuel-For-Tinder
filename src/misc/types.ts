@@ -24,6 +24,7 @@ export type ProfileImage = {
 export type ShowSettings = {
   overlayButton: boolean;
   searchButton: boolean;
+  streamerMode: boolean;
 };
 
 export type TabMessage = {
