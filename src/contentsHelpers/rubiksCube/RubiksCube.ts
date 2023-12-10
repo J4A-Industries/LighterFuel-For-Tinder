@@ -97,6 +97,7 @@ class RubiksCube {
 
   addButtonToPage() {
     // check for the profile page (where the buttons are)
+    // todo: maybe find a better way to do this
     setInterval(() => {
       const menu = document.querySelector('.menu__content');
       if (!menu) return;
