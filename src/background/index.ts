@@ -7,6 +7,7 @@ import ImageRequestCapturer from './imageRequestCapturer';
 import { SENTRY_DSN } from './Misc';
 import { AnalyticsEvent } from '~src/misc/GA';
 import { PeopleHandler } from './PeopleHandler';
+import { injectClarity } from './injectClarity';
 
 const setAndCheckDefaultSettings = async () => {
   const storage = new Storage();
@@ -94,3 +95,33 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     chrome.tabs.create({ url: consentUrl });
   }
 });
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  console.log('tab updated', tabId, changeInfo, tab, tab.status);
+  if (changeInfo.status === 'complete' && tab.url.startsWith('https://tinder.com')) {
+    console.log('injecting clarity');
+    chrome.scripting.executeScript({
+      target: { tabId, allFrames: true },
+      func: injectClarity,
+      args: [{
+        url: chrome.runtime.getURL('resources/clarity.js'),
+        config: {
+          projectId: 'jri296qhbt',
+          upload: 'https://t.clarity.ms/collect',
+          expire: 365,
+          cookies: ['_uetmsclkid', '_uetvid'],
+          track: true,
+          lean: false,
+          content: true,
+          dob: 1441,
+        },
+        clarityKey: 'clarity',
+      }],
+      injectImmediately: true,
+      world: 'MAIN',
+    });
+  }
+});
+
+// TODO: create a script to inject, that takes the URL of the clarity script as an argument (local with the chrome extension)
+// TODO: use that script to create a script to inject clarity into the page
