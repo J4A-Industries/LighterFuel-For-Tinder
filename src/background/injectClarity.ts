@@ -15,10 +15,14 @@ type InjectClarityType = {
 
 export const injectClarity = (data: InjectClarityType) => {
   const { url, config, clarityKey } = data;
+
+  // this code serves the purpose of the original tracking code
   window[clarityKey] = function () {
     (window[clarityKey].q = window[clarityKey].q || []).push([window, document, clarityKey, 'script', config.projectId]);
   };
 
+  // this section then serves the purpose of the js file that the tracking code requests
+  // e.g. https://www.clarity.ms/tag/examplethisisnotreal
   const sync = (): void => {
     const image = new Image();
     image.src = 'https://c.clarity.ms/c.gif';
@@ -34,6 +38,8 @@ export const injectClarity = (data: InjectClarityType) => {
   }
 
   window[clarityKey].t = true;
+
+  // this creates a script tag and injects it into the page, with the local clarity.js file
   const scriptElement = document.createElement('script');
   scriptElement.setAttribute('type', 'text/javascript');
   scriptElement.setAttribute('async', 'true');
@@ -42,6 +48,7 @@ export const injectClarity = (data: InjectClarityType) => {
   const firstScript = document.head;
   firstScript.parentNode.insertBefore(scriptElement, firstScript);
 
+  // this callback gets the ball rolling with clarity
   scriptElement.onload = (): void => {
     window[clarityKey]('start', config);
     window[clarityKey].q.unshift(window[clarityKey].q.pop());

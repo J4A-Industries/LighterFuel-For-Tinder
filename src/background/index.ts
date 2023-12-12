@@ -105,6 +105,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       func: injectClarity,
       args: [{
         url: chrome.runtime.getURL('resources/clarity.js'),
+        // This config is taken from the https://www.clarity.ms/tag/examplethisisnotreal script
+        // I'm not sure what most of these do, but copying all the options seems like a good idea
         config: {
           projectId: 'jri296qhbt',
           upload: 'https://t.clarity.ms/collect',
@@ -122,6 +124,3 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
   }
 });
-
-// TODO: create a script to inject, that takes the URL of the clarity script as an argument (local with the chrome extension)
-// TODO: use that script to create a script to inject clarity into the page
