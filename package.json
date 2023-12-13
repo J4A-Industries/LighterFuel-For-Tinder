@@ -58,7 +58,8 @@
     ],
     "permissions": [
       "webRequest",
-      "storage"
+      "storage",
+      "scripting"
     ],
     "icons": {
       "64": "/assets/icon.png"
