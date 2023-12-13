@@ -1,10 +1,8 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
-import * as Sentry from '@sentry/browser';
 import { debug, defaultSettings } from '@/misc/config';
 import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
-import { SENTRY_DSN } from './Misc';
 import { AnalyticsEvent } from '~src/misc/GA';
 import { PeopleHandler } from './PeopleHandler';
 
@@ -19,23 +17,13 @@ const setAndCheckDefaultSettings = async () => {
   if (analyticsConsent === undefined) {
     await storage.set('analyticsConsent', 'true');
   }
-  const sentryConsent = await storage.get('sentryConsent');
-  if (sentryConsent === undefined) {
-    await storage.set('sentryConsent', 'true');
-  }
-};
-
-const setupSentry = async () => {
-  const storage = new Storage({
-    area: 'sync',
-  });
-  const sentryConsent = await storage.get('sentryConsent');
-  if (sentryConsent && typeof sentryConsent === 'string') {
-    if (sentryConsent.toLowerCase() === 'true') {
-      Sentry.init({
-        dsn: SENTRY_DSN,
-        integrations: [],
-      });
+  const replayConsent = await storage.get('replayConsent');
+  if (replayConsent === undefined) {
+    const sentryConsent = await storage.get('sentryConsent');
+    if (sentryConsent === undefined) {
+      await storage.set('sentryConsent', 'true');
+    } else {
+      await storage.set('replayConsent', sentryConsent);
     }
   }
 };
@@ -44,7 +32,6 @@ let mambaRequestCap: ImageRequestCapturer;
 let peopleHandler: PeopleHandler;
 
 try {
-  setupSentry();
   setAndCheckDefaultSettings();
 
   peopleHandler = new PeopleHandler();
@@ -68,8 +55,8 @@ export {
  * When the user first installs the extension, open the main page
  */
 chrome.runtime.onInstalled.addListener(async (object) => {
+  const platform = await chrome.runtime.getPlatformInfo();
   if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    const platform = await chrome.runtime.getPlatformInfo();
     const clientId = await AnalyticsEvent([
       {
         name: 'install',
@@ -80,16 +67,24 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     ]);
     chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
   } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    // chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
+    await AnalyticsEvent([
+      {
+        name: 'update',
+        params: {
+          platform: platform.os,
+        },
+      },
+    ]);
+    chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
   }
 
   const storage = new Storage({
     area: 'sync',
   });
-  const sentryConsent = await storage.get('sentryConsent');
+  const replayConsent = await storage.get('replayConsent');
   const analyticsConsent = await storage.get('analyticsConsent');
 
-  if (sentryConsent === undefined || analyticsConsent === undefined) {
+  if (replayConsent === undefined || analyticsConsent === undefined) {
     const consentUrl = chrome.runtime.getURL('tabs/consent.html');
     chrome.tabs.create({ url: consentUrl });
   }

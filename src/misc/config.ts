@@ -6,7 +6,7 @@ export const gpt = false;
 export const chromeStore = process.env.PLASMO_PUBLIC_PKG_ID !== chrome.runtime.id;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const findLanguage = (): any => {
+const findLanguage = (): typeof languages['en-GB'] => {
   const lang = navigator.language;
   if (lang.startsWith('en')) {
     return languages['en-GB'];

@@ -9,6 +9,7 @@
     },
     "baseUrl": ".",
     "ignoreDeprecations": "5.0",
+    "allowJs": true,
   },
   "baseUrl": "./src" /* Specify the base directory to resolve non-relative module names. */
 }
