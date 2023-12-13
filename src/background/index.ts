@@ -95,32 +95,3 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     chrome.tabs.create({ url: consentUrl });
   }
 });
-
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log('tab updated', tabId, changeInfo, tab, tab.status);
-  if (changeInfo.status === 'complete' && tab.url.startsWith('https://tinder.com')) {
-    console.log('injecting clarity');
-    chrome.scripting.executeScript({
-      target: { tabId, allFrames: true },
-      func: injectClarity,
-      args: [{
-        url: chrome.runtime.getURL('resources/clarity.js'),
-        // This config is taken from the https://www.clarity.ms/tag/examplethisisnotreal script
-        // I'm not sure what most of these do, but copying all the options seems like a good idea
-        config: {
-          projectId: 'jri296qhbt',
-          upload: 'https://t.clarity.ms/collect',
-          expire: 365,
-          cookies: ['_uetmsclkid', '_uetvid'],
-          track: true,
-          lean: false,
-          content: true,
-          dob: 1441,
-        },
-        clarityKey: 'clarity',
-      }],
-      injectImmediately: true,
-      world: 'MAIN',
-    });
-  }
-});
