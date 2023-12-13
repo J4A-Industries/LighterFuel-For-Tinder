@@ -8,6 +8,13 @@ const Review = () => (
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
         <div className="text-xl overflow-auto max-h-96">
+          <b>v1.5.7</b>
+          <br />
+          <br />
+          LighterFuel now has a &quot;broken&quot; button in the popup you can click to let me know if it&apos;s broken for you, this will help me fix it faster.
+          This will activate Microsoft Clarity (if it&apos;s turned on in the consent page) and will send me a recording of tinde, until you refresh the page or close the tab.
+          <br />
+          <br />
           <b>v1.5.6</b>
           <br />
           <br />
