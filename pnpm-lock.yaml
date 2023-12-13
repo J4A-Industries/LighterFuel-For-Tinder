@@ -46,9 +46,6 @@ dependencies:
   react-icons:
     specifier: ^4.12.0
     version: 4.12.0(react@18.2.0)
-  svg-country-flags:
-    specifier: ^1.2.10
-    version: 1.2.10
   tailwindcss:
     specifier: 3.2.4
     version: 3.2.4(postcss@8.4.32)
@@ -7170,10 +7167,6 @@ packages:
       locate-character: 3.0.0
       magic-string: 0.30.5
       periscopic: 3.1.0
-    dev: false
-
-  /svg-country-flags@1.2.10:
-    resolution: {integrity: sha512-xrqwo0TYf/h2cfPvGpjdSuSguUbri4vNNizBnwzoZnX0xGo3O5nGJMlbYEp7NOYcnPGBm6LE2axqDWSB847bLw==}
     dev: false
 
   /svg-parser@2.0.4:

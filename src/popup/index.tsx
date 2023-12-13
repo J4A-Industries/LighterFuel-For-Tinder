@@ -1,19 +1,23 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState, useEffect } from 'react';
-import ukraineFlag from 'svg-country-flags/svg/ua.svg';
 import '@/popup/style.css';
 import Switch from '@mui/material/Switch';
-import { AiOutlineSetting, AiOutlineInfoCircle } from 'react-icons/ai';
-import { DiGoogleAnalytics } from 'react-icons/di';
 import { useStorage } from '@plasmohq/storage/hook';
 import browser from 'webextension-polyfill';
-import { MdHeartBroken } from 'react-icons/md';
+// import { MdHeartBroken } from 'react-icons/md';
 import { sendToBackground } from '@plasmohq/messaging';
+import ukraineFlag from './ua.svg';
 import {
   debug,
   defaultSettings, links, text,
 } from '@/misc/config';
 import logo from '~assets/LighterFuel512.png';
+import {
+  MdHeartBroken,
+  AiOutlineInfoCircle,
+  AiOutlineSetting,
+  DiGoogleAnalytics,
+} from './icons';
 
 import { openTab } from '@/misc/utils';
 import { AnalyticsEvent } from '@/misc/GA';
