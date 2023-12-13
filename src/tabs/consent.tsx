@@ -44,7 +44,7 @@ const Consent = () => {
           By using LighterFuel, you agree to sending anonymous usage data back to us.
           {' '}
           <br />
-          This data will be used to help improve the extension and will never be sold or shared with any third parties.
+          This data will be used to help improve the extension and is not sold or shared with any third parties, outside of the analytics providers and replay providers that collect it.
           {' '}
           <br />
           If you want to turn this off, you can do so here at any time.

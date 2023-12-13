@@ -12,7 +12,7 @@ const Review = () => (
           <br />
           <br />
           LighterFuel now has a &quot;broken&quot; button in the popup you can click to let me know if it&apos;s broken for you, this will help me fix it faster.
-          This will activate Microsoft Clarity (if it&apos;s turned on in the consent page) and will send me a recording of tinde, until you refresh the page or close the tab.
+          This will activate Microsoft Clarity (if it&apos;s turned on in the consent page) and will send me a recording of tinder, until you refresh the page or close the tab.
           <br />
           <br />
           <b>v1.5.6</b>
@@ -63,7 +63,7 @@ const Review = () => (
           <br />
           <br />
         </div>
-        <a href="https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews" target="_blank" rel="noreferrer" className="btn btn-lg btn-wide btn-success m-auto hover:scale-105 flex justify-center align-middle flex-col gap-4">
+        <a href="https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews" target="_blank" rel="noreferrer" className="btn btn-lg btn-wide btn-success m-auto hover:scale-105 flex justify-center align-middle flex-col gap-4">
           <div className="m-auto">Leave a review</div>
           <img className="m-auto" src="https://camo.githubusercontent.com/0b3c88f2d028d56528ad864625393d63fbadc239d643db76e789ed88fa11aaae/68747470733a2f2f696d672e736869656c64732e696f2f6368726f6d652d7765622d73746f72652f73746172732f626d636e62686e706d626b63706b686e6d6b6e6d6e6b6764656f64666c6a6e63" />
         </a>
