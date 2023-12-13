@@ -8,7 +8,7 @@ const Review = () => (
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
         <div className="text-xl overflow-auto max-h-96">
-          <b>v1.5.7</b>
+          <b>v1.5.8</b>
           <br />
           <br />
           LighterFuel now has a &quot;broken&quot; button in the popup you can click to let me know if it&apos;s broken for you, this will help me fix it faster.
