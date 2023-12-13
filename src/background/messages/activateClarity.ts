@@ -2,6 +2,17 @@ import type { PlasmoMessaging } from '@plasmohq/messaging';
 import { Storage } from '@plasmohq/storage';
 import { injectClarity } from '../injectClarity';
 
+const config = {
+  projectId: 'jri296qhbt',
+  upload: 'https://t.clarity.ms/collect',
+  expire: 365,
+  cookies: ['_uetmsclkid', '_uetvid'],
+  track: true,
+  lean: false,
+  content: true,
+  dob: 1441,
+};
+
 /**
  * This message hander is called when the user clicks the error button
  * in the popup.
@@ -34,16 +45,7 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
         url: chrome.runtime.getURL('resources/clarity.js'),
         // This config is taken from the https://www.clarity.ms/tag/examplethisisnotreal script
         // I'm not sure what most of these do, but copying all the options seems like a good idea
-        config: {
-          projectId: 'jri296qhbt',
-          upload: 'https://t.clarity.ms/collect',
-          expire: 365,
-          cookies: ['_uetmsclkid', '_uetvid'],
-          track: true,
-          lean: false,
-          content: true,
-          dob: 1441,
-        },
+        config,
         clarityKey: 'clarity',
       }],
       injectImmediately: true,
