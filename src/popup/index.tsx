@@ -24,7 +24,6 @@ enum menuOptions {
 }
 
 const IndexPopup = () => {
-  const [data, setData] = useState('');
   const [menuTab, setMenuTab] = useState<menuOptions>(menuOptions.settings);
   const [showSettings, setShowSettings] = useStorage('showSettings', (x) => (x === undefined ? defaultSettings : x));
 
