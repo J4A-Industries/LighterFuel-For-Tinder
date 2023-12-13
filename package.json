@@ -16,8 +16,6 @@
     "@mui/material": "^5.14.20",
     "@plasmohq/messaging": "^0.1.8",
     "@plasmohq/storage": "^1.9.0",
-    "@sentry/browser": "^7.86.0",
-    "@sentry/integrations": "^7.86.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^3.9.4",

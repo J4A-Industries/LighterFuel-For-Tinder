@@ -7,7 +7,7 @@ import logo from '~assets/LighterFuel512.png';
 
 const consentText = {
   analyticsConsent: 'Enable analytics',
-  sentryConsent: 'Enable error reporting',
+  replayConsent: 'Enable error reporting',
 };
 
 const Consent = () => {
@@ -18,8 +18,8 @@ const Consent = () => {
     }),
   });
 
-  const [sentryConsent, setSentryConsent] = useStorage({
-    key: 'sentryConsent',
+  const [replayConsent, setReplayConsent] = useStorage({
+    key: 'replayConsent',
     instance: new Storage({
       area: 'sync',
     }),
@@ -28,7 +28,7 @@ const Consent = () => {
   // sometimes analytics consent is undefined, so we set it to true
   useEffect(() => {
     if (analyticsConsent === undefined) setAnalyticsConsent(true);
-    if (sentryConsent === undefined) setSentryConsent(true);
+    if (replayConsent === undefined) setReplayConsent(true);
   }, []);
 
   return (
@@ -56,7 +56,7 @@ const Consent = () => {
           <br />
           Error reporting is used to help us understand what errors are happening, and how to fix them.
           <br />
-          This is done via Sentry.io.
+          This is done via Microsoft Clarity
           <br />
           This will make lighterfuel work more reliably and consistently for everyone.
           <br />
@@ -81,14 +81,14 @@ const Consent = () => {
 
           <div className="flex flex-col justify-center m-auto bg-slate-800 text-center text-2xl flex-1">
             <div>
-              {consentText.sentryConsent}
+              {consentText.replayConsent}
             </div>
 
             <Switch
-              checked={sentryConsent}
-              onChange={() => setSentryConsent(!sentryConsent)}
+              checked={replayConsent}
+              onChange={() => setReplayConsent(!replayConsent)}
               inputProps={{ 'aria-label': 'controlled' }}
-              aria-label={consentText.sentryConsent}
+              aria-label={consentText.replayConsent}
               className="m-auto"
             />
           </div>

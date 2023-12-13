@@ -32,7 +32,3 @@ export const sendImageDataToTab = (obj: ImageType | ImageType[]) => async (resol
     console.log(`There were no tabs to send the data to ${e}`);
   }
 };
-
-if (!process.env.PLASMO_PUBLIC_SENTRY_DSN) throw new Error('Missing Sentry DSN');
-
-export const SENTRY_DSN = process.env.PLASMO_PUBLIC_SENTRY_DSN;
