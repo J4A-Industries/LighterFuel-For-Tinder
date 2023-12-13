@@ -1,7 +1,24 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
+import { Storage } from '@plasmohq/storage';
 import { injectClarity } from '../injectClarity';
 
+/**
+ * This message hander is called when the user clicks the error button
+ * in the popup.
+ */
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
+  const storage = new Storage({
+    area: 'sync',
+  });
+
+  const replayConsent = await storage.get('replayConsent');
+
+  if (typeof replayConsent === 'string') {
+    if (replayConsent.toLowerCase() !== 'true') {
+      return;
+    }
+  }
+
   chrome.tabs.query({ url: 'https://tinder.com/*', active: true }, (tabs) => {
     if (tabs.length === 0) {
       res.send({
@@ -32,7 +49,6 @@ const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
       injectImmediately: true,
       world: 'MAIN',
     });
-    // check to see if it's tinder
   });
 };
 
