@@ -1,6 +1,4 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
-import { peopleHandler } from '..';
-import type { photoInfo } from '../PeopleHandler';
 import { injectClarity } from '../injectClarity';
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
