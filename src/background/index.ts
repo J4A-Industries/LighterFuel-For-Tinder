@@ -55,29 +55,6 @@ export {
  * When the user first installs the extension, open the main page
  */
 chrome.runtime.onInstalled.addListener(async (object) => {
-  const platform = await chrome.runtime.getPlatformInfo();
-  if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    const clientId = await AnalyticsEvent([
-      {
-        name: 'install',
-        params: {
-          platform: platform.os,
-        },
-      },
-    ]);
-    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
-  } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
-    await AnalyticsEvent([
-      {
-        name: 'update',
-        params: {
-          platform: platform.os,
-        },
-      },
-    ]);
-    chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
-  }
-
   const storage = new Storage({
     area: 'sync',
   });
@@ -87,5 +64,39 @@ chrome.runtime.onInstalled.addListener(async (object) => {
   if (replayConsent === undefined || analyticsConsent === undefined) {
     const consentUrl = chrome.runtime.getURL('tabs/consent.html');
     chrome.tabs.create({ url: consentUrl });
+  }
+
+  const platform = await chrome.runtime.getPlatformInfo();
+  if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    let clientId = await storage.get('clientId');
+    if (!clientId) {
+      clientId = await AnalyticsEvent([
+        {
+          name: 'install',
+          params: {
+            platform: platform.os,
+          },
+        },
+      ]);
+    }
+
+    await storage.set('hasInstalled', true);
+    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
+  } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    const currentVersion = chrome.runtime.getManifest().version;
+    const previousVersion = await storage.get('version');
+    // sometimes the update event is fired when the extension has not actually updated
+    if (currentVersion !== previousVersion) {
+      await AnalyticsEvent([
+        {
+          name: 'update',
+          params: {
+            platform: platform.os,
+          },
+        },
+      ]);
+      chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
+      await storage.set('version', chrome.runtime.getManifest().version);
+    }
   }
 });
