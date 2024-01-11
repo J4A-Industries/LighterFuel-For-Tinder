@@ -41,19 +41,22 @@ class ImageRequestCapturer extends EventTarget {
       (details) => {
         if (debug) console.log(details);
         const imageInArray = this.images.find((x) => details.url === x.url);
+
         if (!imageInArray) {
           if (!details.responseHeaders) return;
 
-          const lastModifiedHeaders = details.responseHeaders.filter((x) => x.name === 'last-modified');
+          const lastModifiedHeaders = details.responseHeaders.filter((x) => x.name.toLowerCase() === 'last-modified');
           if (lastModifiedHeaders.length < 1) return;
 
           const data: ImageType = {
             url: details.url,
-            lastModified: details.responseHeaders.filter((x) => x.name === 'last-modified')[0].value,
+            lastModified: lastModifiedHeaders[0].value,
             timeAddedToArr: new Date(),
             site: this.site,
           };
           this.addImage(data);
+
+          if(debug) console.log('new image', data);
 
           const newImageEvent = new CustomEvent('new image');
           this.dispatchEvent(newImageEvent);
