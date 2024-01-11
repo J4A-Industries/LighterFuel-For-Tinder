@@ -64,6 +64,7 @@ export const AnalyticsEvent = async (events: CollectEventPayload[]) => {
   if (!clientId) {
     clientId = uuid();
     await storage.set('clientId', clientId);
+    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
   }
 
   try {

@@ -5,6 +5,12 @@ export const gpt = false;
 
 export const chromeStore = process.env.PLASMO_PUBLIC_PKG_ID !== chrome.runtime.id;
 
+export const BUMBLE_ID_REPORT_URL = process.env.PLASMO_PUBLIC_BUMBLE_ID_REPORT_URL;
+
+if (!BUMBLE_ID_REPORT_URL) {
+  throw new Error('BUMBLE_ID_REPORT_URL is undefined');
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const findLanguage = (): typeof languages['en-GB'] => {
   const lang = navigator.language;

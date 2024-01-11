@@ -11,10 +11,10 @@
     "package": "plasmo package"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.14.20",
-    "@plasmohq/messaging": "^0.1.8",
+    "@mui/material": "^5.15.4",
+    "@plasmohq/messaging": "^0.6.1",
     "@plasmohq/storage": "^1.9.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.7",
@@ -36,13 +36,13 @@
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "10.4.13",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.32",
+    "postcss": "^8.4.33",
     "prettier": "2.8.3",
     "typescript": "4.9.4"
   },
@@ -51,7 +51,8 @@
       "*://*.tinder.com/*",
       "*://*.gotinder.com/*",
       "*://*.mamba.ru/*",
-      "*://*.wmbcdn.com/*"
+      "*://*.wmbcdn.com/*",
+      "*://*.bumble.com/*"
     ],
     "permissions": [
       "webRequest",
@@ -64,7 +65,8 @@
     "externally_connectable": {
       "matches": [
         "*://tinder.com/*",
-        "*://*.mamba.ru/*"
+        "*://*.mamba.ru/*",
+        "*://*.bumble.com/*"
       ]
     },
     "web_accessible_resources": [

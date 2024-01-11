@@ -1,7 +1,5 @@
-import { create } from 'domain';
-import ImageHandler, { Events } from '@/contentsHelpers/ImageHandler';
-import { debug, text } from '@/misc/config';
-import { createMambaOverlayNode, getImageLastModified, getTimeOld } from './Misc';
+import ImageHandler from '@/contentsHelpers/ImageHandler';
+import { createMambaOverlayNode } from './Misc';
 import { Sites } from '@/misc/types';
 
 /**
