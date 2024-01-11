@@ -1,6 +1,7 @@
+/* eslint-disable class-methods-use-this */
 import ImageHandler from '@/contentsHelpers/ImageHandler';
 import { createMambaOverlayNode } from './Misc';
-import { Sites } from '@/misc/types';
+import { Sites, type ImageType } from '@/misc/types';
 
 /**
  * This class handles the image overlay for mamba.ru
@@ -37,28 +38,28 @@ class MambaJamba extends ImageHandler {
       const image = this.imagesOnPage[i];
       const existingOverlay = image.parentElement.querySelector('div.overlayBox, div.topBox');
       if (!existingOverlay) {
-        this.createOverlay(image);
+        const imageSrc = (image as HTMLImageElement).src;
+        const record = this.images.find((x) => x.url === imageSrc);
+        if (!record) {
+          console.log(`record not found in createOverlayNode ${imageSrc}`);
+        } else {
+          this.createOverlay(image, record);
+        }
       } else {
         // check to see if the overlay 'aria-url' matches the current image
         const overlayURL = existingOverlay.getAttribute('aria-label');
-        const imageURL = this.images.find((x) => x.url === image.getAttribute('src'))?.url;
-        if (overlayURL !== imageURL) {
+        const record = this.images.find((x) => x.url === image.getAttribute('src'));
+        if (overlayURL !== record?.url && record) {
           // if it doesn't, then remove the overlay and create a new one
           existingOverlay.remove();
-          this.createOverlay(image);
+          this.createOverlay(image, record);
         }
       }
     }
   }
 
-  async createOverlay(image: Element): Promise<Element | null> {
-    const imageSrc = image.getAttribute('src');
-    const imageRecord = this.images.find((x) => x.url === imageSrc);
-    if (!imageRecord) {
-      console.log(`imageRecord not found in createOverlayNode ${imageSrc}`);
-      return null;
-    }
-    const overlayNode = createMambaOverlayNode(image, imageRecord);
+  async createOverlay(image: Element, record: ImageType): Promise<Element | null> {
+    const overlayNode = createMambaOverlayNode(image, record);
     // append the overlay to the parent of the image
     image.parentElement.appendChild(overlayNode);
 

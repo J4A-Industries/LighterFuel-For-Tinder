@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
@@ -46,6 +47,8 @@ class ImageHandler {
   storage: Storage;
 
   site: Sites;
+
+  requestedImages: boolean = false;
 
   /**
    * @param {Boolean} debug
@@ -107,6 +110,7 @@ class ImageHandler {
    * Adds the images to the images array, then it prunes the old ones off (if the array gets to big)
    */
   addNewImage(image: ImageType | ImageType[]) {
+    console.log('adding new image', image);
     if (!image) return;
     if (Array.isArray(image)) {
       this.images.push(...image);
@@ -146,11 +150,19 @@ class ImageHandler {
     try {
       while (true) {
         // eslint-disable-next-line no-await-in-loop
+
+        let complete = false;
+
+        if (!this.requestedImages) {
+          complete = true;
+          this.requestedImages = true;
+        }
+
         const imageData = await sendToBackground({
           name: 'getImages',
           body: {
             site: this.site,
-            complete: this.images.length === 0,
+            complete,
           } as getImagesRequest,
         });
         if (debug) console.log(`Successfully got images for ${Sites[this.site]}, ${imageData.images.length} images`);
