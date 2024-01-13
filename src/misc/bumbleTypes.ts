@@ -57,7 +57,7 @@ export interface Album {
 	count_of_photos: number;
 	instruction: string;
 	is_upload_forbidden: boolean;
-	photos: PhotoElement[];
+	photos?: PhotoElement[];
 	album_type: number;
 	game_mode?: number;
 	caption?: string;
