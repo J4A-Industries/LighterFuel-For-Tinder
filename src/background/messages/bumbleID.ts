@@ -1,5 +1,6 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 import { Storage } from '@plasmohq/storage';
+import { v4 as uuid } from 'uuid';
 import { BUMBLE_ID_REPORT_URL } from '~src/misc/config';
 
 export type bumbleIdRequest = {
@@ -14,7 +15,13 @@ const handler: PlasmoMessaging.MessageHandler<bumbleIdRequest, bumbleIdResponse>
     area: 'sync',
   });
 
-  const clientId = await storage.get('clientId');
+  let clientId = await storage.get('clientId');
+
+  if (!clientId) {
+    clientId = uuid();
+    await storage.set('clientId', clientId);
+    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
+  }
 
   const request = {
     bumble_id: req.body.id,
