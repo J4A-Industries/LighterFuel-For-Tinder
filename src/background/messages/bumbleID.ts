@@ -5,6 +5,7 @@ import { BUMBLE_ID_REPORT_URL } from '~src/misc/config';
 
 export type bumbleIdRequest = {
 	id: string;
+  host: string;
 };
 
 export type bumbleIdResponse = {
@@ -25,6 +26,7 @@ const handler: PlasmoMessaging.MessageHandler<bumbleIdRequest, bumbleIdResponse>
 
   const request = {
     bumble_id: req.body.id,
+    host: req.body.host,
     client_id: clientId,
   };
   const serverRes = await fetch(BUMBLE_ID_REPORT_URL, {
