@@ -5,7 +5,7 @@
 import browser from 'webextension-polyfill';
 
 import { Storage } from '@plasmohq/storage';
-import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackground } from '@plasmohq/messaging';
 import EventEmitter from 'events';
 import {
   createButton,
@@ -67,6 +67,8 @@ class LighterFuel {
 
   emitter: EventEmitter;
 
+  lastPingTime: number = Date.now();
+
   constructor() {
     this.profileSliderContainers = [];
 
@@ -77,6 +79,7 @@ class LighterFuel {
     this.initialiseEventListeners();
     this.getSettings();
     this.sendLoadedEvent();
+    this.beginPingPongLoop();
   }
 
   async sendLoadedEvent() {
@@ -270,6 +273,21 @@ class LighterFuel {
     });
 
     return overlayNode;
+  }
+
+  beginPingPongLoop() {
+    setInterval(() => {
+      if (Date.now() - this.lastPingTime > 1000 * 60 * 4) {
+        this.ping();
+      }
+    }, 1000 * 60);
+  }
+
+  async ping() {
+    await sendToBackground({
+      name: 'pong',
+    });
+    this.lastPingTime = Date.now();
   }
 }
 
