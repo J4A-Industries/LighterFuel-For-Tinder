@@ -170,7 +170,7 @@ const replaceWindowXMLHttpRequest = () => {
         // if there's been a photo upload...
         if (this.readyState === 4 && this.url.includes('SERVER_UPLOAD_PHOTO')) {
           handleImageUpload(this.responseText);
-        } else if (this.readyState === 4 && this.url.includes('SERVER_GET_USER_LIST')) {
+        } /* else if (this.readyState === 4 && this.url.includes('SERVER_GET_USER_LIST')) {
           // here's a list of some of the people the user has matched with * Not sure if this is needed *
           handleUserList(this.responseText);
         } else if (this.readyState === 4 && this.url.includes('SERVER_GET_ENCOUNTERS')) {
@@ -179,7 +179,7 @@ const replaceWindowXMLHttpRequest = () => {
         } else if (this.readyState === 4 && this.url.includes('SERVER_GET_USER')) {
           // here's a single profile that the user has clicked on (eg a match)
           handleUser(this.responseText);
-        }
+        } */
       });
       super.send(d);
     }
