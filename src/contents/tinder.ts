@@ -4,6 +4,7 @@ import { sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
+import { AprilFools } from '../contentsHelpers/AprilFools';
 
 /**
  * Execute the script on the tinder website,
@@ -26,7 +27,9 @@ export const getStyle: PlasmoGetStyle = () => {
 
 try {
   const lf = new LighterFuel();
+  const aprilFools = new AprilFools();
   if (debug) console.log(lf);
+  console.log(aprilFools);
 } catch (err) {
   console.error(err);
   sendToBackground<sendAnalyticsEventRequest>({
