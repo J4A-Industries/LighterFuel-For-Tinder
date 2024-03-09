@@ -1,5 +1,4 @@
-import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
-import styleText from 'data-text:~src/contentsHelpers/style.css';
+import type { PlasmoCSConfig } from 'plasmo';
 import { sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
@@ -13,16 +12,7 @@ import { AprilFools } from '../contentsHelpers/AprilFools';
 export const config: PlasmoCSConfig = {
   matches: ['*://tinder.com/*'],
   run_at: 'document_start',
-  css: ['./../contentsHelpers/style.css'],
-};
-
-/**
- * Executing styling on the site, letting me use tailwind
- */
-export const getStyle: PlasmoGetStyle = () => {
-  const style = document.createElement('style');
-  style.textContent = styleText;
-  return style;
+  css: ['../contentsHelpers/style.css'],
 };
 
 try {
