@@ -22,6 +22,8 @@ const getParentElement = (root: Element, parentType: string) => {
 };
 
 class AprilFools {
+  observers = [];
+
   constructor() {
     // if (checkDate()) {
 
@@ -43,6 +45,35 @@ class AprilFools {
       e.preventDefault();
       e.stopPropagation();
       console.log('Dislike button clicked');
+    });
+  }
+
+  monitorLeftSwipe() {
+    const boxes = [...document.querySelectorAll('div.StretchedBox')].filter((x) => x.getAttribute('data-keyboard-gamepad'));
+    if (boxes.length === 0) return;
+    boxes.forEach((box) => {
+      if (box.getAttribute('aria-monitored') === 'true') return;
+      box.setAttribute('aria-monitored', 'true');
+      // Find the div with the text "Nope"
+      const nope = [...box.querySelectorAll('div')].find((x) => x.textContent === 'Nope');
+      // monitor the nope opacity
+      if (nope) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'style') {
+              // @ts-expect-error
+              if (mutation.target.style) {
+                const { opacity } = mutation.target.style;
+                if (opacity > '1') {
+                  console.log('Nope button clicked');
+                }
+              }
+            }
+          });
+        });
+        observer.observe(nope, { attributes: true });
+        this.observers.push(observer);
+      }
     });
   }
 }
