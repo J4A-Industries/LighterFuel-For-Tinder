@@ -170,10 +170,15 @@ export const getImageURLfromNode = (node: Element): string | undefined => {
   // get background image from node
   const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
   const match = srcChecker.exec(prop);
-  if (!match && debug) {
-    console.error('No match found for node', node);
-  }
+
   return match ? match[1] : undefined;
+};
+
+export const getVideoURLfromNode = (node: Element): string | undefined => {
+  const videos = node.querySelectorAll('video');
+  if (videos.length === 0) return undefined;
+  const video = videos[0];
+  return video.getAttribute('src');
 };
 
 /**

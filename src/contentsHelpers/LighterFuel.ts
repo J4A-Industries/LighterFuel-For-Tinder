@@ -13,6 +13,7 @@ import {
   parentNode,
   consoleOut,
   getImageURLfromNode,
+  getVideoURLfromNode,
 } from '@/contentsHelpers/Misc';
 import { debug, defaultSettings, text } from '@/misc/config';
 
@@ -177,20 +178,25 @@ class LighterFuel {
             if (firstParent || secondParent) return curr;
             return acc;
           });
-
-          const imageURL = getImageURLfromNode(currentImage);
-          if (debug && (imageConsoleLogMod % 50 === 0)) console.log('currentImage', imageURL, (await this.getImageInfo(imageURL)));
+          let mediaURL = getImageURLfromNode(currentImage);
+          if (debug && (imageConsoleLogMod % 50 === 0)) console.log('currentImage', mediaURL, (await this.getImageInfo(mediaURL)));
           imageConsoleLogMod++;
-          if (!imageURL) {
-            if (debug) {
-              console.log('getImageURLfromNode returned undefined, skipping this image');
+          if (!mediaURL) {
+            const videoURL = getVideoURLfromNode(currentImage);
+
+            if (!videoURL) {
+              if (debug) {
+                console.log('getImageURLfromNode + getVideoURLfromNode returned undefined, skipping this image');
+              }
+              break;
+            } else {
+              mediaURL = videoURL;
             }
-            break;
           }
 
-          this.getImageInfo(imageURL).then((info) => {
+          this.getImageInfo(mediaURL).then((info) => {
             if (!info) {
-              if (debug) console.log('No info for', imageURL);
+              if (debug) console.log('No info for', mediaURL);
               return;
             }
             let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
