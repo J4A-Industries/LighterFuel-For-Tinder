@@ -1,8 +1,11 @@
+/* eslint-disable consistent-return */
+/* eslint-disable class-methods-use-this */
 const checkDate = () => {
   const date = new Date();
+  const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
-  if (month === 3 && day === 1) {
+  if (year === 2024 && month === 3 && day === 1) {
     return true;
   }
   return false;
@@ -24,12 +27,15 @@ const getParentElement = (root: Element, parentType: string) => {
 class AprilFools {
   observers = [];
 
+  alertedForCurrentSwipe = false;
+
   constructor() {
     // if (checkDate()) {
 
     // }
     setInterval(() => {
       this.reRouteDislikeButton();
+      this.monitorLeftSwipe();
     }, 50);
   }
 
@@ -45,6 +51,7 @@ class AprilFools {
       e.preventDefault();
       e.stopPropagation();
       console.log('Dislike button clicked');
+      this.triggerPopup();
     });
   }
 
@@ -63,18 +70,28 @@ class AprilFools {
             if (mutation.attributeName === 'style') {
               // @ts-expect-error
               if (mutation.target.style) {
-                const { opacity } = mutation.target.style;
-                if (opacity > '1') {
-                  console.log('Nope button clicked');
+                const node = mutation.target as HTMLElement;
+                const { opacity } = node.style;
+
+                if (parseFloat(opacity) >= 0.2) {
+                  this.triggerPopup();
+                } else {
+                  this.alertedForCurrentSwipe = false;
                 }
               }
             }
           });
         });
-        observer.observe(nope, { attributes: true });
+        observer.observe(nope, { attributes: true, attributeFilter: ['style'], subtree: false });
         this.observers.push(observer);
       }
     });
+  }
+
+  triggerPopup() {
+    if (this.alertedForCurrentSwipe) return;
+    this.alertedForCurrentSwipe = true;
+    alert('Sorry this person is too sexy to dislike today, please try again with someone else.\nFor More information, Please Open LighterFuel and see the April update notes.');
   }
 }
 
