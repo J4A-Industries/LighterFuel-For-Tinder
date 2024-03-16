@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   content: [
     './src/tabs/*.{vue,js,ts,jsx,tsx}',
