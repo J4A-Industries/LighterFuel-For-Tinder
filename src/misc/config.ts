@@ -1,14 +1,19 @@
+import { Storage } from '@plasmohq/storage';
 import languages from './languages.json';
 
 export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';
 export const gpt = false;
-
 export const chromeStore = process.env.PLASMO_PUBLIC_PKG_ID !== chrome.runtime.id;
-
 export const BUMBLE_ID_REPORT_URL = process.env.PLASMO_PUBLIC_BUMBLE_ID_REPORT_URL;
 
 if (!BUMBLE_ID_REPORT_URL) {
   throw new Error('BUMBLE_ID_REPORT_URL is undefined');
+}
+
+export const FEATBIT_CLIENT_KEY = process.env.PLASMO_PUBLIC_FEATBIT_CLIENT_KEY;
+
+if (!FEATBIT_CLIENT_KEY) {
+  throw new Error('PLASMO_PUBLIC_FEATBIT_CLIENT_KEY is undefined');
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

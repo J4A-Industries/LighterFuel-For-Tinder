@@ -1,4 +1,36 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
+import { FB } from 'featbit-js-client-sdk';
+import { Storage } from '@plasmohq/storage';
+import { FEATBIT_CLIENT_KEY, chromeStore } from '../misc/config';
+
+export const getFbClient = async () => {
+  const fbClient = new FB();
+
+  const storage = new Storage({
+    area: 'sync',
+  });
+
+  const clientId = await storage.get('clientId');
+
+  await fbClient.init({
+    secret: FEATBIT_CLIENT_KEY,
+    api: 'https://featbit-tio-eu-eval.azurewebsites.net',
+    user: {
+      name: 'user',
+      keyId: clientId,
+      customizedProperties: [
+        {
+          name: 'group',
+          value: chromeStore ? 'chrome' : 'package_release',
+        },
+      ],
+    },
+  });
+
+  return fbClient;
+};
+
 /* eslint-disable class-methods-use-this */
 const checkDate = () => {
   const date = new Date();
@@ -25,18 +57,23 @@ const getParentElement = (root: Element, parentType: string) => {
 };
 
 class AprilFools {
+  enabled = false;
+
   observers = [];
 
   alertedForCurrentSwipe = false;
 
   constructor() {
-    // if (checkDate()) {
-
-    // }
-    setInterval(() => {
-      this.reRouteDislikeButton();
-      this.monitorLeftSwipe();
-    }, 50);
+    // document.addEventListener('', () => {
+    //   this.injectOwnProfile();
+    // });
+    this.handleEnabled();
+    document.addEventListener('DOMContentLoaded', () => {
+      setInterval(() => {
+        this.reRouteDislikeButton();
+        this.monitorLeftSwipe();
+      }, 50);
+    });
   }
 
   reRouteDislikeButton() {
@@ -89,9 +126,17 @@ class AprilFools {
   }
 
   triggerPopup() {
+    if (!this.enabled) return;
     if (this.alertedForCurrentSwipe) return;
     this.alertedForCurrentSwipe = true;
     alert('Sorry this person is too sexy to dislike today, please try again with someone else.\nFor More information, Please Open LighterFuel and see the April update notes.');
+  }
+
+  handleEnabled() {
+    getFbClient().then((fbClient) => {
+      const runAprilFools = fbClient.variation('aprilfools', false);
+      this.enabled = runAprilFools;
+    });
   }
 }
 
