@@ -1,6 +1,9 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
-import { debug, defaultSettings } from '@/misc/config';
+import { FB } from 'featbit-js-client-sdk';
+import {
+  FEATBIT_CLIENT_KEY, chromeStore, debug, defaultSettings,
+} from '@/misc/config';
 import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
 import { AnalyticsEvent } from '~src/misc/GA';
@@ -30,9 +33,33 @@ const setAndCheckDefaultSettings = async () => {
 
 let mambaRequestCap: ImageRequestCapturer;
 let peopleHandler: PeopleHandler;
+let fbClient: FB;
 
 try {
   setAndCheckDefaultSettings();
+
+  const storage = new Storage({
+    area: 'sync',
+  });
+
+  fbClient = new FB();
+
+  storage.get('clientId').then((clientId) => {
+    fbClient.init({
+      secret: FEATBIT_CLIENT_KEY,
+      api: 'https://featbit-tio-eu-eval.azurewebsites.net',
+      user: {
+        keyId: clientId,
+        name: 'user',
+        customizedProperties: [
+          {
+            name: 'group',
+            value: chromeStore ? 'chrome' : 'package_release',
+          },
+        ],
+      },
+    });
+  });
 
   peopleHandler = new PeopleHandler();
 
