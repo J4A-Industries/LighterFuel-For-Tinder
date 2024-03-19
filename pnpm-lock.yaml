@@ -36,7 +36,7 @@ dependencies:
     version: 3.9.4
   featbit-js-client-sdk:
     specifier: github:Acorn221/featbit-js-client-sdk
-    version: github.com/Acorn221/featbit-js-client-sdk/d2289fb9f7ab3b97d6875aeecfb92e7aba13f787
+    version: github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172(react@18.2.0)
   plasmo:
     specifier: ^0.85.0
     version: 0.85.0(postcss@8.4.35)(react-dom@18.2.0)(react@18.2.0)
@@ -3730,8 +3730,8 @@ packages:
     dev: false
     optional: true
 
-  /bare-fs@2.2.1:
-    resolution: {integrity: sha512-+CjmZANQDFZWy4PGbVdmALIwmt33aJg8qTkVjClU6X4WmZkTPBDxRHiBn7fpqEWEfF3AC2io++erpViAIQbSjg==}
+  /bare-fs@2.2.2:
+    resolution: {integrity: sha512-X9IqgvyB0/VA5OZJyb5ZstoN62AzD7YxVGog13kkfYWYqJYcK0kcqLZ6TrmH5qr4/8//ejVcX4x/a0UvaogXmA==}
     requiresBuild: true
     dependencies:
       bare-events: 2.2.1
@@ -7523,7 +7523,7 @@ packages:
       pump: 3.0.0
       tar-stream: 3.1.7
     optionalDependencies:
-      bare-fs: 2.2.1
+      bare-fs: 2.2.2
       bare-path: 2.1.0
     dev: false
 
@@ -7985,8 +7985,13 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/Acorn221/featbit-js-client-sdk/d2289fb9f7ab3b97d6875aeecfb92e7aba13f787:
-    resolution: {tarball: https://codeload.github.com/Acorn221/featbit-js-client-sdk/tar.gz/d2289fb9f7ab3b97d6875aeecfb92e7aba13f787}
+  github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172(react@18.2.0):
+    resolution: {tarball: https://codeload.github.com/Acorn221/featbit-js-client-sdk/tar.gz/80fcb65b23aa86e48a101e32e89bd70e263a0172}
+    id: github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172
     name: featbit-js-client-sdk
     version: 1.0.6
+    dependencies:
+      '@plasmohq/storage': 1.9.3(react@18.2.0)
+    transitivePeerDependencies:
+      - react
     dev: false
