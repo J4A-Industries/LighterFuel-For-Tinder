@@ -14,4 +14,5 @@ declare module '*.jpg';
 interface Window {
   __data: any;
   __customData: any;
+  __overwriteData: any;
 }
