@@ -187,7 +187,7 @@ export const overWriteData = {
 };
 
 const handler: PlasmoMessaging.MessageHandler<AprilFoolsReqRequest, AprilFoolsReqResponse> = async (req, res) => {
-  const aprilFools = fbClient.variation('aprilfools', false);
+  const aprilFools = fbClient.variation('aprilfools', true);
 
   const storage = new Storage({
     area: 'sync',
