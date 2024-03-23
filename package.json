@@ -52,8 +52,7 @@
       "*://*.tinder.com/*",
       "*://*.gotinder.com/*",
       "*://*.mamba.ru/*",
-      "*://*.wmbcdn.com/*",
-      "*://*.bumble.com/*"
+      "*://*.wmbcdn.com/*"
     ],
     "permissions": [
       "webRequest",
@@ -66,8 +65,7 @@
     "externally_connectable": {
       "matches": [
         "*://tinder.com/*",
-        "*://*.mamba.ru/*",
-        "*://*.bumble.com/*"
+        "*://*.mamba.ru/*"
       ]
     },
     "web_accessible_resources": [
