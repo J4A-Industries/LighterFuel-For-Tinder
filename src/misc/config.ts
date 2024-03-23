@@ -1,4 +1,3 @@
-import { Storage } from '@plasmohq/storage';
 import languages from './languages.json';
 
 export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';

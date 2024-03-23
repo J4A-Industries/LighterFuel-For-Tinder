@@ -1,47 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
-import { FB } from 'featbit-js-client-sdk';
-import { Storage } from '@plasmohq/storage';
-import { FEATBIT_CLIENT_KEY, chromeStore } from '../misc/config';
-
-export const getFbClient = async () => {
-  const fbClient = new FB();
-
-  const storage = new Storage({
-    area: 'sync',
-  });
-
-  const clientId = await storage.get('clientId');
-
-  await fbClient.init({
-    secret: FEATBIT_CLIENT_KEY,
-    api: 'https://featbit-tio-eu-eval.azurewebsites.net',
-    user: {
-      name: 'user',
-      keyId: clientId,
-      customizedProperties: [
-        {
-          name: 'group',
-          value: chromeStore ? 'chrome' : 'package_release',
-        },
-      ],
-    },
-  });
-
-  return fbClient;
-};
-
-/* eslint-disable class-methods-use-this */
-const checkDate = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-  if (year === 2024 && month === 3 && day === 1) {
-    return true;
-  }
-  return false;
-};
+import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import type { AprilFoolsReqRequest, AprilFoolsReqResponse } from '../background/messages/aprilFoolsRequest';
+import type { AprilFoolsRequest, AprilFoolsResponse } from '../background/messages/aprilFoolsSubmit';
 
 const dislikeButtonPath = 'm15.44 12 4.768 4.708c1.056.977 1.056 2.441 0 3.499-.813 1.057-2.438 1.057-3.413 0L12 15.52l-4.713 4.605c-.975 1.058-2.438 1.058-3.495 0-1.056-.813-1.056-2.44 0-3.417L8.47 12 3.874 7.271c-1.138-.976-1.138-2.44 0-3.417a1.973 1.973 0 0 1 3.25 0L12 8.421l4.713-4.567c.975-1.139 2.438-1.139 3.413 0 1.057.814 1.057 2.44 0 3.417L15.44 12Z';
 
@@ -56,6 +17,8 @@ const getParentElement = (root: Element, parentType: string) => {
   return null;
 };
 
+const profileImageIds = ['b7df15f5-506e-4621-b84f-8f35e3e3893e', 'fb8a5567-b61e-489e-99d4-d31cfb7a529f', '0e840a98-1f43-4561-8a74-108fe7c16b96', '166b2853-6237-41aa-bece-7f0c1c3164d8', 'c3ff2819-a924-424e-90e7-ecc8632b04d8'];
+
 class AprilFools {
   enabled = false;
 
@@ -63,15 +26,18 @@ class AprilFools {
 
   alertedForCurrentSwipe = false;
 
+  alreadyPassed = false;
+
   constructor() {
-    // document.addEventListener('', () => {
-    //   this.injectOwnProfile();
-    // });
-    this.handleEnabled();
+    this.checkToRun();
     document.addEventListener('DOMContentLoaded', () => {
-      setInterval(() => {
+      const runInterval = setInterval(() => {
         this.reRouteDislikeButton();
         this.monitorLeftSwipe();
+        this.checkToRun();
+        if (this.alreadyPassed) {
+          clearInterval(runInterval);
+        }
       }, 50);
     });
   }
@@ -128,15 +94,50 @@ class AprilFools {
   triggerPopup() {
     if (!this.enabled) return;
     if (this.alertedForCurrentSwipe) return;
+    if (!this.isJamesDisplayed()) return;
     this.alertedForCurrentSwipe = true;
-    alert('Sorry this person is too sexy to dislike today, please try again with someone else.\nFor More information, Please Open LighterFuel and see the April update notes.');
+    alert('Sorry this person is too hot to dislike today, please try again with someone else.\nFor More information, Please Open LighterFuel and see the April update notes.');
+    sendToBackground<AprilFoolsRequest, AprilFoolsResponse>({
+      name: 'aprilFoolsSubmit',
+      body: {
+        event: 'attemptedRejection',
+      },
+    });
   }
 
-  handleEnabled() {
-    getFbClient().then((fbClient) => {
-      const runAprilFools = fbClient.variation('aprilfools', false);
-      this.enabled = runAprilFools;
+  async checkToRun() {
+    console.log('Checking to run');
+    const run = await sendToBackground<AprilFoolsReqRequest, AprilFoolsReqResponse>({
+      name: 'aprilFoolsRequest',
     });
+    console.log('April fools', run.runAprilFools);
+    this.enabled = run.runAprilFools;
+    this.alreadyPassed = run.alreadyPassed;
+  }
+
+  isJamesDisplayed() {
+    if (this.alreadyPassed) return;
+    // search for divs with the .StretchedBox class
+    const cards = [...document.querySelectorAll('div.StretchedBox')].filter((x) => x.getAttribute('data-keyboard-gamepad'));
+
+    console.log('cards', cards.length);
+    // if no cards are found, return false
+    if (cards.length === 0) return false;
+
+    // loop through all the cards and search for any of the profile images
+
+    const found = cards.some((card) => {
+      const images = [...card.querySelectorAll('div')];
+      return images.some((image) => {
+        const style = image.getAttribute('style');
+        if (!style) return false;
+        return profileImageIds.some((id) => style.includes(id));
+      });
+    });
+
+    console.log('found', found);
+
+    return found;
   }
 }
 
