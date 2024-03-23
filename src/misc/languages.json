@@ -20,6 +20,9 @@
 		"overlay": {
 			"createdAt": "Created",
 			"search": "Search"
+		},
+		"aprilfools": {
+			"text": "Want to swipe left on James? :( Click the left arrow once"
 		}
 	}
 }

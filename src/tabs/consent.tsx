@@ -32,7 +32,7 @@ const Consent = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-screen bg-base-100 flex justify-center align-middle">
+    <div className="min-h-screen w-screen bg-gray-900 flex justify-center align-middle text-white">
       <div className="m-auto flex flex-col p-4 bg-neutral-focus gap-4">
         <div className="flex justify-center align-middle">
           <h1 className="text-4xl m-auto flex-1 text-center">Consent</h1>
@@ -58,9 +58,16 @@ const Consent = () => {
           <br />
           This is done via Microsoft Clarity
           <br />
+          We use FeatBit for feature flags so we can ensure features roll out as smoothly as possible and their software may collect some data.
+          <br />
+          <p className="bold">
+            Finally, we reserve the right, on the 1st of april each year, to play a prank on you.
+          </p>
+          <br />
           This will make lighterfuel work more reliably and consistently for everyone.
           <br />
-          <a href="https://j4a.uk/privacy-policy">
+          <br />
+          <a href="https://j4a.uk/privacy-policy" className="text-blue-500 underline">
             Click Here For The Privacy Policy
           </a>
         </p>

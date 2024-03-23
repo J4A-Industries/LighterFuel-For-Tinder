@@ -189,8 +189,6 @@ export const injectOwnProfile = () => {
     return;
   }
 
-  localStorage.setItem('lighterfuelAprilFools', 'true');
-
   Object.defineProperty(window, '__data', {
     get() {
       return window.__customData;

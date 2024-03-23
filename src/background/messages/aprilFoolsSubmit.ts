@@ -20,10 +20,9 @@ const handler: PlasmoMessaging.MessageHandler<AprilFoolsRequest, AprilFoolsRespo
     area: 'sync',
   });
 
-  await storage.setItem('aprilFools2024Displayed', true);
-
   switch (event) {
     case 'swiped':
+      await storage.setItem('aprilFools2024Displayed', true);
       await AnalyticsEvent([{
         name: 'aprilFoolsSwipe',
         params: {
