@@ -1,5 +1,5 @@
 import type { PlasmoCSConfig } from 'plasmo';
-import { sendToBackground } from '@plasmohq/messaging';
+import { relayMessage, sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
@@ -14,6 +14,18 @@ export const config: PlasmoCSConfig = {
   run_at: 'document_start',
   css: ['../contentsHelpers/style.css'],
 };
+
+relayMessage(
+  {
+    name: 'aprilFoolsSubmit',
+  },
+);
+
+relayMessage(
+  {
+    name: 'aprilFoolsRequest',
+  },
+);
 
 try {
   const lf = new LighterFuel();
