@@ -202,6 +202,7 @@ class ProfileGetter {
         result,
       },
     });
+    localStorage.setItem('lighterfuelAprilFools', 'true');
   }
 }
 

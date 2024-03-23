@@ -30,7 +30,7 @@ relayMessage(
 try {
   const lf = new LighterFuel();
   const aprilFools = new AprilFools();
-  console.log('April Fools:', aprilFools);
+  if (debug) console.log('April Fools:', aprilFools);
   if (debug) console.log(lf);
 } catch (err) {
   console.error(err);

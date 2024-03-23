@@ -2,12 +2,19 @@ import './style.css';
 import logo from '~assets/LighterFuel512.png';
 
 const Review = () => (
-  <div className="w-screen min-h-screen flex justify-center align-middle">
-    <div className="m-auto bg-base-200 p-4 flex gap-4 max-w-4xl">
+  <div className="w-screen min-h-screen flex justify-center align-middle text-white bg-gray-900">
+    <div className="m-auto bg-gray-800 p-4 flex gap-4 max-w-4xl">
       <img src={logo} className="m-auto max-h-[20em] max-w-[20em]" alt="logo" />
       <div className="flex-1 flex justify-center align-middle flex-col gap-4">
         <div className="underline text-3xl text-center">Lighterfuel Updates</div>
         <div className="text-xl overflow-auto max-h-96">
+          <b>v1.6.0</b>
+          <br />
+          <br />
+          The LighterFuel April fools update is out! You&apos;ll have to wait and see what it does ;)
+          I&apos;ve also been working on an update for bumble compatibility, so keep an eye out for that soon™.
+          <br />
+          <br />
           <b>v1.5.8</b>
           <br />
           <br />
@@ -65,7 +72,6 @@ const Review = () => (
         </div>
         <a href="https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews" target="_blank" rel="noreferrer" className="btn btn-lg btn-wide btn-success m-auto hover:scale-105 flex justify-center align-middle flex-col gap-4">
           <div className="m-auto">Leave a review</div>
-          <img className="m-auto" src="https://camo.githubusercontent.com/0b3c88f2d028d56528ad864625393d63fbadc239d643db76e789ed88fa11aaae/68747470733a2f2f696d672e736869656c64732e696f2f6368726f6d652d7765622d73746f72652f73746172732f626d636e62686e706d626b63706b686e6d6b6e6d6e6b6764656f64666c6a6e63" />
         </a>
       </div>
 

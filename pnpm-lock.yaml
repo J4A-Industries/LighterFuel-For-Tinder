@@ -36,7 +36,7 @@ dependencies:
     version: 3.9.4
   featbit-js-client-sdk:
     specifier: github:Acorn221/featbit-js-client-sdk
-    version: github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172(react@18.2.0)
+    version: github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0(react@18.2.0)
   plasmo:
     specifier: ^0.85.2
     version: 0.85.2(postcss@8.4.35)(react-dom@18.2.0)(react@18.2.0)
@@ -8075,9 +8075,9 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172(react@18.2.0):
-    resolution: {tarball: https://codeload.github.com/Acorn221/featbit-js-client-sdk/tar.gz/80fcb65b23aa86e48a101e32e89bd70e263a0172}
-    id: github.com/Acorn221/featbit-js-client-sdk/80fcb65b23aa86e48a101e32e89bd70e263a0172
+  github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0(react@18.2.0):
+    resolution: {tarball: https://codeload.github.com/Acorn221/featbit-js-client-sdk/tar.gz/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0}
+    id: github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0
     name: featbit-js-client-sdk
     version: 1.0.6
     dependencies:
