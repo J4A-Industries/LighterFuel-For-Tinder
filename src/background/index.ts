@@ -1,6 +1,7 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
 import { FB } from 'featbit-js-client-sdk';
+import { v4 as uuid } from 'uuid';
 import {
   FEATBIT_CLIENT_KEY, chromeStore, debug, defaultSettings,
 } from '@/misc/config';
@@ -35,6 +36,30 @@ let mambaRequestCap: ImageRequestCapturer;
 let peopleHandler: PeopleHandler;
 let fbClient: FB;
 
+const initFb = async (storage: Storage) => {
+  let clientId = await storage.get('clientId');
+
+  if (!clientId) {
+    clientId = uuid();
+    await storage.set('clientId', clientId);
+    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
+  }
+  await fbClient.init({
+    secret: FEATBIT_CLIENT_KEY,
+    api: 'https://featbit-tio-eu-eval.azurewebsites.net',
+    user: {
+      keyId: clientId,
+      name: 'user',
+      customizedProperties: [
+        {
+          name: 'group',
+          value: chromeStore ? 'chrome' : 'package_release',
+        },
+      ],
+    },
+  });
+};
+
 try {
   setAndCheckDefaultSettings();
 
@@ -42,23 +67,10 @@ try {
     area: 'sync',
   });
 
-  fbClient = new FB();
+  fbClient = new FB(storage);
 
-  storage.get('clientId').then((clientId) => {
-    fbClient.init({
-      secret: FEATBIT_CLIENT_KEY,
-      api: 'https://featbit-tio-eu-eval.azurewebsites.net',
-      user: {
-        keyId: clientId,
-        name: 'user',
-        customizedProperties: [
-          {
-            name: 'group',
-            value: chromeStore ? 'chrome' : 'package_release',
-          },
-        ],
-      },
-    });
+  initFb(storage).catch((err) => {
+    console.error('Error initializing featbit', err);
   });
 
   peopleHandler = new PeopleHandler();
@@ -76,6 +88,7 @@ try {
 export {
   peopleHandler,
   mambaRequestCap,
+  fbClient,
 };
 
 /**

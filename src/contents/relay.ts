@@ -36,12 +36,6 @@ relayMessage(
   },
 );
 
-relayMessage(
-  {
-    name: 'aprilFoolsSubmit',
-  },
-);
-
 relayMessage({
   name: 'bumbleID',
 });
