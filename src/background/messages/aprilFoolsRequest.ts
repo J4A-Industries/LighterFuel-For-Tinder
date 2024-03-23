@@ -187,7 +187,6 @@ export const overWriteData = {
 };
 
 const handler: PlasmoMessaging.MessageHandler<AprilFoolsReqRequest, AprilFoolsReqResponse> = async (req, res) => {
-  console.log('April Fools Request');
   const aprilFools = fbClient.variation('aprilfools', false);
 
   const storage = new Storage({
@@ -196,7 +195,6 @@ const handler: PlasmoMessaging.MessageHandler<AprilFoolsReqRequest, AprilFoolsRe
 
   const aprilFools2024Displayed = await storage.getItem<boolean>('aprilFools2024Displayed');
 
-  console.log('sending back april fools', aprilFools);
   res.send({
     runAprilFools: aprilFools,
     alreadyPassed: aprilFools2024Displayed,
