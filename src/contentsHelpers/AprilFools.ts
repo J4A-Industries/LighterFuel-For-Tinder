@@ -33,12 +33,14 @@ class AprilFools {
     this.checkToRun();
     document.addEventListener('DOMContentLoaded', () => {
       const runInterval = setInterval(() => {
-        this.reRouteDislikeButton();
-        this.monitorLeftSwipe();
-        this.checkToRun();
-        if (this.alreadyPassed) {
-          clearInterval(runInterval);
-        }
+				if(this.enabled){
+        	this.reRouteDislikeButton();
+        	this.monitorLeftSwipe();
+        	this.checkToRun();
+        	if (this.alreadyPassed) {
+         		clearInterval(runInterval);
+        	}
+				}
       }, 50);
     });
   }
