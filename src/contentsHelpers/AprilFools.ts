@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
-import { sendToBackground, sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackground } from '@plasmohq/messaging';
 import type { AprilFoolsReqRequest, AprilFoolsReqResponse } from '../background/messages/aprilFoolsRequest';
 import type { AprilFoolsRequest, AprilFoolsResponse } from '../background/messages/aprilFoolsSubmit';
 import { debug } from '../misc/config';
@@ -48,6 +48,7 @@ class AprilFools {
 
   reRouteDislikeButton() {
     if (!checkDate()) return;
+    if (debug) console.log('Re-routing dislike button');
     const innerSVG = [...document.querySelectorAll('path')].find((x) => x.getAttribute('d') === dislikeButtonPath);
     if (!innerSVG) return;
     const button = getParentElement(innerSVG, 'button');
@@ -117,6 +118,7 @@ class AprilFools {
     });
     this.enabled = checkDate();
     this.alreadyPassed = run.alreadyPassed;
+    if (debug) console.log('enabled', this.enabled, 'alreadyPassed', this.alreadyPassed);
   }
 
   isJamesDisplayed() {
