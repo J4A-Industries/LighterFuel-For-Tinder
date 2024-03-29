@@ -34,9 +34,6 @@ dependencies:
   daisyui:
     specifier: ^3.9.4
     version: 3.9.4
-  featbit-js-client-sdk:
-    specifier: github:Acorn221/featbit-js-client-sdk
-    version: github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0(react@18.2.0)
   plasmo:
     specifier: ^0.85.2
     version: 0.85.2(postcss@8.4.35)(react-dom@18.2.0)(react@18.2.0)
@@ -8074,14 +8071,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0(react@18.2.0):
-    resolution: {tarball: https://codeload.github.com/Acorn221/featbit-js-client-sdk/tar.gz/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0}
-    id: github.com/Acorn221/featbit-js-client-sdk/a21ce2fd456ae61cd5e3a11ebda4783e76dc6ed0
-    name: featbit-js-client-sdk
-    version: 1.0.6
-    dependencies:
-      '@plasmohq/storage': 1.9.3(react@18.2.0)
-    transitivePeerDependencies:
-      - react
-    dev: false

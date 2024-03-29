@@ -1,7 +1,7 @@
 {
   "name": "lighter-fuel-for-tinder",
   "displayName": "LighterFuel for tinder",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "LighterFuel helps you see when accounts were created, see enlarged photos and reverse image search photos!",
   "author": "James",
   "scripts": {
@@ -19,7 +19,6 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^3.9.4",
-    "featbit-js-client-sdk": "github:Acorn221/featbit-js-client-sdk",
     "plasmo": "^0.85.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -77,8 +76,7 @@
           "<all_urls>"
         ]
       }
-    ],
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vmE53IYlj40Hf5EjRdODt6WO8NhPGnjm2R9xCEZIpZhOKymuKVpqBmKetaLWvr+atJK23G9F3TN/4hEyNTP1Sp5AQLm1/57aL2J7PCOkBcA9Q3Q58noU6BuPjRkx29yZUZcwB8WBPb+OfeYoSYNttx5llAGk+nIN/tFVReNxAANFxF18Qp9bVWVE1oKmkp3jORmuTcSoX9DYDHUkJbWy35qN7U7XIG+P0n4JjekXiUMZsUWQbYQl0+Xb1+r2G1EGMUnZkql8nrb/pw86Dq1lzhxKJIoC9LsTyiHyBSmG/nmDzxq38wjppNUGX8+eGsOvZWayfUDqa3GArq5ZBGfTwIDAQAB"
+    ]
   },
   "postcss": {
     "plugins": {

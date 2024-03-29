@@ -34,43 +34,12 @@ const setAndCheckDefaultSettings = async () => {
 
 let mambaRequestCap: ImageRequestCapturer;
 let peopleHandler: PeopleHandler;
-let fbClient: FB;
-
-const initFb = async (storage: Storage) => {
-  let clientId = await storage.get('clientId');
-
-  if (!clientId) {
-    clientId = uuid();
-    await storage.set('clientId', clientId);
-    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
-  }
-  await fbClient.init({
-    secret: FEATBIT_CLIENT_KEY,
-    api: 'https://featbit-tio-eu-eval.azurewebsites.net',
-    user: {
-      keyId: clientId,
-      name: 'user',
-      customizedProperties: [
-        {
-          name: 'group',
-          value: chromeStore ? 'chrome' : 'package_release',
-        },
-      ],
-    },
-  });
-};
 
 try {
   setAndCheckDefaultSettings();
 
   const storage = new Storage({
     area: 'sync',
-  });
-
-  fbClient = new FB(storage);
-
-  initFb(storage).catch((err) => {
-    console.error('Error initializing featbit', err);
   });
 
   peopleHandler = new PeopleHandler();
@@ -88,7 +57,6 @@ try {
 export {
   peopleHandler,
   mambaRequestCap,
-  fbClient,
 };
 
 /**
@@ -135,7 +103,7 @@ chrome.runtime.onInstalled.addListener(async (object) => {
           },
         },
       ]);
-      chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
+      // chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
       await storage.set('version', chrome.runtime.getManifest().version);
     }
   }

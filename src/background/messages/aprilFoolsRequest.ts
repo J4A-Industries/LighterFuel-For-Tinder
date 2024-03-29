@@ -1,11 +1,9 @@
 import type { PlasmoMessaging } from '@plasmohq/messaging';
 import { Storage } from '@plasmohq/storage';
-import { fbClient } from '..';
 
 export type AprilFoolsReqRequest = {};
 
 export type AprilFoolsReqResponse = {
-	runAprilFools: boolean;
   alreadyPassed: boolean;
   overwriteObject: any;
 };
@@ -187,8 +185,6 @@ export const overWriteData = {
 };
 
 const handler: PlasmoMessaging.MessageHandler<AprilFoolsReqRequest, AprilFoolsReqResponse> = async (req, res) => {
-  const aprilFools = fbClient.variation('aprilfools', true);
-
   const storage = new Storage({
     area: 'sync',
   });
@@ -196,7 +192,6 @@ const handler: PlasmoMessaging.MessageHandler<AprilFoolsReqRequest, AprilFoolsRe
   const aprilFools2024Displayed = await storage.getItem<boolean>('aprilFools2024Displayed');
 
   res.send({
-    runAprilFools: aprilFools,
     alreadyPassed: aprilFools2024Displayed,
     overwriteObject: overWriteData,
   });

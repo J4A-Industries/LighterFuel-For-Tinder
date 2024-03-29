@@ -115,8 +115,7 @@ class AprilFools {
     const run = await sendToBackground<AprilFoolsReqRequest, AprilFoolsReqResponse>({
       name: 'aprilFoolsRequest',
     });
-    if (debug) console.log('April fools', run.runAprilFools);
-    this.enabled = run.runAprilFools;
+    this.enabled = checkDate();
     this.alreadyPassed = run.alreadyPassed;
   }
 
