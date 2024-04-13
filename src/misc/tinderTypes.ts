@@ -199,6 +199,16 @@ export interface Match {
 	is_archived: boolean;
 }
 
+export interface FastMatch {
+	data: {
+		next_page_token: string;
+		results: UserResults[];
+	}
+	meta: {
+		status: number;
+	}
+}
+
 export interface Country {
 	name: string;
 	cc: string;
