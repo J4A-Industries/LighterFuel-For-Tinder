@@ -21,7 +21,6 @@ import {
 
 import { openTab } from '@/misc/utils';
 import { AnalyticsEvent } from '@/misc/GA';
-import { checkDate } from '../contentsHelpers/AprilFoolsMisc';
 
 enum menuOptions {
   settings,
@@ -155,14 +154,6 @@ const IndexPopup = () => {
           {text.info.text}
         </div>
       )}
-
-      {
-        checkDate() && (
-          <div className="text-base m-2 p-2 bg-slate-800">
-            {text.aprilfools.text}
-          </div>
-        )
-      }
     </div>
   );
 };

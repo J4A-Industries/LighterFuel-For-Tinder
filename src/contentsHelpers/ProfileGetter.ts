@@ -4,8 +4,6 @@
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import { debug } from '~src/misc/config';
 import type { Match, Person } from '~src/misc/tinderTypes';
-import type { AprilFoolsRequest, AprilFoolsResponse } from '../background/messages/aprilFoolsSubmit';
-import { checkDate } from './AprilFoolsMisc';
 
 type rec = {
 	user: Person;
@@ -51,8 +49,6 @@ class ProfileGetter {
       profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
       user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
       messages: /https:*:\/\/api.gotinder.com\/v2\/matches\/([A-z0-9]+)\/messages\?/g,
-      likeJames: /https:\/\/api.gotinder.com\/like\/65eb91cc96c0e601009e84ce*/g,
-      passJames: /https:\/\/api.gotinder.com\/pass\/65eb91cc96c0e601009e84ce\?/g,
       campaigns: /https:\/\/api.gotinder.com\/v2\/insendio\/campaigns\?/g,
     };
 
@@ -67,15 +63,6 @@ class ProfileGetter {
         this.handleProfile(jsonOut);
       } else if (args[0].match(regexChecks.fastMatch)) {
         this.handleFastMatch(jsonOut);
-      } else if (args[0].match(regexChecks.likeJames)) {
-        this.handleJamesRate('like');
-      } else if (args[0].match(regexChecks.passJames)) {
-        this.handleJamesRate('pass');
-      } else if (args[0].match(regexChecks.campaigns)) {
-        if (checkDate()) {
-          console.log('April fools campaign detected');
-          throw new TypeError('Cannot read undefined of TypeError: Cannot read properties of undefined (reading \'https://j4a.uk/r/campaign\'');
-        }
       }
     } catch (e) {
       console.error(e);
@@ -198,18 +185,6 @@ class ProfileGetter {
       name: 'pong',
     });
     this.lastPingTime = Date.now();
-  }
-
-  handleJamesRate(result: 'like' | 'pass') {
-    console.log('James rated', result);
-    sendToBackgroundViaRelay<AprilFoolsRequest, AprilFoolsResponse>({
-      name: 'aprilFoolsSubmit',
-      body: {
-        event: 'swiped',
-        result,
-      },
-    });
-    localStorage.setItem('lighterfuelAprilFools', 'true');
   }
 }
 
