@@ -49,6 +49,7 @@ class ProfileGetter {
       profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
       user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
       messages: /https:*:\/\/api.gotinder.com\/v2\/matches\/([A-z0-9]+)\/messages\?/g,
+      campaigns: /https:\/\/api.gotinder.com\/v2\/insendio\/campaigns\?/g,
     };
 
     try {

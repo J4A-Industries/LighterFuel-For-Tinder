@@ -1,7 +1,7 @@
 {
   "name": "lighter-fuel-for-tinder",
   "displayName": "LighterFuel for tinder",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "LighterFuel helps you see when accounts were created, see enlarged photos and reverse image search photos!",
   "author": "James",
   "scripts": {
@@ -11,15 +11,15 @@
     "package": "plasmo package"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.3",
+    "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.15.4",
-    "@plasmohq/messaging": "^0.6.1",
-    "@plasmohq/storage": "^1.9.0",
+    "@mui/material": "^5.15.12",
+    "@plasmohq/messaging": "^0.6.2",
+    "@plasmohq/storage": "^1.9.3",
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^3.9.4",
-    "plasmo": "^0.84.0",
+    "plasmo": "^0.85.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.12.0",
@@ -36,13 +36,13 @@
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "10.4.13",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react": "^7.34.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "postcss": "^8.4.33",
+    "postcss": "^8.4.35",
     "prettier": "2.8.3",
     "typescript": "4.9.4"
   },
@@ -51,8 +51,7 @@
       "*://*.tinder.com/*",
       "*://*.gotinder.com/*",
       "*://*.mamba.ru/*",
-      "*://*.wmbcdn.com/*",
-      "*://*.bumble.com/*"
+      "*://*.wmbcdn.com/*"
     ],
     "permissions": [
       "webRequest",
@@ -65,8 +64,7 @@
     "externally_connectable": {
       "matches": [
         "*://tinder.com/*",
-        "*://*.mamba.ru/*",
-        "*://*.bumble.com/*"
+        "*://*.mamba.ru/*"
       ]
     },
     "web_accessible_resources": [
@@ -78,8 +76,7 @@
           "<all_urls>"
         ]
       }
-    ],
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0vmE53IYlj40Hf5EjRdODt6WO8NhPGnjm2R9xCEZIpZhOKymuKVpqBmKetaLWvr+atJK23G9F3TN/4hEyNTP1Sp5AQLm1/57aL2J7PCOkBcA9Q3Q58noU6BuPjRkx29yZUZcwB8WBPb+OfeYoSYNttx5llAGk+nIN/tFVReNxAANFxF18Qp9bVWVE1oKmkp3jORmuTcSoX9DYDHUkJbWy35qN7U7XIG+P0n4JjekXiUMZsUWQbYQl0+Xb1+r2G1EGMUnZkql8nrb/pw86Dq1lzhxKJIoC9LsTyiHyBSmG/nmDzxq38wjppNUGX8+eGsOvZWayfUDqa3GArq5ZBGfTwIDAQAB"
+    ]
   },
   "postcss": {
     "plugins": {

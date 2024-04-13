@@ -10,7 +10,6 @@ export const config: PlasmoCSConfig = {
 
 try {
   const getter = new ProfileGetter();
-
   if (debug) console.log('Getter created!', getter);
 } catch (e) {
   console.error(`Error in profile getter: ${e}`);

@@ -1,6 +1,9 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
-import { debug, defaultSettings } from '@/misc/config';
+import { v4 as uuid } from 'uuid';
+import {
+  chromeStore, debug, defaultSettings,
+} from '@/misc/config';
 import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';
 import { AnalyticsEvent } from '~src/misc/GA';
@@ -33,6 +36,10 @@ let peopleHandler: PeopleHandler;
 
 try {
   setAndCheckDefaultSettings();
+
+  const storage = new Storage({
+    area: 'sync',
+  });
 
   peopleHandler = new PeopleHandler();
 

@@ -2,9 +2,7 @@ import languages from './languages.json';
 
 export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';
 export const gpt = false;
-
 export const chromeStore = process.env.PLASMO_PUBLIC_PKG_ID !== chrome.runtime.id;
-
 export const BUMBLE_ID_REPORT_URL = process.env.PLASMO_PUBLIC_BUMBLE_ID_REPORT_URL;
 
 if (!BUMBLE_ID_REPORT_URL) {

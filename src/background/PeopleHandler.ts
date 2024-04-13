@@ -24,9 +24,14 @@ const extractRecPhotoId = (url: string) => {
   return match ? match[1] : null;
 };
 
-const checkForRec = (input: string) => {
-  const regex = /https:\/\/images-ssl\.gotinder\.com\/u\/[A-Za-z0-9]+\/([A-Za-z0-9]+(\.[A-Za-z0-9]+)+)/i;
-  return regex.test(input);
+const checkForImageRec = (input: string) => {
+  const imageRegex = /https:\/\/images-ssl\.gotinder\.com\/u\/[A-Za-z0-9]+\/([A-Za-z0-9]+(\.[A-Za-z0-9]+)+)/i;
+  return imageRegex.test(input);
+};
+
+const checkForVideoRec = (input: string) => {
+  const videoRegex = /https:\/\/images-ssl\.gotinder\.com\/[A-Za-z0-9]+\/(.*?)\.[A-Za-z0-9?=&~-]+/i;
+  return videoRegex.test(input);
 };
 
 const extractUuidFromUrl = (inUrl: string): string | undefined => {
@@ -113,11 +118,14 @@ export class PeopleHandler {
     // search through all of the people
 
     // ! This is a hacky way to check if the url is a person rec or not
-    const personRec = checkForRec(url);
+    const personRec = checkForImageRec(url);
+
+    // TODO: video rec is not currently working, we need to fix this
+    const videoRec = checkForVideoRec(url);
 
     if (personRec) {
       for (const person of this.people) {
-        if (person.type !== 'rec') continue;
+        if (person.type !== 'rec' && !videoRec) continue;
         const id = extractRecPhotoId(url);
         // search through person's photos
         for (const photo of person.photos) {
@@ -139,7 +147,7 @@ export class PeopleHandler {
       for (const person of this.people) {
         // search through person's photos
         for (const photo of person.photos) {
-          if (person.type === 'rec') continue;
+          if (person.type === 'rec' && !videoRec) continue;
           if (extractUuidFromUrl(photo.url) === photoId || photo?.id === photoId) {
             // return photoRecord details immediately when you get a match
             return {
