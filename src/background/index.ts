@@ -1,9 +1,8 @@
 /* eslint-disable import/no-mutable-exports */
 import { Storage } from '@plasmohq/storage';
-import { FB } from 'featbit-js-client-sdk';
 import { v4 as uuid } from 'uuid';
 import {
-  FEATBIT_CLIENT_KEY, chromeStore, debug, defaultSettings,
+  chromeStore, debug, defaultSettings,
 } from '@/misc/config';
 import { Sites } from '@/misc/types';
 import ImageRequestCapturer from './imageRequestCapturer';

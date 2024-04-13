@@ -58,8 +58,6 @@ const Consent = () => {
           <br />
           This is done via Microsoft Clarity
           <br />
-          We use FeatBit for feature flags so we can ensure features roll out as smoothly as possible and their software may collect some data.
-          <br />
           <p className="bold">
             Finally, we reserve the right, on the 1st of april each year, to play a prank on you.
           </p>

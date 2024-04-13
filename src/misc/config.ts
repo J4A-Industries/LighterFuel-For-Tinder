@@ -9,12 +9,6 @@ if (!BUMBLE_ID_REPORT_URL) {
   throw new Error('BUMBLE_ID_REPORT_URL is undefined');
 }
 
-export const FEATBIT_CLIENT_KEY = process.env.PLASMO_PUBLIC_FEATBIT_CLIENT_KEY;
-
-if (!FEATBIT_CLIENT_KEY) {
-  throw new Error('PLASMO_PUBLIC_FEATBIT_CLIENT_KEY is undefined');
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const findLanguage = (): typeof languages['en-GB'] => {
   const lang = navigator.language;
