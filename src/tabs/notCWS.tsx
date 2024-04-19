@@ -17,7 +17,7 @@ const NotCWS = () => (
           />
         </div>
       </div>
-      <p className="text-xl">
+      <p className="text-xl max-w-2xl">
         You must install LighterFuel via the Chrome Web Store to use it, as you
         are not currently using the Chrome Web Store version.
         {' '}
