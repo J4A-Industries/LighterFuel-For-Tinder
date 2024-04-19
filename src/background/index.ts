@@ -72,16 +72,19 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     const consentUrl = chrome.runtime.getURL('tabs/consent.html');
     chrome.tabs.create({ url: consentUrl });
   }
-
+  const { installType } = await chrome.management.getSelf();
   const platform = await chrome.runtime.getPlatformInfo();
   if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
-    let clientId = await storage.get('clientId');
-    if (!clientId) {
+    let clientId = await storage.get<string | undefined>('clientId');
+    const hasInstalled = await storage.get('hasInstalled');
+    if (clientId === undefined) {
       clientId = await AnalyticsEvent([
         {
           name: 'install',
           params: {
             platform: platform.os,
+            installType,
+            hasInstalled: `${hasInstalled}`,
           },
         },
       ]);
@@ -90,6 +93,9 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     await storage.set('hasInstalled', true);
     chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
   } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+    const clientId = await storage.get('clientId');
+    console.log(`ClientID: ${clientId}, clientID type: ${typeof clientId}, clientID length: ${clientId.length}`);
+
     const currentVersion = chrome.runtime.getManifest().version;
     const previousVersion = await storage.get('version');
     // sometimes the update event is fired when the extension has not actually updated
