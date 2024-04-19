@@ -112,4 +112,9 @@ chrome.runtime.onInstalled.addListener(async (object) => {
       await storage.set('version', chrome.runtime.getManifest().version);
     }
   }
+
+  if (installType === 'development' && !debug) {
+    chrome.runtime.setUninstallURL('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc');
+    chrome.tabs.create({ url: chrome.runtime.getURL('tabs/notCWS.html') });
+  }
 });

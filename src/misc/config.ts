@@ -24,7 +24,7 @@ export const links = {
   github: 'https://github.com/Acorn221/LighterFuel-For-Tinder',
   ukraineAppeal: 'https://donation.dec.org.uk/ukraine-humanitarian-appeal',
   reviews:
-    'https://chrome.google.com/webstore/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
+    'https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc/reviews',
   discord: 'https://discord.gg/nHcDMkqYgP',
 };
 
