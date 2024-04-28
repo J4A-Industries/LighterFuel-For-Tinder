@@ -32,18 +32,21 @@ let imageConsoleLogMod = 0;
 /**
  * Returns visibility ratio of element within viewport.
  *
- * @param {Element} target - DOM element to observe
- * @return {Promise<number>} Promise that resolves with visibility ratio
+ * @param target - DOM element to observe
+ * @return Promise that resolves with visibility ratio
  */
-const getVisibility = (target: Element) => new Promise((resolve) => {
+const getVisibility = (target: Element) => new Promise<{ratio: number, visibilityCheck: boolean}>((resolve) => {
   const options = {
     root: null, // viewport
     rootMargin: '0px',
     threshold: 0, // get ratio, even if only 1px is in view
   };
 
+  // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
+  const visibilityCheck = target.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true });
+
   const observer = new IntersectionObserver(([entry]) => {
-    resolve(entry.intersectionRatio);
+    resolve({ ratio: entry.intersectionRatio, visibilityCheck });
     observer.disconnect();
   }, options);
 
@@ -164,16 +167,11 @@ class LighterFuel {
   startMonitorInterval() {
     setInterval(async () => {
       const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
-      const shown = await Promise.all(keenSlider.map(async (slider) => {
-        const ratio = await getVisibility(slider);
-        return {
-          slider,
-          ratio,
-        };
-      }));
 
-      // filter out the ones that are not visible
-      const visible = shown.filter((x) => (x.ratio as number) > 0).map((x) => x.slider);
+      // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
+      const visible = keenSlider.filter((x) => x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }));
+
+      console.log('visible', visible);
 
       if (visible.length > 0) {
         // For every slider, make sure there's the overlay
@@ -280,10 +278,9 @@ class LighterFuel {
     onPlaced();
 
     // check to see if the element is visible or not
-
-    getVisibility(overlayNode).then((ratio: number) => {
+    getVisibility(overlayNode).then((visibility) => {
       // if it's not visible and it's a top box, change it to an overlay box
-      if (ratio === 0 && overlayNode.classList.contains('topBox')) {
+      if (visibility.ratio === 0 && overlayNode.classList.contains('topBox')) {
         overlayNode.classList.remove('topBox');
         overlayNode.classList.add('overlayBox');
       }
