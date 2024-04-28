@@ -290,7 +290,7 @@ class LighterFuel {
     const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')];
     Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
       const bounds = overlay.getBoundingClientRect();
-      if (bounds.top > 120) {
+      if (bounds.top > 120 && overlay.classList.contains('overlayBox')) {
         overlay.classList.remove('overlayBox');
         overlay.classList.add('topBox');
         parentNode(overlay, 2).style.overflow = 'visible';
