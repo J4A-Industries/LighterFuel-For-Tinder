@@ -72,6 +72,8 @@ class LighterFuel {
 
   lastPingTime: number = Date.now();
 
+  windowResizeTimeout: NodeJS.Timeout | undefined;
+
   constructor() {
     this.profileSliderContainers = [];
     this.emitter = new EventEmitter();
@@ -91,6 +93,12 @@ class LighterFuel {
       this.getSettings();
       this.sendLoadedEvent();
       this.beginPingPongLoop();
+      window.addEventListener('resize', () => {
+        if (this.windowResizeTimeout) {
+          clearTimeout(this.windowResizeTimeout);
+        }
+        this.windowResizeTimeout = setTimeout(this.handleWindowResize.bind(this), 100);
+      });
     } else {
       alert('You must install LighterFuel via the Chrome Web Store to use it.\n\n Uninstall this version and install the Chrome Web Store version.');
       window.open('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc', '_blank').focus();
@@ -170,8 +178,6 @@ class LighterFuel {
 
       // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
       const visible = keenSlider.filter((x) => x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }));
-
-      console.log('visible', visible);
 
       if (visible.length > 0) {
         // For every slider, make sure there's the overlay
@@ -264,7 +270,7 @@ class LighterFuel {
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
       // * whenever there's 100px above, we have room to place the box above
-      if (bounds.top > 100) {
+      if (bounds.top > 120) {
         overlayNode.classList.add('topBox');
         parentNode(overlayNode, 2).style.overflow = 'visible';
         parentNode(overlayNode, 5).style.top = '50px';
@@ -277,16 +283,25 @@ class LighterFuel {
 
     onPlaced();
 
-    // check to see if the element is visible or not
-    getVisibility(overlayNode).then((visibility) => {
-      // if it's not visible and it's a top box, change it to an overlay box
-      if (visibility.ratio === 0 && overlayNode.classList.contains('topBox')) {
-        overlayNode.classList.remove('topBox');
-        overlayNode.classList.add('overlayBox');
-      }
-    });
-
     return overlayNode;
+  }
+
+  handleWindowResize() {
+    const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')];
+    Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
+      const bounds = overlay.getBoundingClientRect();
+      if (bounds.top > 120) {
+        overlay.classList.remove('overlayBox');
+        overlay.classList.add('topBox');
+        parentNode(overlay, 2).style.overflow = 'visible';
+        parentNode(overlay, 5).style.top = '50px';
+      } else {
+        overlay.classList.add('overlayBox');
+        overlay.classList.remove('topBox');
+      }
+    })).catch((e) => {
+      console.error('Error in handleWindowResize', e);
+    });
   }
 
   beginPingPongLoop() {
