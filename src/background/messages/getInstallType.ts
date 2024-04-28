@@ -14,11 +14,15 @@ export type getInstallTypeResponse = {
  */
 const handler: PlasmoMessaging.MessageHandler<getInstallTypeRequest, getInstallTypeResponse> = async (req, res) => {
   // get the images from the main thread
-  const { installType } = await chrome.management.getSelf();
-
-  res.send({
-    installType,
-  });
+  let installType = 'unknown';
+  try {
+    const self = await chrome.management.getSelf();
+    installType = self.installType;
+  } catch (e) {
+    console.error('Error getting install type', e);
+  } finally {
+    res.send({ installType });
+  }
 };
 
 export default handler;
