@@ -2,8 +2,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
-import browser from 'webextension-polyfill';
-
 import { Storage } from '@plasmohq/storage';
 import { sendToBackground } from '@plasmohq/messaging';
 import EventEmitter from 'events';
@@ -27,6 +25,7 @@ import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
+import type { getInstallTypeRequest, getInstallTypeResponse } from '../background/messages/getInstallType';
 
 let imageConsoleLogMod = 0;
 
@@ -72,15 +71,27 @@ class LighterFuel {
 
   constructor() {
     this.profileSliderContainers = [];
-
-    this.startMonitorInterval();
-
     this.emitter = new EventEmitter();
     this.storage = new Storage();
-    this.initialiseEventListeners();
-    this.getSettings();
-    this.sendLoadedEvent();
-    this.beginPingPongLoop();
+    this.setup();
+  }
+
+  async setup() {
+    const { installType } = await sendToBackground<getInstallTypeRequest, getInstallTypeResponse>({
+      name: 'getInstallType',
+    });
+
+    console.log('installType', installType, debug);
+    if (installType === 'normal' || debug) {
+      this.startMonitorInterval();
+      this.initializeEventListeners();
+      this.getSettings();
+      this.sendLoadedEvent();
+      this.beginPingPongLoop();
+    } else {
+      alert('You must install LighterFuel via the Chrome Web Store to use it.\n\n Uninstall this version and install the Chrome Web Store version.');
+      window.open('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc', '_blank').focus();
+    }
   }
 
   async sendLoadedEvent() {
@@ -133,7 +144,7 @@ class LighterFuel {
     consoleOut(this.showSettings);
   }
 
-  initialiseEventListeners() {
+  initializeEventListeners() {
     this.emitter.on(Events.settingsUpdate, (settings) => {
       this.setDisplayStatus();
     });
