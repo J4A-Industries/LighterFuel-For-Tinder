@@ -105,6 +105,7 @@ chrome.runtime.onInstalled.addListener(async (object) => {
           name: 'update',
           params: {
             platform: platform.os,
+            installType,
           },
         },
       ]);
