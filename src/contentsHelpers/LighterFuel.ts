@@ -290,14 +290,17 @@ class LighterFuel {
     const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')];
     Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
       const bounds = overlay.getBoundingClientRect();
-      if (bounds.top > 120 && overlay.classList.contains('overlayBox')) {
+      if (bounds.top >= 120 && overlay.classList.contains('overlayBox')) {
         overlay.classList.remove('overlayBox');
         overlay.classList.add('topBox');
         parentNode(overlay, 2).style.overflow = 'visible';
         parentNode(overlay, 5).style.top = '50px';
-      } else {
+      } else if (bounds.top < 120 && overlay.classList.contains('topBox')) {
         overlay.classList.add('overlayBox');
         overlay.classList.remove('topBox');
+      } else {
+        // just default to the overlayBox
+        overlay.classList.add('overlayBox');
       }
     })).catch((e) => {
       console.error('Error in handleWindowResize', e);
