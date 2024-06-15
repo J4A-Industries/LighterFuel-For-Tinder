@@ -12,6 +12,7 @@ import {
   consoleOut,
   getImageURLfromNode,
   getVideoURLfromNode,
+  Events,
 } from '@/contentsHelpers/Misc';
 import { debug, defaultSettings, text } from '@/misc/config';
 
@@ -20,8 +21,6 @@ import {
   Sites,
   type profileSliderContainer,
 } from '@/misc/types';
-
-import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';

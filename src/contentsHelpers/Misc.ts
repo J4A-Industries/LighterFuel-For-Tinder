@@ -272,53 +272,7 @@ export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray
   return outArr as ProfileImage[];
 };
 
-/**
-   * This gets the last modified date for an image
-   * This is required due to caching of images on the client
-   *
-   * @param url the image URL to get the last modified date for
-   */
-export const getImageLastModified = async (url: string): Promise<Date | null> => {
-  try {
-    // todo: fix the fetch cors issue
-    const response = await fetch(
-      url,
-      {
-        method: 'GET',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-        },
-        referrer: 'https://www.mamba.ru/',
-        referrerPolicy: 'strict-origin-when-cross-origin',
-        body: null,
-        mode: 'cors',
-        credentials: 'omit',
-      },
-
-    );
-    const lastModified = response.headers.get('last-modified');
-    return lastModified ? new Date(lastModified) : null;
-  } catch (error) {
-    console.error('Error fetching image last modified date:', error);
-    return null;
-  }
-};
-
-/**
- * Used to create the mamba overlay for the image
- *
- * @param image The image to create the overlay for
- * @param imageRecord The image record to get the last modified date from
- * @returns a div element that is the overlay
- */
-export const createMambaOverlayNode = (image: Element, imageRecord: ImageType) => {
-  const overlay = document.createElement('div');
-  overlay.classList.add('overlayBox');
-  // set aria-label to the image url
-  overlay.setAttribute('aria-label', imageRecord.url);
-  const date = new Date(imageRecord.lastModified);
-  const xOld = getTimeOld(date.getTime());
-  overlay.innerHTML = `Uploaded At: ${date.getHours()}:${date.getMinutes()} ${date.toLocaleDateString()} ${xOld} Old`;
-  overlay.appendChild(createSearchButton(imageRecord.url));
-  return overlay;
-};
+export enum Events {
+  settingsUpdate = 'settingsUpdate',
+  imagesUpdate = 'imagesUpdate',
+}

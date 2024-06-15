@@ -49,12 +49,9 @@
   "manifest": {
     "host_permissions": [
       "*://*.tinder.com/*",
-      "*://*.gotinder.com/*",
-      "*://*.mamba.ru/*",
-      "*://*.wmbcdn.com/*"
+      "*://*.gotinder.com/*"
     ],
     "permissions": [
-      "webRequest",
       "storage",
       "scripting"
     ],
@@ -63,8 +60,7 @@
     },
     "externally_connectable": {
       "matches": [
-        "*://tinder.com/*",
-        "*://*.mamba.ru/*"
+        "*://tinder.com/*"
       ]
     },
     "web_accessible_resources": [
