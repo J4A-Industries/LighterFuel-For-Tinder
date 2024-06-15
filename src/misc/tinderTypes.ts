@@ -310,3 +310,61 @@ export interface UserStats {
 	ageMin: number;
 	gender: string;
 }
+
+export enum CoreRecType {
+	User = 'user',
+}
+export interface Teaser {
+	string: string;
+	type?: string;
+}
+
+export interface Content {
+	id: any;
+	type?: any;
+}
+
+export interface TappyContent {
+	content: Content[];
+}
+
+export interface ProfileDetailContent {
+	content: any[];
+	page_content_id: string;
+}
+
+export interface Preference {
+	name: string;
+	leading_icon_url: string;
+}
+export interface MatchedPreferences {
+	text: Text;
+	names: string[];
+	preferences: Preference[];
+	descriptor_ids: string[];
+}
+
+export interface Instagram {
+	last_fetch_time: Date;
+	completed_initial_fetch: boolean;
+	photos: any[];
+	media_count: number;
+}
+
+export interface CoreRec {
+	type: CoreRecType;
+	user: User;
+	distance_mi: number;
+	content_hash: string;
+	s_number: number;
+	teaser: Teaser;
+	teasers: Teaser[];
+	is_superlike_upsell: boolean;
+	tappy_content: TappyContent[];
+	profile_detail_content: ProfileDetailContent[];
+	ui_configuration: any;
+	matched_preferences?: MatchedPreferences;
+	user_posts: any[];
+	experiment_info?: any;
+	instagram?: Instagram;
+}

@@ -4,6 +4,19 @@
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import { debug } from '~src/misc/config';
 import type { Match, Person } from '~src/misc/tinderTypes';
+import ResponseModifier from './ResponseModifier';
+
+export const regexChecks = {
+  matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
+  updates: /https:\/\/api.gotinder.com\/updates\?/g, // https://api.gotinder.com/updates?locale=en-GB
+  myLikes: /https:\/\/api.gotinder.com\/v2\/my-likes\?/g,
+  fastMatch: /https:\/\/api.gotinder.com\/v2\/fast-match\?/g,
+  core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
+  profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
+  user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
+  messages: /https:*:\/\/api.gotinder.com\/v2\/matches\/([A-z0-9]+)\/messages\?/g,
+  campaigns: /https:\/\/api.gotinder.com\/v2\/insendio\/campaigns\?/g,
+};
 
 type rec = {
 	user: Person;
@@ -12,8 +25,11 @@ type rec = {
 class ProfileGetter {
   lastPingTime = Date.now();
 
-  constructor() {
+  responseModifier: ResponseModifier;
+
+  constructor(responseModifier: ResponseModifier) {
     this.setCustomFetch();
+    this.responseModifier = responseModifier;
   }
 
   /**
@@ -28,7 +44,8 @@ class ProfileGetter {
     window.fetch = (...args) => new Promise((resolve, reject) => {
       nativeFetch(...args).then((result) => {
         this.handleFetchResponse(result.clone(), args);
-        resolve(result);
+        // resolve(result);
+        this.responseModifier.handleRequest(args[0] as string, result).then((res) => resolve(res));
       }).catch((err) => reject(err));
     });
   }
@@ -40,18 +57,6 @@ class ProfileGetter {
    * @param {Array} args The arguments sent back
    */
   async handleFetchResponse(result: Response, args: any[]) {
-    const regexChecks = {
-      matches: /https:\/\/api.gotinder.com\/v2\/matches\?/g,
-      updates: /https:\/\/api.gotinder.com\/updates\?/g, // https://api.gotinder.com/updates?locale=en-GB
-      myLikes: /https:\/\/api.gotinder.com\/v2\/my-likes\?/g,
-      fastMatch: /https:\/\/api.gotinder.com\/v2\/fast-match\?/g,
-      core: /https:\/\/api.gotinder.com\/v2\/recs\/core\/*/g,
-      profile: /https:\/\/api.gotinder.com\/v2\/profile\/*/g,
-      user: /https:\/\/api.gotinder.com\/user\/([A-z0-9]+)/g,
-      messages: /https:*:\/\/api.gotinder.com\/v2\/matches\/([A-z0-9]+)\/messages\?/g,
-      campaigns: /https:\/\/api.gotinder.com\/v2\/insendio\/campaigns\?/g,
-    };
-
     try {
       const jsonOut = await result.json();
 
@@ -142,6 +147,7 @@ class ProfileGetter {
       people.push(person);
       if (debug) console.log('new person added from core!', person);
     });
+    this.getShowSettings();
 
     this.sendPeopleToBackground(people);
   }
@@ -168,8 +174,18 @@ class ProfileGetter {
       body: {
         people,
       },
+    }).then((x) => {
+      console.log('getPeople response', x);
     });
     this.lastPingTime = Date.now();
+  }
+
+  getShowSettings() {
+    sendToBackgroundViaRelay({
+      name: 'getPeople',
+    }).then((res) => {
+      console.log('SHOW SETTINGS IN PG:', res);
+    });
   }
 
   beginPingPongLoop() {

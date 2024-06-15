@@ -1,4 +1,5 @@
 import languages from './languages.json';
+import type { ShowSettings } from './types';
 
 export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';
 export const gpt = false;
@@ -28,8 +29,8 @@ export const links = {
   discord: 'https://discord.gg/nHcDMkqYgP',
 };
 
-export const defaultSettings = {
+export const defaultSettings: ShowSettings = {
   overlayButton: true,
   searchButton: true,
-  debuggingTelemetry: true,
+  disableSuperLikeUpsell: true,
 };

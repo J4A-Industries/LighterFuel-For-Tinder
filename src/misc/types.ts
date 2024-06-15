@@ -24,6 +24,7 @@ export type ProfileImage = {
 export type ShowSettings = {
   overlayButton: boolean;
   searchButton: boolean;
+  disableSuperLikeUpsell?: boolean;
 };
 
 export type TabMessage = {
