@@ -55,10 +55,6 @@ chrome.runtime.onInstalled.addListener(async (object) => {
   const replayConsent = await storage.get('replayConsent');
   const analyticsConsent = await storage.get('analyticsConsent');
 
-  if (replayConsent === undefined || analyticsConsent === undefined) {
-    const consentUrl = chrome.runtime.getURL('tabs/consent.html');
-    chrome.tabs.create({ url: consentUrl });
-  }
   const { installType } = await chrome.management.getSelf();
   const platform = await chrome.runtime.getPlatformInfo();
   if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
@@ -104,5 +100,8 @@ chrome.runtime.onInstalled.addListener(async (object) => {
   if (installType === 'development' && !debug) {
     chrome.runtime.setUninstallURL('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc');
     chrome.tabs.create({ url: chrome.runtime.getURL('tabs/notCWS.html') });
+  } else if (replayConsent === undefined || analyticsConsent === undefined) {
+    const consentUrl = chrome.runtime.getURL('tabs/consent.html');
+    chrome.tabs.create({ url: consentUrl });
   }
 });
