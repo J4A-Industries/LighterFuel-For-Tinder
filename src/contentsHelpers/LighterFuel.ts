@@ -2,8 +2,6 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
-import browser from 'webextension-polyfill';
-
 import { Storage } from '@plasmohq/storage';
 import { sendToBackground } from '@plasmohq/messaging';
 import EventEmitter from 'events';
@@ -27,24 +25,28 @@ import { Events } from '@/contentsHelpers/ImageHandler';
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type { getImageInfoRequest, getImageInfoResponse } from '~src/background/messages/getImageInfo';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
+import type { getInstallTypeRequest, getInstallTypeResponse } from '../background/messages/getInstallType';
 
 let imageConsoleLogMod = 0;
 
 /**
  * Returns visibility ratio of element within viewport.
  *
- * @param {Element} target - DOM element to observe
- * @return {Promise<number>} Promise that resolves with visibility ratio
+ * @param target - DOM element to observe
+ * @return Promise that resolves with visibility ratio
  */
-const getVisibility = (target: Element) => new Promise((resolve) => {
+const getVisibility = (target: Element) => new Promise<{ratio: number, visibilityCheck: boolean}>((resolve) => {
   const options = {
     root: null, // viewport
     rootMargin: '0px',
     threshold: 0, // get ratio, even if only 1px is in view
   };
 
+  // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
+  const visibilityCheck = target.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true });
+
   const observer = new IntersectionObserver(([entry]) => {
-    resolve(entry.intersectionRatio);
+    resolve({ ratio: entry.intersectionRatio, visibilityCheck });
     observer.disconnect();
   }, options);
 
@@ -70,17 +72,37 @@ class LighterFuel {
 
   lastPingTime: number = Date.now();
 
+  windowResizeTimeout: NodeJS.Timeout | undefined;
+
   constructor() {
     this.profileSliderContainers = [];
-
-    this.startMonitorInterval();
-
     this.emitter = new EventEmitter();
     this.storage = new Storage();
-    this.initialiseEventListeners();
-    this.getSettings();
-    this.sendLoadedEvent();
-    this.beginPingPongLoop();
+    this.setup();
+  }
+
+  async setup() {
+    const { installType } = await sendToBackground<getInstallTypeRequest, getInstallTypeResponse>({
+      name: 'getInstallType',
+    });
+
+    console.log('installType', installType, debug);
+    if (installType === 'normal' || debug) {
+      this.startMonitorInterval();
+      this.initializeEventListeners();
+      this.getSettings();
+      this.sendLoadedEvent();
+      this.beginPingPongLoop();
+      window.addEventListener('resize', () => {
+        if (this.windowResizeTimeout) {
+          clearTimeout(this.windowResizeTimeout);
+        }
+        this.windowResizeTimeout = setTimeout(this.handleWindowResize.bind(this), 100);
+      });
+    } else {
+      alert('You must install LighterFuel via the Chrome Web Store to use it.\n\n Uninstall this version and install the Chrome Web Store version.');
+      window.open('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc', '_blank').focus();
+    }
   }
 
   async sendLoadedEvent() {
@@ -133,7 +155,7 @@ class LighterFuel {
     consoleOut(this.showSettings);
   }
 
-  initialiseEventListeners() {
+  initializeEventListeners() {
     this.emitter.on(Events.settingsUpdate, (settings) => {
       this.setDisplayStatus();
     });
@@ -153,16 +175,9 @@ class LighterFuel {
   startMonitorInterval() {
     setInterval(async () => {
       const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
-      const shown = await Promise.all(keenSlider.map(async (slider) => {
-        const ratio = await getVisibility(slider);
-        return {
-          slider,
-          ratio,
-        };
-      }));
 
-      // filter out the ones that are not visible
-      const visible = shown.filter((x) => (x.ratio as number) > 0).map((x) => x.slider);
+      // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
+      const visible = keenSlider.filter((x) => x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }));
 
       if (visible.length > 0) {
         // For every slider, make sure there's the overlay
@@ -255,7 +270,7 @@ class LighterFuel {
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
       // * whenever there's 100px above, we have room to place the box above
-      if (bounds.top > 100) {
+      if (bounds.top > 120) {
         overlayNode.classList.add('topBox');
         parentNode(overlayNode, 2).style.overflow = 'visible';
         parentNode(overlayNode, 5).style.top = '50px';
@@ -268,17 +283,28 @@ class LighterFuel {
 
     onPlaced();
 
-    // check to see if the element is visible or not
-
-    getVisibility(overlayNode).then((ratio: number) => {
-      // if it's not visible and it's a top box, change it to an overlay box
-      if (ratio === 0 && overlayNode.classList.contains('topBox')) {
-        overlayNode.classList.remove('topBox');
-        overlayNode.classList.add('overlayBox');
-      }
-    });
-
     return overlayNode;
+  }
+
+  handleWindowResize() {
+    const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')];
+    Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
+      const bounds = overlay.getBoundingClientRect();
+      if (bounds.top >= 120 && overlay.classList.contains('overlayBox')) {
+        overlay.classList.remove('overlayBox');
+        overlay.classList.add('topBox');
+        parentNode(overlay, 2).style.overflow = 'visible';
+        parentNode(overlay, 5).style.top = '50px';
+      } else if (bounds.top < 120 && overlay.classList.contains('topBox')) {
+        overlay.classList.add('overlayBox');
+        overlay.classList.remove('topBox');
+      } else {
+        // just default to the overlayBox
+        overlay.classList.add('overlayBox');
+      }
+    })).catch((e) => {
+      console.error('Error in handleWindowResize', e);
+    });
   }
 
   beginPingPongLoop() {

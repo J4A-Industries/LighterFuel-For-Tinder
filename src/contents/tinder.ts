@@ -1,5 +1,5 @@
 import type { PlasmoCSConfig } from 'plasmo';
-import { relayMessage, sendToBackground } from '@plasmohq/messaging';
+import { sendToBackground } from '@plasmohq/messaging';
 import LighterFuel from '@/contentsHelpers/LighterFuel';
 import { debug } from '@/misc/config';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';

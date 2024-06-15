@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.12",
     "@plasmohq/messaging": "^0.6.2",
-    "@plasmohq/storage": "^1.9.3",
+    "@plasmohq/storage": "^1.10.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^3.9.4",
