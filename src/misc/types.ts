@@ -1,12 +1,5 @@
 export enum Sites {
   TINDER,
-  BUMBLE,
-  HINGE,
-  BADOO,
-  OKCUPID,
-  MAMBA,
-  ZOOSK,
-  MATCH,
 }
 
 export type ImageType = {
