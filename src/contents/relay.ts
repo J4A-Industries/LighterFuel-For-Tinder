@@ -1,14 +1,13 @@
 import { relayMessage } from '@plasmohq/messaging';
+import { PlasmoCSConfig } from 'plasmo';
+
+export const config: PlasmoCSConfig = {
+  matches: ['*://tinder.com/*'],
+};
 
 relayMessage(
   {
     name: 'pong',
-  },
-);
-
-relayMessage(
-  {
-    name: 'getImages',
   },
 );
 
