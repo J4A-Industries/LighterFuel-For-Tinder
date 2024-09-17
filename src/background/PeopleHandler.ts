@@ -7,7 +7,7 @@ import { debug } from '~src/misc/config';
 import type { Person, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
 
 const maxPeopleToStore = 1000;
-const maxPeopleToSave = 100;
+const maxPeopleToSave = 200;
 
 export type photoInfo = {
 	hqUrl: string;
@@ -65,20 +65,6 @@ export class PeopleHandler {
 
   storage: Storage;
 
-  lastSavedTime = Date.now();
-
-  constructor() {
-    // get people from storage
-    this.storage = new Storage({
-      area: 'local',
-    });
-
-    this.storage.get<PersonWithAddedAt[]>('people').then((data) => {
-      if (!data) return;
-      this.handleNewPeople(data);
-    });
-  }
-
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
       if (!this.people.find((p) => p._id === person._id && p.type === person.type)) {
@@ -91,7 +77,7 @@ export class PeopleHandler {
       }
     });
 
-    // if there are over 100 people in the array who are recs, remove the oldest ones
+    // if there are over x people in the array who are recs, remove the oldest ones
 
     if (this.people.length > maxPeopleToStore) {
       const recs = this.people.filter((person) => person.type === 'rec')
@@ -104,14 +90,9 @@ export class PeopleHandler {
     }
 
     if (debug) console.log('people', this.people);
-    if (Date.now() - this.lastSavedTime > 1000 * 5) {
-      this.savePeople();
-      this.lastSavedTime = Date.now();
-    }
   }
 
   /**
-	 * This
 	 * @param url the photo URL attached to the account
 	 */
   getInfoFromPhoto(url: string): photoInfo {
@@ -163,14 +144,6 @@ export class PeopleHandler {
 
     if (debug) console.error('no match found for url', url);
     return undefined;
-  }
-
-  async savePeople() {
-    // storage limit of 5MB so we can't save everyone ;(
-    const peopleToSave = this.people
-      .sort((a, b) => b.addedAt - a.addedAt)
-      .slice(0, maxPeopleToSave);
-    await this.storage.set('people', peopleToSave);
   }
 
   async handleProfile(profile: ProfileResponseData) {
