@@ -271,6 +271,7 @@ class LighterFuel {
       const overlayNode = document.createElement('p');
       overlayNode.style.zIndex = '1000';
       overlayNode.classList.add('overlayBox');
+      overlayNode.classList.add('noTopBox');
       overlayNode.innerHTML = `${xOld} Ago`;
 
       el.appendChild(overlayNode);
@@ -326,7 +327,8 @@ class LighterFuel {
   }
 
   handleWindowResize() {
-    const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')];
+    const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')]
+    .filter(el => !el.classList.contains('noTopBox'));
     Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
       const bounds = overlay.getBoundingClientRect();
       if (bounds.top >= 120 && overlay.classList.contains('overlayBox')) {
