@@ -41,7 +41,6 @@ const getVisibility = (target: Element) => new Promise<{ratio: number, visibilit
     threshold: 0, // get ratio, even if only 1px is in view
   };
 
-  // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
   const visibilityCheck = target.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true });
 
   const observer = new IntersectionObserver(([entry]) => {
@@ -59,8 +58,6 @@ class LighterFuel {
 
   site: Sites;
 
-  profileSliderContainers: profileSliderContainer[];
-
   mainMutationObserver: MutationObserver;
 
   textContainerObserver: MutationObserver | undefined;
@@ -74,7 +71,6 @@ class LighterFuel {
   windowResizeTimeout: NodeJS.Timeout | undefined;
 
   constructor() {
-    this.profileSliderContainers = [];
     this.emitter = new EventEmitter();
     this.storage = new Storage();
     this.setup();
@@ -171,79 +167,123 @@ class LighterFuel {
     return res.info;
   }
 
-  startMonitorInterval() {
-    setInterval(async () => {
-      const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
+  async handleConventionalSliderImages() {
+    const keenSlider = [...document.querySelectorAll('div.keen-slider, div.profileCard__slider')].reverse();
 
-      // @ts-expect-error contentVisibilityAuto is not in the types and is experimental
-      const visible = keenSlider.filter((x) => x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }));
+    const visible = keenSlider.filter((x) => x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }));
 
-      if (visible.length > 0) {
-        // For every slider, make sure there's the overlay
-        for (const slider of visible) {
-          // check to see if the overlay 'aria-url' matches the current image
-          const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
-          if (profileImages.length === 0) {
+    if (visible.length > 0) {
+      // For every slider, make sure there's the overlay
+      for (const slider of visible) {
+        // check to see if the overlay 'aria-url' matches the current image
+        const profileImages = [...slider.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
+        if (profileImages.length === 0) {
+          break;
+        }
+        const currentImage = profileImages.reduce((acc, curr) => {
+          const firstParent = curr.parentElement.getAttribute('aria-hidden') === 'false';
+          const secondParent = curr.parentElement.parentElement.getAttribute('aria-hidden') === 'false';
+          if (firstParent || secondParent) return curr;
+          return acc;
+        });
+        let mediaURL = getImageURLfromNode(currentImage);
+        if (debug && (imageConsoleLogMod % 50 === 0)) console.log('currentImage', mediaURL, (await this.getImageInfo(mediaURL)));
+        imageConsoleLogMod++;
+        if (!mediaURL) {
+          const videoURL = getVideoURLfromNode(currentImage);
+
+          if (!videoURL) {
+            if (debug) {
+              console.log('getImageURLfromNode + getVideoURLfromNode returned undefined, skipping this image');
+            }
             break;
+          } else {
+            mediaURL = videoURL;
           }
-          const currentImage = profileImages.reduce((acc, curr) => {
-            const firstParent = curr.parentElement.getAttribute('aria-hidden') === 'false';
-            const secondParent = curr.parentElement.parentElement.getAttribute('aria-hidden') === 'false';
-            if (firstParent || secondParent) return curr;
-            return acc;
-          });
-          let mediaURL = getImageURLfromNode(currentImage);
-          if (debug && (imageConsoleLogMod % 50 === 0)) console.log('currentImage', mediaURL, (await this.getImageInfo(mediaURL)));
-          imageConsoleLogMod++;
-          if (!mediaURL) {
-            const videoURL = getVideoURLfromNode(currentImage);
+        }
 
-            if (!videoURL) {
-              if (debug) {
-                console.log('getImageURLfromNode + getVideoURLfromNode returned undefined, skipping this image');
-              }
-              break;
-            } else {
-              mediaURL = videoURL;
-            }
+        this.getImageInfo(mediaURL).then((info) => {
+          if (!info) {
+            if (debug) console.log('No info for', mediaURL);
+            return;
           }
+          let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
+          const sliderParent = slider.parentNode;
 
-          this.getImageInfo(mediaURL).then((info) => {
-            if (!info) {
-              if (debug) console.log('No info for', mediaURL);
-              return;
-            }
-            let existingOverlay = slider.parentNode.querySelector('p.overlayBox, p.topBox');
-            const sliderParent = slider.parentNode;
+          if (existingOverlay) {
+            if (existingOverlay.parentNode) {
+              const existingOverlayInCorrectPlace = (existingOverlay.parentNode as HTMLElement).classList.contains('keen-slider')
+              || (existingOverlay.parentNode as HTMLElement).classList.contains('tappable-view');
 
-            if (existingOverlay) {
-              if (existingOverlay.parentNode) {
-                const existingOverlayInCorrectPlace = (existingOverlay.parentNode as HTMLElement).classList.contains('keen-slider')
-                || (existingOverlay.parentNode as HTMLElement).classList.contains('tappable-view');
-
-                if (!existingOverlayInCorrectPlace) {
-                  existingOverlay.parentNode.removeChild(existingOverlay);
-                  existingOverlay = undefined;
-                  if (debug) {
-                    console.log('Existing overlay not in correct place, removing it');
-                  }
+              if (!existingOverlayInCorrectPlace) {
+                existingOverlay.parentNode.removeChild(existingOverlay);
+                existingOverlay = undefined;
+                if (debug) {
+                  console.log('Existing overlay not in correct place, removing it');
                 }
               }
             }
+          }
 
-            if (!existingOverlay) {
+          if (!existingOverlay) {
+            this.createOverlayNode(info, sliderParent);
+            consoleOut('Added overlay');
+          } else // check to see if the overlay 'aria-url' matches the current image
+            if (existingOverlay.getAttribute('aria-url') !== info.original) {
+              // if not, update the overlay
+              existingOverlay.parentNode.removeChild(existingOverlay);
               this.createOverlayNode(info, sliderParent);
-              consoleOut('Added overlay');
-            } else // check to see if the overlay 'aria-url' matches the current image
-              if (existingOverlay.getAttribute('aria-url') !== info.original) {
-                // if not, update the overlay
-                existingOverlay.parentNode.removeChild(existingOverlay);
-                this.createOverlayNode(info, sliderParent);
-                consoleOut('Updated overlay');
-              }
-          });
-        }
+              consoleOut('Updated overlay');
+            }
+        });
       }
+    }
+  }
+
+  handleLikesYouCardItem() {
+    const visible = [...document.querySelectorAll('.likesYouCardItem')].reduce((acc, topLevel) => {
+      const stretchedBox = [...topLevel.querySelectorAll('div.StretchedBox')] as HTMLDivElement[];
+
+      return [...acc, ...stretchedBox.filter((x) => {
+        if(!x || x.style.backgroundImage === '') return acc;
+      
+        if(!x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }) || x.getAttribute('aria-has-overlay') === 'true') return false;
+
+        return true;
+      })]
+
+    }, [] as HTMLDivElement[]);
+    console.log('visible', visible.length);
+    visible.forEach(async (el) => {
+      el.setAttribute('aria-has-overlay', 'true');
+
+      const mediaURL = getImageURLfromNode(el);
+      if(!mediaURL) {
+        if(debug) console.log('getImageURLfromNode returned undefined (likes-you-card), skipping this image');
+        return;
+      }
+
+      const data = await this.getImageInfo(mediaURL);
+
+      const date = new Date(data.accountCreated);
+      const xOld = getTimeOld(date.getTime());
+
+      const overlayNode = document.createElement('p');
+      overlayNode.style.zIndex = '1000';
+      overlayNode.classList.add('overlayBox');
+      overlayNode.innerHTML = `${xOld} Ago`;
+
+      el.appendChild(overlayNode);
+    })
+
+  }
+
+  startMonitorInterval() {
+    setInterval(async () => {
+      await Promise.all([
+        this.handleConventionalSliderImages(),
+        this.handleLikesYouCardItem(),
+      ]);
     }, 50);
   }
 
@@ -308,7 +348,7 @@ class LighterFuel {
 
   beginPingPongLoop() {
     setInterval(() => {
-      if (Date.now() - this.lastPingTime > 1000 * 60 * 4) {
+      if (Date.now() - this.lastPingTime > 950 * 60 * 4) {
         this.ping();
       }
     }, 1000 * 60);
