@@ -68,6 +68,9 @@ export class PeopleHandler {
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
       if (!this.people.find((p) => p._id === person._id && p.type === person.type)) {
+        if (person.type === 'match' || person.type === 'profile') {
+          this.people = this.people.filter((p) => p._id !== person._id);
+        }
         this.people.push(
           {
             ...person,
