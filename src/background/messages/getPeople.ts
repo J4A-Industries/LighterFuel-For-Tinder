@@ -4,7 +4,7 @@ import { peopleHandler } from '..';
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
   peopleHandler.handleNewPeople(req.body.people);
   res.send({
-    recieved: true,
+    received: true,
   });
 };
 

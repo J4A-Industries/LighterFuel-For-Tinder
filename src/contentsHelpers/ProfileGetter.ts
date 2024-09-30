@@ -71,7 +71,7 @@ class ProfileGetter {
   }
 
   handleFastMatch(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid fast match response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid fast match response');
 
     const newRecs: rec[] = jsonOut.data.results;
     const people = [];
@@ -88,7 +88,7 @@ class ProfileGetter {
   }
 
   handleNewMatches(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.data?.matches)) console.error('Invalid matches response');
+    if (!Array.isArray(jsonOut?.data?.matches) && debug) console.error('Invalid matches response');
 
     const newMatches: Match[] = jsonOut.data.matches;
 
@@ -112,7 +112,7 @@ class ProfileGetter {
   }
 
   handleNewUpdates(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.matches)) console.error('Invalid updates response');
+    if (!Array.isArray(jsonOut?.matches) && debug) console.error('Invalid updates response');
 
     const newMatches: Match[] = jsonOut.matches;
 
@@ -130,7 +130,7 @@ class ProfileGetter {
 
   handleNewCore(jsonOut: any) {
     if (debug) console.log('core recs', jsonOut);
-    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid core response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid core response');
 
     const newRecs: rec[] = jsonOut.data.results;
     const people = [];
@@ -148,7 +148,7 @@ class ProfileGetter {
 
   handleProfile(jsonOut: any) {
     if (debug) console.log('profile', jsonOut);
-    if (!Array.isArray(jsonOut?.data?.results)) console.error('Invalid profile response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid profile response');
 
     if (!jsonOut.data.user) return;
 
