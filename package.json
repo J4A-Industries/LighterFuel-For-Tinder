@@ -6,8 +6,7 @@
   "author": "James",
   "scripts": {
     "dev": "plasmo dev",
-    "build-chrome": "plasmo build",
-    "build-firefox": "plasmo build --target=firefox-mv2",
+    "build": "plasmo build",
     "package": "plasmo package"
   },
   "dependencies": {
