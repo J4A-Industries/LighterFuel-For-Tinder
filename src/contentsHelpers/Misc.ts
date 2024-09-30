@@ -11,13 +11,13 @@ const getReverseImageURL = (url: string): string => `https://lens.google.com/upl
    * TODO: make platform agnostic
    * @returns The buttons
    */
-export const createButton = (url: string): HTMLElement => {
+export const createButton = (url: string, withSearch: boolean): HTMLElement => {
   const parent = document.createElement('div');
   parent.classList.add('buttonParent');
   // * URLs that start with ... are private (their URL can't be passed to any other service)
   // * They are seemingly the profile pictures when swiping
   // * Let's just only allow this on matches for now
-  if (!url.startsWith('https://images-ssl.gotinder.com/u/')) {
+  if (withSearch) {
     const searchButton = document.createElement('div');
     const reverseImageUrl = getReverseImageURL(url);
     searchButton.classList.add('buttonLF');
@@ -44,10 +44,8 @@ export const createButton = (url: string): HTMLElement => {
   const openHighQuality = document.createElement('a');
   openHighQuality.classList.add('buttonLF');
   openHighQuality.classList.add('search');
-  openHighQuality.style.color = 'black';
   openHighQuality.href = url;
   openHighQuality.innerText = 'Open High Quality';
-  openHighQuality.style.outline = 'black solid 1px';
   openHighQuality.target = '_blank';
 
   openHighQuality.onclick = () => {

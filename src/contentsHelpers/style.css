@@ -69,4 +69,6 @@
   border-color: #000000;
   border-width: 2px;
 	margin: 4px;
+  color: black; 
+  outline: black solid 1px;
 }

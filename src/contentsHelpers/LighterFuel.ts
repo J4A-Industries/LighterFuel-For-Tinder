@@ -245,21 +245,20 @@ class LighterFuel {
       const stretchedBox = [...topLevel.querySelectorAll('div.StretchedBox')] as HTMLDivElement[];
 
       return [...acc, ...stretchedBox.filter((x) => {
-        if(!x || x.style.backgroundImage === '') return acc;
-      
-        if(!x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }) || x.getAttribute('aria-has-overlay') === 'true') return false;
+        if (!x || x.style.backgroundImage === '') return acc;
+
+        if (!x.checkVisibility({ checkOpacity: true, visibilityProperty: true, contentVisibilityAuto: true }) || x.getAttribute('aria-has-overlay') === 'true') return false;
 
         return true;
-      })]
-
+      })];
     }, [] as HTMLDivElement[]);
     console.log('visible', visible.length);
     visible.forEach(async (el) => {
       el.setAttribute('aria-has-overlay', 'true');
 
       const mediaURL = getImageURLfromNode(el);
-      if(!mediaURL) {
-        if(debug) console.log('getImageURLfromNode returned undefined (likes-you-card), skipping this image');
+      if (!mediaURL) {
+        if (debug) console.log('getImageURLfromNode returned undefined (likes-you-card), skipping this image');
         return;
       }
 
@@ -275,8 +274,7 @@ class LighterFuel {
       overlayNode.innerHTML = `${xOld} Ago`;
 
       el.appendChild(overlayNode);
-    })
-
+    });
   }
 
   startMonitorInterval() {
@@ -305,7 +303,7 @@ class LighterFuel {
       console.log('no hqUrl', data);
     }
 
-    overlayNode.appendChild(createButton(data.hqUrl));
+    overlayNode.appendChild(createButton(data.hqUrl, data.type !== 'rec'));
     overlayNode.setAttribute('aria-url', data.original);
     const onPlaced = () => {
       const bounds = overlayNode.getBoundingClientRect();
@@ -328,7 +326,7 @@ class LighterFuel {
 
   handleWindowResize() {
     const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')]
-    .filter(el => !el.classList.contains('noTopBox'));
+      .filter((el) => !el.classList.contains('noTopBox'));
     Promise.all(overlays.map(async (overlay: HTMLDivElement) => {
       const bounds = overlay.getBoundingClientRect();
       if (bounds.top >= 120 && overlay.classList.contains('overlayBox')) {
