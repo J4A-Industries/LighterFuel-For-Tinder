@@ -326,6 +326,7 @@ class LighterFuel {
   }
 
   handleTopBoxPlace(topBox: HTMLDivElement) {
+    if (!topBox?.parentElement?.parentElement?.parentElement) return;
     // eslint-disable-next-line no-param-reassign
     topBox.parentElement.parentElement.parentElement.style.overflow = 'visible';
   }
