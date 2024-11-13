@@ -312,7 +312,7 @@ class LighterFuel {
         overlayNode.classList.add('topBox');
         parentNode(overlayNode, 2).style.overflow = 'visible';
         parentNode(overlayNode, 5).style.top = '50px';
-        // this.handleTopBoxPlace(overlayNode);
+        this.handleTopBoxPlace(overlayNode);
       } else {
         overlayNode.classList.add('overlayBox');
       }
@@ -325,10 +325,10 @@ class LighterFuel {
     return overlayNode;
   }
 
-  // handleTopBoxPlace(topBox: HTMLDivElement) {
-  //   // eslint-disable-next-line no-param-reassign
-  //   topBox.parentElement.parentElement.style.overflow = 'visible';
-  // }
+  handleTopBoxPlace(topBox: HTMLDivElement) {
+    // eslint-disable-next-line no-param-reassign
+    topBox.parentElement.parentElement.parentElement.style.overflow = 'visible';
+  }
 
   handleWindowResize() {
     const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')]
@@ -340,7 +340,7 @@ class LighterFuel {
         overlay.classList.add('topBox');
         parentNode(overlay, 2).style.overflow = 'visible';
         parentNode(overlay, 5).style.top = '50px';
-        // this.handleTopBoxPlace(overlay);
+        this.handleTopBoxPlace(overlay);
       } else if (bounds.top < 120 && overlay.classList.contains('topBox')) {
         overlay.classList.add('overlayBox');
         overlay.classList.remove('topBox');
