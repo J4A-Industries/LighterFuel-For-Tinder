@@ -81,7 +81,7 @@ class LighterFuel {
       name: 'getInstallType',
     });
 
-    console.log('installType', installType, debug);
+    if (debug) console.log('installType', installType, debug);
     if (installType === 'normal' || debug) {
       this.startMonitorInterval();
       this.initializeEventListeners();
@@ -252,7 +252,7 @@ class LighterFuel {
         return true;
       })];
     }, [] as HTMLDivElement[]);
-    console.log('visible', visible.length);
+    if (debug) console.log('visible', visible.length);
     visible.forEach(async (el) => {
       el.setAttribute('aria-has-overlay', 'true');
 
@@ -312,6 +312,7 @@ class LighterFuel {
         overlayNode.classList.add('topBox');
         parentNode(overlayNode, 2).style.overflow = 'visible';
         parentNode(overlayNode, 5).style.top = '50px';
+        this.handleTopBoxPlace(overlayNode);
       } else {
         overlayNode.classList.add('overlayBox');
       }
@@ -324,6 +325,12 @@ class LighterFuel {
     return overlayNode;
   }
 
+  handleTopBoxPlace(topBox: HTMLDivElement) {
+    if (!topBox?.parentElement?.parentElement?.parentElement) return;
+    // eslint-disable-next-line no-param-reassign
+    topBox.parentElement.parentElement.parentElement.style.overflow = 'visible';
+  }
+
   handleWindowResize() {
     const overlays = [...document.querySelectorAll('p.overlayBox, p.topBox')]
       .filter((el) => !el.classList.contains('noTopBox'));
@@ -334,6 +341,7 @@ class LighterFuel {
         overlay.classList.add('topBox');
         parentNode(overlay, 2).style.overflow = 'visible';
         parentNode(overlay, 5).style.top = '50px';
+        this.handleTopBoxPlace(overlay);
       } else if (bounds.top < 120 && overlay.classList.contains('topBox')) {
         overlay.classList.add('overlayBox');
         overlay.classList.remove('topBox');

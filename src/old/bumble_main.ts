@@ -24,14 +24,14 @@ const handleImageUpload = async (data: string) => {
     const fileUpload = response.body.find((b) => b.client_upload_photo);
 
     if (!fileUpload) {
-      console.log('No file upload found');
+      if (debug) console.log('No file upload found');
       return;
     }
 
     const photo = fileUpload?.client_upload_photo.photo;
 
     if (!photo) {
-      console.log('No photo found');
+      if (debug) console.log('No photo found');
       return;
     }
 
@@ -88,7 +88,7 @@ const handleUserList = async (data: string) => {
     }, []);
 
     if (debug) console.log(`Found ${users.length} users`);
-    console.log(users);
+    if (debug) console.log(users);
   } catch (err) {
     console.error(err);
   }
@@ -115,7 +115,7 @@ const handleEncounters = async (data: string) => {
     }, []);
 
     if (debug) console.log(`Found ${users.length} encounters`);
-    console.log(users);
+    if (debug) console.log(users);
 
     await sendToBackgroundViaRelay({
       name: 'bumbleUser',
@@ -140,7 +140,7 @@ const handleUser = async (data: string) => {
     }
 
     if (debug) console.log(`Found ${users.length} users`);
-    console.log(users);
+    if (debug) console.log(users);
 
     const merged: MergedUser[] = users;
 

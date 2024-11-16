@@ -23,7 +23,7 @@ class ProfileGetter {
    */
   setCustomFetch() {
     // save default fetch
-    console.log('Setting custom fetch');
+    if (debug) console.log('Setting custom fetch');
 
     const nativeFetch = window.fetch;
     window.fetch = (...args) => new Promise((resolve, reject) => {
@@ -82,7 +82,7 @@ class ProfileGetter {
 
   handleLike(jsonOut: any, url: string) {
     if ('match' in jsonOut) {
-      console.log('new match', jsonOut.match);
+      if (debug) console.log('new match', jsonOut.match);
       const regex = /like\/([a-zA-Z0-9]+)\?/;
       const match = url.match(regex);
 
