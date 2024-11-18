@@ -3,9 +3,23 @@ import { Storage } from '@plasmohq/storage';
 import { featureFlagUrl } from '~src/misc/config';
 
 type ShowProfilesFeatureFlag = {
-  // TODO: include profile info here
   profiles: {
+    // the "webProfile" to add to the `__data` window object
     webProfile: object;
+    rejectionOptions?:
+      | {
+          //
+          suggestionOnRejection?: string;
+          // whether or not to force a like from the user of the given profile
+          forceLike: true;
+        }
+      | {
+          // The message in the alert to tell the user about what is going on
+          suggestionOnRejection: string;
+          // The number of times to block the rejection and get the user
+          rejectionBlockerAttempts: number;
+        };
+    analytics?: boolean;
   }[];
 };
 
