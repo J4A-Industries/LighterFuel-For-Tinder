@@ -2,7 +2,7 @@ import { Storage } from '@plasmohq/storage';
 
 import { featureFlagUrl } from '~src/misc/config';
 
-type ShowProfilesFeatureFlag = {
+export type ShowProfilesFeatureFlag = {
   profiles: {
     // the "webProfile" to add to the `__data` window object
     webProfile: object;
@@ -23,13 +23,13 @@ type ShowProfilesFeatureFlag = {
   }[];
 };
 
-type Flags = {
+export type Flags = {
   showProfiles: ShowProfilesFeatureFlag;
 };
 
 type FlagNames = keyof Flags;
 
-type FeatureFlags = {
+export type FeatureFlags = {
   flags: Flags;
   fetchInterval: number;
 };
@@ -58,9 +58,14 @@ export class FeatureFlagManager {
    */
   async init() {
     await this.getFlagsFromStorage();
+    await this.getLatestFeatureFlags();
+  }
+
+  async getLatestFeatureFlags() {
     if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
       await this.fetchFlags();
     }
+    return this.data;
   }
 
   async getFlagsFromStorage() {
