@@ -8,8 +8,8 @@ type ShowProfilesFeatureFlag = {
     webProfile: object;
     rejectionOptions?:
       | {
-          //
-          suggestionOnRejection?: string;
+          // The message in the alert to tell the user about what is going on
+          suggestionOnRejection: string;
           // whether or not to force a like from the user of the given profile
           forceLike: true;
         }
@@ -38,6 +38,10 @@ type FeatureFlagsWithLastFetched = FeatureFlags & {
   lastFetched: number;
 };
 
+/**
+ * The feature flag manager handles all the FeatureFlag state management
+ * and handling for LighterFuel
+ */
 export class FeatureFlagManager {
   data: FeatureFlagsWithLastFetched | undefined = undefined;
 
@@ -49,6 +53,9 @@ export class FeatureFlagManager {
     if (storage) this.storage = storage;
   }
 
+  /**
+   * Fetches the feature flag data and sets to data
+   */
   async init() {
     await this.getFlagsFromStorage();
     if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
