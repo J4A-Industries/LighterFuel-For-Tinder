@@ -1,9 +1,13 @@
 /* eslint-disable import/no-mutable-exports */
+
+import { debug, defaultSettings } from '@/misc/config';
+
 import { Storage } from '@plasmohq/storage';
-import {
-  debug, defaultSettings,
-} from '@/misc/config';
+
+import { FeatureFlagManager } from '~src/background/classes/FeatureFlagManager';
+import { ProfileShower } from '~src/background/classes/ProfileShower';
 import { AnalyticsEvent } from '~src/misc/GA';
+
 import { PeopleHandler } from './PeopleHandler';
 
 const setAndCheckDefaultSettings = async () => {
@@ -28,22 +32,34 @@ const setAndCheckDefaultSettings = async () => {
   }
 };
 
-let peopleHandler: PeopleHandler;
+const peopleHandler = new PeopleHandler();
+const featureFlagManager = new FeatureFlagManager();
+let profileShower: ProfileShower;
+
+const getProfileShower = async () => {
+  if (!profileShower) {
+    await featureFlagManager.init();
+    profileShower = new ProfileShower(
+      featureFlagManager.data.flags.showProfiles.profiles,
+    );
+    return profileShower;
+  }
+  return profileShower;
+};
 
 try {
   setAndCheckDefaultSettings();
 
-  peopleHandler = new PeopleHandler();
+  getProfileShower().catch((e) => console.error(e));
 
   if (debug) console.log('people handler', peopleHandler);
+  if (debug) console.log('featureFlagManager', featureFlagManager);
 } catch (err: any) {
   console.error(`Error caught in background.js: ${err.stack}`);
 }
 
 // exporting so the message handlers can access the images
-export {
-  peopleHandler,
-};
+export { peopleHandler, featureFlagManager, getProfileShower };
 
 /**
  * When the user first installs the extension, open the main page
@@ -74,10 +90,16 @@ chrome.runtime.onInstalled.addListener(async (object) => {
     }
 
     await storage.set('hasInstalled', true);
-    chrome.runtime.setUninstallURL(`https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`);
+    chrome.runtime.setUninstallURL(
+      `https://j4a.uk/projects/lighterfuel/uninstall?clientId=${clientId}`,
+    );
   } else if (object.reason === chrome.runtime.OnInstalledReason.UPDATE) {
     const clientId = await storage.get('clientId');
-    console.log(`ClientID: ${clientId}, clientID type: ${typeof clientId}, clientID length: ${clientId.length}`);
+    console.log(
+      `ClientID: ${clientId}, clientID type: ${typeof clientId}, clientID length: ${
+        clientId.length
+      }`,
+    );
 
     const currentVersion = chrome.runtime.getManifest().version;
     const previousVersion = await storage.get('version');
@@ -98,7 +120,9 @@ chrome.runtime.onInstalled.addListener(async (object) => {
   }
 
   if (installType === 'development' && !debug) {
-    chrome.runtime.setUninstallURL('https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc');
+    chrome.runtime.setUninstallURL(
+      'https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc',
+    );
     chrome.tabs.create({ url: chrome.runtime.getURL('tabs/notCWS.html') });
   } else if (replayConsent === undefined || analyticsConsent === undefined) {
     const consentUrl = chrome.runtime.getURL('tabs/consent.html');

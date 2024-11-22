@@ -1,6 +1,6 @@
 declare namespace NodeJS {
   interface ProcessEnv {
-    PLASMO_PUBLIC_GTAG_ID?: string
+    PLASMO_PUBLIC_GTAG_ID?: string;
   }
 }
 
@@ -13,4 +13,5 @@ declare module '*.png';
 declare module '*.jpg';
 interface Window {
   __data: any;
+  __customData;
 }

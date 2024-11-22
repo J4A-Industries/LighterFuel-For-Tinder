@@ -33,3 +33,11 @@ relayMessage({
 relayMessage({
   name: 'getFeatureFlags',
 });
+
+relayMessage({
+  name: 'getProfileToShow',
+});
+
+relayMessage({
+  name: 'sendProfileResult',
+});
