@@ -17,12 +17,16 @@ export class MainWorldProfileInjector {
   profileFlag: ProfileFeatureFlag | undefined;
 
   async init() {
+    console.log('getting profile to show');
     const getProfileToShowRes = await sendToBackgroundViaRelay<
       GetProfileToShowRequest,
       GetProfileToShowResponse
     >({
       name: 'getProfileToShow',
+      body: {},
     });
+
+    console.log('Got profile to show', getProfileToShowRes);
 
     this.profileFlag = getProfileToShowRes;
     if (this.profileFlag) {
@@ -36,6 +40,8 @@ export class MainWorldProfileInjector {
       return;
     }
 
+    const { webProfile } = this.profileFlag;
+
     Object.defineProperty(window, '__data', {
       get() {
         return window.__customData;
@@ -43,11 +49,13 @@ export class MainWorldProfileInjector {
       set(val) {
         window.__customData = {
           ...val,
-          webProfile: this.profileFlag.webProfile,
+          webProfile,
         };
         if (debug) console.warn('Someone tried to set __data to ', val);
       },
     });
+
+    console.log('Injected profile data into window.__data!!');
   }
 
   handleWebRequest() {

@@ -8,18 +8,20 @@ export type ShowProfilesFeatureFlag = {
     webProfile: object;
     rejectionOptions?:
       | {
+          // FIXME: not implemented
           // The message in the alert to tell the user about what is going on
           suggestionOnRejection: string;
           // whether or not to force a like from the user of the given profile
           forceLike: true;
         }
       | {
+          // FIXME: not implemented
           // The message in the alert to tell the user about what is going on
           suggestionOnRejection: string;
           // The number of times to block the rejection and get the user
           rejectionBlockerAttempts: number;
         };
-    analytics?: boolean;
+    analytics?: boolean; // FIXME: not implemented
   }[];
 };
 
@@ -62,16 +64,19 @@ export class FeatureFlagManager {
   }
 
   async getLatestFeatureFlags() {
-    if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
+    if (this.data === undefined) {
+      await this.fetchFlags();
+    } else if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
       await this.fetchFlags();
     }
+
     return this.data;
   }
 
   async getFlagsFromStorage() {
-    this.data = await this.storage.getItem<FeatureFlagsWithLastFetched>(
-      'featureFlags',
-    );
+    this.data = await this.storage.getItem<
+      FeatureFlagsWithLastFetched | undefined
+    >('featureFlags');
   }
 
   async fetchFlags() {
