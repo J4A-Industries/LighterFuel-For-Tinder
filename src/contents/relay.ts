@@ -4,6 +4,8 @@ import { relayMessage } from '@plasmohq/messaging';
 
 export const config: PlasmoCSConfig = {
   matches: ['*://tinder.com/*'],
+  run_at: 'document_start',
+  all_frames: true,
 };
 
 relayMessage({
