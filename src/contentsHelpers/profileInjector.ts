@@ -42,6 +42,13 @@ export class MainWorldProfileInjector {
 
     const { webProfile } = this.profileFlag;
 
+    // setting data initially
+    window.__customData = {
+      ...window.__data,
+      webProfile,
+    };
+
+    // Making sure that if anyone tries to set __data, we update __customData
     Object.defineProperty(window, '__data', {
       get() {
         return window.__customData;
