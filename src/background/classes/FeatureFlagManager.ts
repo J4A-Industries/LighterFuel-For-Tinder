@@ -1,11 +1,14 @@
 import { Storage } from '@plasmohq/storage';
 
 import { featureFlagUrl } from '~src/misc/config';
+import type { Person } from '~src/misc/tinderTypes';
 
 export type ShowProfilesFeatureFlag = {
   profiles: {
     // the "webProfile" to add to the `__data` window object
-    webProfile: object;
+    webProfile: {
+      user: Person;
+    };
     rejectionOptions?:
       | {
           // FIXME: not implemented

@@ -12,13 +12,18 @@ import type {
   SendProfileResultResponse,
 } from '~src/background/messages/sendProfileResult';
 import { debug } from '~src/misc/config';
+import { getImageDivsFromIDs } from '~src/misc/utils';
 
+// TODO: We need to check whether or not the given profile is currently being shown
+// for the button swap and the swipe reversal mode
 export class MainWorldProfileInjector {
   profileFlag: ProfileFeatureFlag | undefined;
 
   private keySwapEnabled = false; // Internal flag to enable/disable key swap
 
   private swipeReversalEnabled = false; // Internal flag to enable/disable swipe reversal
+
+  private swapButtonsEnabled = false;
 
   private keySwapHandler: ((event: KeyboardEvent) => void) | null = null; // Internal handler for key swap
 
@@ -238,5 +243,29 @@ export class MainWorldProfileInjector {
       window.removeEventListener('keydown', this.keySwapHandler, true);
       this.keySwapHandler = null;
     }
+  }
+
+  swapButtons(swapButtonsEnabled: boolean) {
+    if (this.swapButtonsEnabled === swapButtonsEnabled) return;
+    this.swapButtonsEnabled = swapButtonsEnabled;
+
+    // const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
+    //   (x) => x.id,
+    // );
+
+    // const divs = getImageDivsFromIDs(photoIds).getElements();
+
+    // if (divs.length === 0) {
+    //   if (debug) console.error('No divs found');
+    //   return;
+    // }
+
+    // const firstDiv = divs[0];
+
+    // firstDiv;
+
+    // TODO: get one of the buttons via it's class name
+    // TODO: go to the parent and swap around the like and dislike position
+    // TODO: see if we need to use a mutation observer to make sure the buttons don't change position
   }
 }
