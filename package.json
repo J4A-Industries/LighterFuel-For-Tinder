@@ -36,6 +36,7 @@
     "autoprefixer": "10.4.13",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.37.0",
@@ -86,7 +87,8 @@
     },
     "extends": [
       "plugin:react/recommended",
-      "airbnb"
+      "airbnb",
+      "prettier"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
@@ -116,6 +118,7 @@
           "allowIndentationTabs": true
         }
       ],
+      "import/order": "off",
       "import/extensions": 0,
       "import/no-unresolved": 0,
       "jsx-a11y/click-events-have-key-events": 0,
