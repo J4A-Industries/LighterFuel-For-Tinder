@@ -26,14 +26,15 @@ class ProfileGetter {
     if (debug) console.log('Setting custom fetch');
 
     const nativeFetch = window.fetch;
-    window.fetch = (...args) => new Promise((resolve, reject) => {
-      nativeFetch(...args)
-        .then((result) => {
-          this.handleFetchResponse(result.clone(), args);
-          resolve(result);
-        })
-        .catch((err) => reject(err));
-    });
+    window.fetch = (...args) =>
+      new Promise((resolve, reject) => {
+        nativeFetch(...args)
+          .then((result) => {
+            this.handleFetchResponse(result.clone(), args);
+            resolve(result);
+          })
+          .catch((err) => reject(err));
+      });
   }
 
   /**
@@ -63,8 +64,8 @@ class ProfileGetter {
       if (args[0].match(regexChecks.matches)) {
         this.handleNewMatches(jsonOut);
       } else if (
-        args[0].match(regexChecks.core)
-        || args[0].match(regexChecks.myLikes)
+        args[0].match(regexChecks.core) ||
+        args[0].match(regexChecks.myLikes)
       ) {
         this.handleNewCore(jsonOut);
       } else if (args[0].match(regexChecks.profile)) {
@@ -73,11 +74,26 @@ class ProfileGetter {
         this.handleFastMatch(jsonOut);
       } else if (args[0].match(regexChecks.like)) {
         this.handleLike(jsonOut, args[0]);
+      } else if (args[0].match(regexChecks.user)) {
+        this.handleUser(jsonOut); // https://api.gotinder.com/user/67502696a7bbc0010061140f?locale=en
       }
     } catch (e) {
       console.error(e);
       // if the response is not json, ignore it
     }
+  }
+
+  handleUser(jsonOut: any) {
+    if (debug) console.log('user', jsonOut);
+
+    if (!jsonOut.results) {
+      if (debug) console.error('Invalid user response');
+      return;
+    }
+
+    const person: Person = jsonOut.results;
+    person.type = 'rec';
+    this.sendPeopleToBackground([person]);
   }
 
   handleLike(jsonOut: any, url: string) {
@@ -98,12 +114,14 @@ class ProfileGetter {
         });
         return;
       }
-      if (debug) console.error('Could not find id in url after successful match', url);
+      if (debug)
+        console.error('Could not find id in url after successful match', url);
     }
   }
 
   handleFastMatch(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid fast match response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug)
+      console.error('Invalid fast match response');
 
     const newRecs: rec[] = jsonOut.data.results;
     const people = [];
@@ -120,7 +138,8 @@ class ProfileGetter {
   }
 
   handleNewMatches(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.data?.matches) && debug) console.error('Invalid matches response');
+    if (!Array.isArray(jsonOut?.data?.matches) && debug)
+      console.error('Invalid matches response');
 
     const newMatches: Match[] = jsonOut.data.matches;
 
@@ -143,7 +162,8 @@ class ProfileGetter {
   }
 
   handleNewUpdates(jsonOut: any) {
-    if (!Array.isArray(jsonOut?.matches) && debug) console.error('Invalid updates response');
+    if (!Array.isArray(jsonOut?.matches) && debug)
+      console.error('Invalid updates response');
 
     const newMatches: Match[] = jsonOut.matches;
 
@@ -161,7 +181,8 @@ class ProfileGetter {
 
   handleNewCore(jsonOut: any) {
     if (debug) console.log('core recs', jsonOut);
-    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid core response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug)
+      console.error('Invalid core response');
 
     const newRecs: rec[] = jsonOut.data.results;
     const people = [];
@@ -179,7 +200,8 @@ class ProfileGetter {
 
   handleProfile(jsonOut: any) {
     if (debug) console.log('profile', jsonOut);
-    if (!Array.isArray(jsonOut?.data?.results) && debug) console.error('Invalid profile response');
+    if (!Array.isArray(jsonOut?.data?.results) && debug)
+      console.error('Invalid profile response');
 
     if (!jsonOut.data.user) return;
 
