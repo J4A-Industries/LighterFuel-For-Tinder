@@ -25,6 +25,7 @@ export type ShowProfilesFeatureFlag = {
           rejectionBlockerAttempts: number;
         };
     analytics?: boolean; // FIXME: not implemented
+    onlyFunMode?: boolean; // FIXME: not implemented
   }[];
 };
 

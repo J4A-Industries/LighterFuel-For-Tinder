@@ -30,12 +30,6 @@ const setAndCheckDefaultSettings = async () => {
       await storage.set('replayConsent', sentryConsent);
     }
   }
-
-  const funMode = await storage.get('funMode');
-
-  if (funMode === undefined) {
-    await storage.set('funMode', true);
-  }
 };
 
 const peopleHandler = new PeopleHandler();
