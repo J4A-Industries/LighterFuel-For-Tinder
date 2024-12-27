@@ -27,6 +27,9 @@ export class ProfileShower {
   }
 
   getProfile(): ProfileFeatureFlag | undefined {
+    if (this.shownProfileFlagIds === null) {
+      throw new Error('Shown profile flag IDs not loaded');
+    }
     if (this.profiles.length === 0) {
       return undefined;
     }
