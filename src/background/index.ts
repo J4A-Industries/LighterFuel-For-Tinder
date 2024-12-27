@@ -42,6 +42,7 @@ const getProfileShower = async () => {
     profileShower = new ProfileShower(
       featureFlagManager.data.flags.showProfiles.profiles,
     );
+    await profileShower.init();
     return profileShower;
   }
   return profileShower;
