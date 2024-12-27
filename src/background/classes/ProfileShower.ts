@@ -41,7 +41,7 @@ export class ProfileShower {
     return unshownProfile;
   }
 
-  async handleSwipe(profileId: String, direction: 'left' | 'right') {
+  async handleSwipe(profileId: String, result: 'like' | 'pass') {
     const flag = this.profiles.find(
       (profile) => profile.webProfile.user._id === profileId,
     );
@@ -54,7 +54,7 @@ export class ProfileShower {
       {
         name: 'swipe',
         params: {
-          direction,
+          result,
           profileId,
           flagId: flag.flagId,
         },
@@ -64,8 +64,6 @@ export class ProfileShower {
   }
 
   async handleAttemptedRejection(profileId: string) {
-    // TODO: analytics call
-    // TODO: add to rejection count locally
     const flag = this.profiles.find(
       (profile) => profile.webProfile.user._id === profileId,
     );

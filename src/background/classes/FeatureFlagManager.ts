@@ -26,6 +26,7 @@ export type ShowProfilesFeatureFlag = {
         };
     analytics?: boolean; // FIXME: not implemented
     onlyFunMode?: boolean; // FIXME: not implemented
+    flagId: string;
   }[];
 };
 
