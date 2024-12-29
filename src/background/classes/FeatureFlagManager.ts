@@ -1,6 +1,6 @@
 import { Storage } from '@plasmohq/storage';
 
-import { featureFlagUrl } from '~src/misc/config';
+import { debug, featureFlagUrl } from '~src/misc/config';
 import type { Person } from '~src/misc/tinderTypes';
 
 export type ShowProfilesFeatureFlag = {
@@ -26,6 +26,7 @@ export type ShowProfilesFeatureFlag = {
         };
     analytics?: boolean; // FIXME: not implemented
     onlyFunMode?: boolean; // FIXME: not implemented
+    changeDirections?: boolean;
     flagId: string;
   }[];
 };
@@ -66,10 +67,11 @@ export class FeatureFlagManager {
   async init() {
     await this.getFlagsFromStorage();
     await this.getLatestFeatureFlags();
+    console.log('Feature flags:', this.data);
   }
 
   async getLatestFeatureFlags() {
-    if (this.data === undefined) {
+    if (this.data === undefined || debug === true) {
       await this.fetchFlags();
     } else if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
       await this.fetchFlags();

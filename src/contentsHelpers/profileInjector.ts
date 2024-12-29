@@ -27,6 +27,10 @@ export class MainWorldProfileInjector {
 
   private keySwapHandler: ((event: KeyboardEvent) => void) | null = null; // Internal handler for key swap
 
+  private targetProfileDiv: HTMLElement | null = null;
+
+  private profileAlreadyTagged: boolean = false;
+
   private originalAddEventListener:
     | typeof EventTarget.prototype.addEventListener
     | null = null;
@@ -47,9 +51,15 @@ export class MainWorldProfileInjector {
     if (this.profileFlag) {
       this.injectProfile();
     }
+    this.handleChangeDirections();
+  }
 
-    this.enableSwipeReversal();
-    this.enableKeySwap();
+  handleChangeDirections() {
+    if (this.profileFlag.changeDirections) {
+      // TODO: Only change directions for the current profile
+      this.enableSwipeReversal();
+      this.enableKeySwap();
+    }
   }
 
   injectProfile() {
@@ -88,7 +98,10 @@ export class MainWorldProfileInjector {
   }
 
   async handleResult(result: 'like' | 'pass') {
-    // TODO: submit the result to the background script
+    if (!this.profileFlag) {
+      throw new Error('No profile flag found');
+    }
+
     await sendToBackgroundViaRelay<
       SendProfileResultRequest,
       SendProfileResultResponse
@@ -97,6 +110,7 @@ export class MainWorldProfileInjector {
       body: {
         event: 'swiped',
         result,
+        profileFlagId: this.profileFlag.flagId,
       },
     });
   }
@@ -195,6 +209,7 @@ export class MainWorldProfileInjector {
     }
   }
 
+  // TODO: find out if this works
   enableKeySwap() {
     if (this.keySwapEnabled) return;
 
@@ -233,6 +248,7 @@ export class MainWorldProfileInjector {
     window.addEventListener('keydown', this.keySwapHandler, true);
   }
 
+  // TODO: find out if this works too
   disableKeySwap() {
     if (!this.keySwapEnabled) return;
 
@@ -245,13 +261,13 @@ export class MainWorldProfileInjector {
     }
   }
 
-  swapButtons(swapButtonsEnabled: boolean) {
+  swapButtonsForProfile(swapButtonsEnabled: boolean) {
     if (this.swapButtonsEnabled === swapButtonsEnabled) return;
     this.swapButtonsEnabled = swapButtonsEnabled;
 
-    // const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
-    //   (x) => x.id,
-    // );
+    const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
+      (x) => x.id,
+    );
 
     // const divs = getImageDivsFromIDs(photoIds).getElements();
 
@@ -267,5 +283,31 @@ export class MainWorldProfileInjector {
     // TODO: get one of the buttons via it's class name
     // TODO: go to the parent and swap around the like and dislike position
     // TODO: see if we need to use a mutation observer to make sure the buttons don't change position
+  }
+
+  handleProfileShown() {
+    // TODO: create an interval that checks if the profile is being shown
+    // TODO: if the profile is being shown, mark targetProfileDiv as the profile div
+    // TODO: call a function to say the profile is being shown
+    // TODO: cancel the interval if the profile is no longer on the page
+    const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
+      (x) => x.id,
+    );
+    const profileShownInterval = setInterval(() => {
+      const divs = getImageDivsFromIDs(photoIds).getElements();
+
+      if (divs.length === 0) {
+        if (this.targetProfileDiv) {
+          clearInterval(profileShownInterval);
+        }
+      } else if (!this.targetProfileDiv) {
+        const firstDiv = divs[0];
+        this.targetProfileDiv =
+          firstDiv.parentElement.parentElement.parentElement.parentElement.parentElement;
+
+        // TODO: check if the element is actually in the view of the user
+        // TODO: Otherwise we're going to have to just wait until the pass or like request is sent
+      }
+    }, 1000);
   }
 }

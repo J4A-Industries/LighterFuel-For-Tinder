@@ -83,9 +83,9 @@ export class ProfileShower {
     const shownProfiles = await this.storage.get<string[]>(
       'shownProfileFlagIds',
     );
-    if (shownProfiles) {
-      this.shownProfileFlagIds = shownProfiles;
-    }
+
+    // If there are no shown profiles, set it to an empty array
+    this.shownProfileFlagIds = shownProfiles || [];
   }
 
   async markAsShown(profileFlagId: string) {

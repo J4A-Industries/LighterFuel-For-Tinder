@@ -19,7 +19,6 @@ class ProfileGetter {
 
   /**
    * Sets a passthrough for the fetch so we can monitor requests
-   * TODO: make this look nicer
    */
   setCustomFetch() {
     // save default fetch
@@ -38,7 +37,6 @@ class ProfileGetter {
   }
 
   /**
-   * TODO: move this to an external helper file
    * This method is to handle the response from the custom fetch when one appears
    * @param {Response} result The result from the fetch
    * @param {Array} args The arguments sent back
