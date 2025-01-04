@@ -61,7 +61,7 @@ export class MainWorldProfileInjector {
 
     if (id !== this.profileFlag?.webProfile.user._id) return;
     if (
-      typeof (jsonOut as UnsuccessfulLikeResponse)?.rate_limited_until !==
+      typeof (jsonOut as UnsuccessfulLikeResponse)?.rate_limited_until ===
         'number' &&
       likeOrPass === 'like'
     )
