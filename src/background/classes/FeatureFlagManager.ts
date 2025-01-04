@@ -103,15 +103,19 @@ export class FeatureFlagManager {
   }
 
   async fetchFlags() {
-    const result = await fetch(featureFlagUrl);
+    try {
+      const result = await fetch(featureFlagUrl);
 
-    if (result.status === 200) {
-      const data = (await result.json()) as FeatureFlags;
-      this.data = {
-        ...data,
-        lastFetched: new Date().getTime(),
-      };
-      this.storage.setItem('featureFlags', this.data);
+      if (result.status === 200) {
+        const data = (await result.json()) as FeatureFlags;
+        this.data = {
+          ...data,
+          lastFetched: new Date().getTime(),
+        };
+        this.storage.setItem('featureFlags', this.data);
+      }
+    } catch (e) {
+      if (debug) console.error('Error fetching feature flags', e);
     }
   }
 }
