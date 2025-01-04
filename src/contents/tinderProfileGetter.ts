@@ -1,5 +1,8 @@
 import type { PlasmoCSConfig } from 'plasmo';
-import ProfileGetter from '~src/contentsHelpers/ProfileGetter';
+
+import { FetchInterceptor } from '~src/contentsHelpers/FetchInterceptor';
+import { ProfileGetter } from '~src/contentsHelpers/ProfileGetter';
+import { MainWorldProfileInjector } from '~src/contentsHelpers/profileInjector';
 import { debug } from '~src/misc/config';
 
 export const config: PlasmoCSConfig = {
@@ -9,8 +12,13 @@ export const config: PlasmoCSConfig = {
 };
 
 try {
-  const getter = new ProfileGetter();
-  if (debug) console.log('Getter created!', getter);
+  const fetchInterceptor = new FetchInterceptor();
+
+  const getter = new ProfileGetter(fetchInterceptor);
+  const profileInjector = new MainWorldProfileInjector(fetchInterceptor);
+  profileInjector.init().catch((e) => console.error(e));
+
+  if (debug) console.log('fetchInterceptor!', fetchInterceptor);
 } catch (e) {
   console.error(`Error in profile getter: ${e}`);
 }

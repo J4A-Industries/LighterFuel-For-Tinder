@@ -11,8 +11,12 @@ import type {
   SendProfileResultRequest,
   SendProfileResultResponse,
 } from '~src/background/messages/sendProfileResult';
+import { FetchInterceptor } from '~src/contentsHelpers/FetchInterceptor';
 import { debug } from '~src/misc/config';
 import { getImageDivsFromIDs } from '~src/misc/utils';
+
+const LIKE_PASS_REGEX =
+  /https:\/\/api\.gotinder\.com\/(like|pass)\/([A-Za-z0-9]+)\?/g;
 
 // TODO: We need to check whether or not the given profile is currently being shown
 // for the button swap and the swipe reversal mode
@@ -30,6 +34,32 @@ export class MainWorldProfileInjector {
   private targetProfileDiv: HTMLElement | null = null;
 
   private profileAlreadyTagged: boolean = false;
+
+  constructor(fetchInterceptor: FetchInterceptor) {
+    this.initializeHandlers(fetchInterceptor);
+  }
+
+  private initializeHandlers(fetchInterceptor: FetchInterceptor) {
+    fetchInterceptor.addHandler(
+      LIKE_PASS_REGEX,
+      this.handleLikePass.bind(this),
+    );
+    // https://api.gotinder.com/pass/67502696a7bbc0010061140f?locale=en&s_number=8969268009655960
+  }
+
+  private handleLikePass(jsonOut: any, url?: string): void {
+    // TODO: check to see if the like/pass is for our profile
+    // TODO: mark the like/pass
+    const urlExec = LIKE_PASS_REGEX.exec(url!);
+    const id = urlExec[2];
+    const likeOrPass = urlExec[1] as 'like' | 'pass';
+
+    console.log('id', id);
+
+    if (id === this.profileFlag?.webProfile.user._id) {
+      console.log('This is our profile', likeOrPass);
+    }
+  }
 
   private originalAddEventListener:
     | typeof EventTarget.prototype.addEventListener
