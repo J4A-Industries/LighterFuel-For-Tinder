@@ -39,6 +39,7 @@ export class MainWorldProfileInjector {
 
   constructor(fetchInterceptor: FetchInterceptor) {
     this.initializeHandlers(fetchInterceptor);
+    this.prepSwipeReversal();
   }
 
   private initializeHandlers(fetchInterceptor: FetchInterceptor) {
@@ -60,6 +61,7 @@ export class MainWorldProfileInjector {
 
     if (id !== this.profileFlag?.webProfile.user._id) return;
     console.log('Got result for flag profile', likeOrPass);
+    this.toggleSwipeReversal(false);
     this.profileAlreadyTagged = true;
 
     await this.handleResult(likeOrPass);
@@ -89,14 +91,6 @@ export class MainWorldProfileInjector {
     }
     // this.handleChangeDirections();
     this.handleProfileShown();
-  }
-
-  handleChangeDirections() {
-    if (this.profileFlag.changeDirections) {
-      // TODO: Only change directions for the current profile
-      this.enableSwipeReversal();
-      this.enableKeySwap();
-    }
   }
 
   injectProfile() {
@@ -130,10 +124,6 @@ export class MainWorldProfileInjector {
     console.log('Injected profile data into window.__data!!');
   }
 
-  handleWebRequest() {
-    // TODO: intercept fetch requests and filter for any that include our profile
-  }
-
   async handleResult(result: 'like' | 'pass') {
     if (!this.profileFlag) {
       throw new Error('No profile flag found');
@@ -152,50 +142,35 @@ export class MainWorldProfileInjector {
     });
   }
 
-  enableSwipeReversal() {
-    console.log('Enabling swipe reversal', this.swipeReversalEnabled);
-    if (this.swipeReversalEnabled) return;
+  prepSwipeReversal() {
+    // Ensure this method can be safely called multiple times
+    if (this.originalAddEventListener) return;
 
-    this.swipeReversalEnabled = true;
+    console.log('Preparing swipe reversal environment');
 
-    let startX: number | null = null;
-    let lastX: number | null = null;
-
-    if (!this.originalAddEventListener) {
-      this.originalAddEventListener = EventTarget.prototype.addEventListener;
-    }
+    // Save the original `addEventListener` method
+    this.originalAddEventListener = EventTarget.prototype.addEventListener;
 
     // Cache `originalAddEventListener` in a closure to avoid context issues
     const { originalAddEventListener } = this;
 
-    // Override `addEventListener`
+    // Override `addEventListener` to prepare swipe reversal mechanics
     EventTarget.prototype.addEventListener = function (
       type: string,
       listener: EventListenerOrEventListenerObject,
       options?: boolean | AddEventListenerOptions,
     ) {
-      if (type === 'pointerdown') {
+      if (type === 'pointerdown' || type === 'pointermove') {
         const wrappedListener = function (event: PointerEvent) {
-          startX = event.clientX;
-          lastX = event.clientX;
-          (listener as EventListener).call(this, event); // Pass the event to the original listener
-        };
-        return originalAddEventListener.call(
-          this,
-          type,
-          wrappedListener,
-          options,
-        );
-      }
+          if (type === 'pointerdown') {
+            window.__swipeReversalStartX = event.clientX;
+            window.__swipeReversalLastX = event.clientX;
+          } else if (type === 'pointermove' && window.__swipeReversalEnabled) {
+            const currentClientX = event.clientX;
+            const movementX = currentClientX - window.__swipeReversalLastX;
+            const reversedMovementX = -movementX;
 
-      if (type === 'pointermove') {
-        const wrappedListener = function (event: PointerEvent) {
-          if (startX !== null && lastX !== null) {
-            const currentClientX = event.clientX; // Capture the original clientX value
-            const movementX = currentClientX - lastX; // Calculate real movement
-            const reversedMovementX = -movementX; // Reverse the movement
-
-            // Modify properties dynamically
+            // Dynamically modify properties
             Object.defineProperty(event, 'movementX', {
               get() {
                 return reversedMovementX;
@@ -204,15 +179,20 @@ export class MainWorldProfileInjector {
             });
             Object.defineProperty(event, 'clientX', {
               get() {
-                return startX! - (currentClientX - startX!); // Reverse clientX based on offset
+                return (
+                  window.__swipeReversalStartX -
+                  (currentClientX - window.__swipeReversalStartX)
+                );
               },
               configurable: true,
             });
 
-            lastX = currentClientX; // Update last position
+            window.__swipeReversalLastX = currentClientX;
           }
-          (listener as EventListener).call(this, event); // Pass the event to the original listener
+
+          (listener as EventListener).call(this, event);
         };
+
         return originalAddEventListener.call(
           this,
           type,
@@ -221,7 +201,6 @@ export class MainWorldProfileInjector {
         );
       }
 
-      // Default behavior for other event types
       return originalAddEventListener.call(this, type, listener, options);
     };
 
@@ -229,21 +208,25 @@ export class MainWorldProfileInjector {
     window.addEventListener(
       'pointerup',
       () => {
-        startX = null;
-        lastX = null;
+        window.__swipeReversalStartX = null;
+        window.__swipeReversalLastX = null;
       },
       { capture: true },
     );
+
+    console.log('Swipe reversal environment prepared');
   }
 
-  disableSwipeReversal() {
-    if (!this.swipeReversalEnabled) return;
-
-    this.swipeReversalEnabled = false;
-
-    // Restore original `addEventListener`
-    if (this.originalAddEventListener) {
-      EventTarget.prototype.addEventListener = this.originalAddEventListener;
+  toggleSwipeReversal(enable: boolean) {
+    console.log('Toggling swipe reversal:', enable);
+    if (enable && !this.swipeReversalEnabled) {
+      console.log('Enabling swipe reversal');
+      this.swipeReversalEnabled = true;
+      window.__swipeReversalEnabled = true;
+    } else if (!enable && this.swipeReversalEnabled) {
+      console.log('Disabling swipe reversal');
+      this.swipeReversalEnabled = false;
+      window.__swipeReversalEnabled = false;
     }
   }
 
@@ -338,7 +321,7 @@ export class MainWorldProfileInjector {
           console.log('Profile is no longer on the page, clearing interval');
           clearInterval(this.checkProfileInterval);
           if (this.profileFlag.changeDirections) {
-            this.disableSwipeReversal();
+            this.toggleSwipeReversal(false);
           }
         }
       } else if (!this.targetProfileDiv) {
@@ -347,7 +330,7 @@ export class MainWorldProfileInjector {
           firstDiv.parentElement.parentElement.parentElement.parentElement.parentElement;
 
         if (this.profileFlag.changeDirections) {
-          this.enableSwipeReversal();
+          this.toggleSwipeReversal(true);
         }
 
         // TODO: check if the element is actually in the view of the user
