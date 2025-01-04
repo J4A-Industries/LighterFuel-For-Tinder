@@ -65,8 +65,6 @@ export class ProfileGetter {
       return;
     }
 
-    console.log('HandleNewCore', jsonOut.data.results);
-
     const people = jsonOut.data.results.map((rec) => {
       const person = rec.user;
       person.type = 'rec';

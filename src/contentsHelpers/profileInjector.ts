@@ -35,6 +35,8 @@ export class MainWorldProfileInjector {
 
   private profileAlreadyTagged: boolean = false;
 
+  private checkProfileInterval: NodeJS.Timeout | null = null;
+
   constructor(fetchInterceptor: FetchInterceptor) {
     this.initializeHandlers(fetchInterceptor);
   }
@@ -47,7 +49,7 @@ export class MainWorldProfileInjector {
     // https://api.gotinder.com/pass/67502696a7bbc0010061140f?locale=en&s_number=8969268009655960
   }
 
-  private handleLikePass(jsonOut: any, url?: string): void {
+  private async handleLikePass(jsonOut: any, url?: string) {
     // TODO: check to see if the like/pass is for our profile
     // TODO: mark the like/pass
     const urlExec = LIKE_PASS_REGEX.exec(url!);
@@ -56,9 +58,13 @@ export class MainWorldProfileInjector {
 
     console.log('id', id);
 
-    if (id === this.profileFlag?.webProfile.user._id) {
-      console.log('This is our profile', likeOrPass);
-    }
+    if (id !== this.profileFlag?.webProfile.user._id) return;
+    console.log('Got result for flag profile', likeOrPass);
+    this.profileAlreadyTagged = true;
+
+    await this.handleResult(likeOrPass);
+
+    // TODO: handle changing the buttons + swipe reversal
   }
 
   private originalAddEventListener:
@@ -81,7 +87,8 @@ export class MainWorldProfileInjector {
     if (this.profileFlag) {
       this.injectProfile();
     }
-    this.handleChangeDirections();
+    // this.handleChangeDirections();
+    this.handleProfileShown();
   }
 
   handleChangeDirections() {
@@ -146,6 +153,7 @@ export class MainWorldProfileInjector {
   }
 
   enableSwipeReversal() {
+    console.log('Enabling swipe reversal', this.swipeReversalEnabled);
     if (this.swipeReversalEnabled) return;
 
     this.swipeReversalEnabled = true;
@@ -316,24 +324,31 @@ export class MainWorldProfileInjector {
   }
 
   handleProfileShown() {
-    // TODO: create an interval that checks if the profile is being shown
     // TODO: if the profile is being shown, mark targetProfileDiv as the profile div
     // TODO: call a function to say the profile is being shown
     // TODO: cancel the interval if the profile is no longer on the page
     const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
       (x) => x.id,
     );
-    const profileShownInterval = setInterval(() => {
+    this.checkProfileInterval = setInterval(() => {
       const divs = getImageDivsFromIDs(photoIds).getElements();
 
       if (divs.length === 0) {
         if (this.targetProfileDiv) {
-          clearInterval(profileShownInterval);
+          console.log('Profile is no longer on the page, clearing interval');
+          clearInterval(this.checkProfileInterval);
+          if (this.profileFlag.changeDirections) {
+            this.disableSwipeReversal();
+          }
         }
       } else if (!this.targetProfileDiv) {
         const firstDiv = divs[0];
         this.targetProfileDiv =
           firstDiv.parentElement.parentElement.parentElement.parentElement.parentElement;
+
+        if (this.profileFlag.changeDirections) {
+          this.enableSwipeReversal();
+        }
 
         // TODO: check if the element is actually in the view of the user
         // TODO: Otherwise we're going to have to just wait until the pass or like request is sent

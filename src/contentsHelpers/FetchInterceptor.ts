@@ -4,7 +4,7 @@ import { debug } from '~src/misc/config';
 
 type RegexHandler = {
   regex: RegExp;
-  handler: (jsonOut: any, url?: string) => void;
+  handler: (jsonOut: any, url?: string) => void | Promise<void>;
   calledCount?: number;
 };
 
@@ -39,12 +39,14 @@ export class FetchInterceptor {
       const jsonOut = await result.json();
       const url = args[0];
 
-      this.regexHandlers.forEach(({ regex, handler }, index) => {
-        if (url.match(regex)) {
-          handler(jsonOut, url);
-          this.regexHandlers[index].calledCount++;
-        }
-      });
+      await Promise.all(
+        this.regexHandlers.map(async ({ regex, handler }, index) => {
+          if (url.match(regex)) {
+            await handler(jsonOut, url);
+            this.regexHandlers[index].calledCount++;
+          }
+        }),
+      );
     } catch (e) {
       if (debug) console.error('Error in fetch response handler:', e);
     }

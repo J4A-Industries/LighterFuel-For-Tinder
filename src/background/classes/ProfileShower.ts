@@ -6,7 +6,6 @@ import { AnalyticsEvent } from '~src/misc/GA';
 
 export type ProfileFeatureFlag = ShowProfilesFeatureFlag['profiles'][number];
 
-// TODO: we should have the window request to this class instead
 // of the feature flags so we can handle the logic for who to show
 // on this class instead of on the client.
 export class ProfileShower {
@@ -41,9 +40,9 @@ export class ProfileShower {
     return unshownProfile;
   }
 
-  async handleSwipe(profileId: String, result: 'like' | 'pass') {
+  async handleSwipe(profileFlagId: String, result: 'like' | 'pass') {
     const flag = this.profiles.find(
-      (profile) => profile.webProfile.user._id === profileId,
+      (profile) => profile.flagId === profileFlagId,
     );
 
     if (!flag) {
@@ -55,7 +54,7 @@ export class ProfileShower {
         name: 'swipe',
         params: {
           result,
-          profileId,
+          profileId: flag.webProfile.user._id,
           flagId: flag.flagId,
         },
       },

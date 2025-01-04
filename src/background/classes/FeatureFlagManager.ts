@@ -91,11 +91,11 @@ export class FeatureFlagManager {
 
     if (result.status === 200) {
       const data = (await result.json()) as FeatureFlags;
-
-      this.storage.setItem('featureFlags', {
+      this.data = {
         ...data,
         lastFetched: new Date().getTime(),
-      } satisfies FeatureFlagsWithLastFetched);
+      };
+      this.storage.setItem('featureFlags', this.data);
     }
   }
 }
