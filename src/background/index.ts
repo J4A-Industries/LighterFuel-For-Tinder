@@ -115,7 +115,7 @@ chrome.runtime.onInstalled.addListener(async (object) => {
           },
         },
       ]);
-      // chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
+      chrome.tabs.create({ url: chrome.runtime.getURL('tabs/review.html') });
       await storage.set('version', chrome.runtime.getManifest().version);
     }
   }
