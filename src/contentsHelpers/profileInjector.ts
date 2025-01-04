@@ -247,20 +247,21 @@ export class MainWorldProfileInjector {
     const dislikeButton = buttons[1];
     const likeButton = buttons[3];
 
-    // Swap the innerHTML of the buttons
-    const tempInnerHTML = dislikeButton.innerHTML;
-    dislikeButton.innerHTML = likeButton.innerHTML;
-    likeButton.innerHTML = tempInnerHTML;
+    // Get the parent element
+    const parent = dislikeButton.parentElement;
 
-    // TODO: get one of the buttons via it's class name
-    // TODO: go to the parent and swap around the like and dislike position
-    // TODO: see if we need to use a mutation observer to make sure the buttons don't change position
+    if (parent) {
+      // Create references to their siblings
+      const dislikeNextSibling = dislikeButton.nextElementSibling;
+      const likeNextSibling = likeButton.nextElementSibling;
+
+      // Swap positions using the siblings as anchors
+      parent.insertBefore(dislikeButton, likeNextSibling);
+      parent.insertBefore(likeButton, dislikeNextSibling);
+    }
   }
 
   handleProfileShown() {
-    // TODO: if the profile is being shown, mark targetProfileDiv as the profile div
-    // TODO: call a function to say the profile is being shown
-    // TODO: cancel the interval if the profile is no longer on the page
     const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
       (x) => x.id,
     );
