@@ -131,7 +131,7 @@ class LighterFuel {
     await sendToBackground<sendAnalyticsEventRequest>({
       name: 'sendAnalyticsEvent',
       body: {
-        name: 'Loaded_Tinder', // TODO: change this to "Loaded"
+        name: 'Loaded_Tinder',
         params: {
           event_title: 'loaded',
           event_platform: 'TINDER',

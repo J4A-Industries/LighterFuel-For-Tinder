@@ -18,7 +18,13 @@ try {
   const profileInjector = new MainWorldProfileInjector(fetchInterceptor);
   profileInjector.init().catch((e) => console.error(e));
 
-  if (debug) console.log('fetchInterceptor!', fetchInterceptor);
+  if (debug)
+    console.log(
+      'Main world classes setup!',
+      fetchInterceptor,
+      getter,
+      profileInjector,
+    );
 } catch (e) {
   console.error(`Error in profile getter: ${e}`);
 }
