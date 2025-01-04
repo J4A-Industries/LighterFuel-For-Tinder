@@ -13,6 +13,10 @@ import type {
 } from '~src/background/messages/sendProfileResult';
 import { FetchInterceptor } from '~src/contentsHelpers/FetchInterceptor';
 import { debug } from '~src/misc/config';
+import type {
+  LikeResponse,
+  UnsuccessfulLikeResponse,
+} from '~src/misc/tinderTypes';
 import { getImageDivsFromIDs } from '~src/misc/utils';
 
 const LIKE_PASS_REGEX =
@@ -51,22 +55,23 @@ export class MainWorldProfileInjector {
   }
 
   private async handleLikePass(jsonOut: any, url?: string) {
-    // TODO: check to see if the like/pass is for our profile
-    // TODO: mark the like/pass
     const urlExec = LIKE_PASS_REGEX.exec(url!);
     const id = urlExec[2];
     const likeOrPass = urlExec[1] as 'like' | 'pass';
 
-    console.log('id', id);
-
     if (id !== this.profileFlag?.webProfile.user._id) return;
+    if (
+      typeof (jsonOut as UnsuccessfulLikeResponse)?.rate_limited_until !==
+        'number' &&
+      likeOrPass === 'like'
+    )
+      return;
     console.log('Got result for flag profile', likeOrPass);
     this.toggleSwipeReversal(false);
     if (this.checkProfileInterval) clearInterval(this.checkProfileInterval);
     this.profileAlreadyTagged = true;
 
     await this.handleResult(likeOrPass);
-    // TODO: handle changing the buttons + swipe reversal
   }
 
   private originalAddEventListener:

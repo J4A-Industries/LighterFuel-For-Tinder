@@ -26,7 +26,7 @@ export class FetchInterceptor {
     window.fetch = (...args) =>
       new Promise((resolve, reject) => {
         nativeFetch(...args)
-          .then((result) => {
+          .then(async (result) => {
             this.handleFetchResponse(result.clone(), args);
             resolve(result);
           })
@@ -46,9 +46,11 @@ export class FetchInterceptor {
             this.regexHandlers[index].calledCount++;
           }
         }),
-      );
+      ).catch((e) => {
+        if (debug) console.error('Error processing response handler', e);
+      });
     } catch (e) {
-      if (debug) console.error('Error in fetch response handler:', e);
+      if (debug) console.error('Error decoding json:', e);
     }
   }
 
@@ -68,7 +70,7 @@ export class FetchInterceptor {
   // Public API to add a handler
   public addHandler(
     regex: RegExp,
-    handler: (jsonOut: any, url?: string) => void,
+    handler: (response: any, url?: string) => void,
   ) {
     this.regexHandlers.push({ regex, handler, calledCount: 0 });
   }
