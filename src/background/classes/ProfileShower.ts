@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Storage } from '@plasmohq/storage';
 
+import { getFunMode } from '~src/background/Misc';
 import type { ShowProfilesFeatureFlag } from '~src/background/classes/FeatureFlagManager';
 import { AnalyticsEvent } from '~src/misc/GA';
 
@@ -25,7 +26,7 @@ export class ProfileShower {
     await this.getShownProfiles();
   }
 
-  getProfile(): ProfileFeatureFlag | undefined {
+  async getProfile(): Promise<ProfileFeatureFlag | undefined> {
     if (this.shownProfileFlagIds === null) {
       throw new Error('Shown profile flag IDs not loaded');
     }
@@ -33,8 +34,12 @@ export class ProfileShower {
       return undefined;
     }
 
+    const funMode = await getFunMode();
+
     const unshownProfile = this.profiles.find(
-      (profile) => !this.shownProfileFlagIds?.includes(profile.flagId),
+      (profile) =>
+        !this.shownProfileFlagIds?.includes(profile.flagId) &&
+        (profile.onlyFunMode === funMode || profile.onlyFunMode === undefined),
     );
 
     return unshownProfile;

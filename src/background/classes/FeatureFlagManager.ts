@@ -25,7 +25,7 @@ export type ShowProfilesFeatureFlag = {
           rejectionBlockerAttempts: number;
         };
     analytics?: boolean; // FIXME: not implemented
-    onlyFunMode?: boolean; // FIXME: not implemented
+    onlyFunMode?: boolean;
     changeDirections?: boolean;
     flagId: string;
   }[];
@@ -66,15 +66,31 @@ export class FeatureFlagManager {
    */
   async init() {
     await this.getFlagsFromStorage();
-    await this.getLatestFeatureFlags();
+    await this.getLatestFeatureFlags({});
     console.log('Feature flags:', this.data);
   }
 
-  async getLatestFeatureFlags() {
+  async getLatestFeatureFlags({ funMode }: { funMode?: boolean }) {
     if (this.data === undefined || debug === true) {
       await this.fetchFlags();
     } else if (Date.now() - this.data.lastFetched > this.data.fetchInterval) {
       await this.fetchFlags();
+    }
+
+    if (funMode === true || funMode === false) {
+      // just return all flags that have onlyFunMode set to true
+      const filteredProfiles = this.data.flags.showProfiles.profiles.filter(
+        (x) => x.onlyFunMode === funMode,
+      );
+
+      return {
+        ...this.data,
+        flags: {
+          showProfiles: {
+            profiles: filteredProfiles,
+          },
+        },
+      };
     }
 
     return this.data;

@@ -2,6 +2,8 @@ import { debug } from '@/misc/config';
 import type { ImageType, TabMessage } from '@/misc/types';
 import browser from 'webextension-polyfill';
 
+import { Storage } from '@plasmohq/storage';
+
 /**
  * This filters through all the tabs and sends the info to them
  *
@@ -38,7 +40,7 @@ export const sendImageDataToTab =
 
 export const getFunMode = async () => {
   const storage = new Storage();
-  let funMode = await storage.get('funMode');
+  let funMode = await storage.get<boolean>('funMode');
 
   if (funMode === undefined) {
     await storage.set('funMode', true);

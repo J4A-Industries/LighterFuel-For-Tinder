@@ -18,8 +18,12 @@ const Review = () => (
           prove it! I&apos;ve added a &quot;fun mode&quot; toggle in the
           extension menu so you can opt out of LighterFuel themed pranks and
           april fools updates. Email me at{' '}
-          <a href="mailto:help@j4a.uk">help@j4a.uk</a> if you have any feedback
-          or suggestions.
+          <a href="mailto:help@j4a.uk" className="text-blue underline">
+            help@j4a.uk
+          </a>{' '}
+          if you have any feedback or suggestions.
+          <br />
+          <br />
           <b>v1.6.0</b>
           <br />
           <br />

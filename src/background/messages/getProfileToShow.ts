@@ -15,7 +15,7 @@ const handler: PlasmoMessaging.MessageHandler<
   GetProfileToShowResponse
 > = async (req, res) => {
   const profileShower = await getProfileShower();
-  const flagData = profileShower.getProfile();
+  const flagData = await profileShower.getProfile();
 
   res.send(flagData);
 };
