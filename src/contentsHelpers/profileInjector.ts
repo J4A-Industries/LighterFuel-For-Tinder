@@ -62,10 +62,10 @@ export class MainWorldProfileInjector {
     if (id !== this.profileFlag?.webProfile.user._id) return;
     console.log('Got result for flag profile', likeOrPass);
     this.toggleSwipeReversal(false);
+    if (this.checkProfileInterval) clearInterval(this.checkProfileInterval);
     this.profileAlreadyTagged = true;
 
     await this.handleResult(likeOrPass);
-
     // TODO: handle changing the buttons + swipe reversal
   }
 
@@ -218,67 +218,18 @@ export class MainWorldProfileInjector {
   }
 
   toggleSwipeReversal(enable: boolean) {
-    console.log('Toggling swipe reversal:', enable);
     if (enable && !this.swipeReversalEnabled) {
       console.log('Enabling swipe reversal');
       this.swipeReversalEnabled = true;
       window.__swipeReversalEnabled = true;
+      // TODO: swap around the buttons
+      this.swapButtonsForProfile(true);
     } else if (!enable && this.swipeReversalEnabled) {
       console.log('Disabling swipe reversal');
       this.swipeReversalEnabled = false;
       window.__swipeReversalEnabled = false;
-    }
-  }
-
-  // TODO: find out if this works
-  enableKeySwap() {
-    if (this.keySwapEnabled) return;
-
-    this.keySwapEnabled = true;
-
-    // Arrow key swap handler
-    this.keySwapHandler = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        event.preventDefault(); // Prevent the original event
-
-        // Determine the swapped key
-        const swappedKey =
-          event.key === 'ArrowLeft' ? 'ArrowRight' : 'ArrowLeft';
-        const swappedKeyCode = swappedKey === 'ArrowRight' ? 39 : 37;
-
-        // Create a new keyboard event with swapped key values
-        const swappedEvent = new KeyboardEvent('keydown', {
-          key: swappedKey,
-          code: swappedKey,
-          keyCode: swappedKeyCode,
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-        });
-
-        // Manually override the keyCode (needed for some platforms)
-        Object.defineProperty(swappedEvent, 'keyCode', {
-          get: () => swappedKeyCode,
-        });
-
-        event.target.dispatchEvent(swappedEvent); // Dispatch the swapped event
-      }
-    };
-
-    // Add the keydown listener
-    window.addEventListener('keydown', this.keySwapHandler, true);
-  }
-
-  // TODO: find out if this works too
-  disableKeySwap() {
-    if (!this.keySwapEnabled) return;
-
-    this.keySwapEnabled = false;
-
-    // Remove the keydown listener
-    if (this.keySwapHandler) {
-      window.removeEventListener('keydown', this.keySwapHandler, true);
-      this.keySwapHandler = null;
+      this.swapButtonsForProfile(false);
+      // TODO: swap back the buttons (if they were swapped)
     }
   }
 
@@ -286,20 +237,15 @@ export class MainWorldProfileInjector {
     if (this.swapButtonsEnabled === swapButtonsEnabled) return;
     this.swapButtonsEnabled = swapButtonsEnabled;
 
-    const photoIds: string[] = this.profileFlag.webProfile.user.photos.map(
-      (x) => x.id,
-    );
+    const buttons = document.querySelectorAll('.gamepad-button-wrapper');
 
-    // const divs = getImageDivsFromIDs(photoIds).getElements();
+    const dislikeButton = buttons[1];
+    const likeButton = buttons[3];
 
-    // if (divs.length === 0) {
-    //   if (debug) console.error('No divs found');
-    //   return;
-    // }
-
-    // const firstDiv = divs[0];
-
-    // firstDiv;
+    // Swap the innerHTML of the buttons
+    const tempInnerHTML = dislikeButton.innerHTML;
+    dislikeButton.innerHTML = likeButton.innerHTML;
+    likeButton.innerHTML = tempInnerHTML;
 
     // TODO: get one of the buttons via it's class name
     // TODO: go to the parent and swap around the like and dislike position
@@ -319,7 +265,6 @@ export class MainWorldProfileInjector {
       if (divs.length === 0) {
         if (this.targetProfileDiv) {
           console.log('Profile is no longer on the page, clearing interval');
-          clearInterval(this.checkProfileInterval);
           if (this.profileFlag.changeDirections) {
             this.toggleSwipeReversal(false);
           }
@@ -336,6 +281,6 @@ export class MainWorldProfileInjector {
         // TODO: check if the element is actually in the view of the user
         // TODO: Otherwise we're going to have to just wait until the pass or like request is sent
       }
-    }, 1000);
+    }, 50);
   }
 }
