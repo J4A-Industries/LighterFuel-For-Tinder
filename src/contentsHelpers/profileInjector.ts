@@ -13,6 +13,7 @@ import type {
   SendProfileResultResponse,
 } from '~src/background/messages/sendProfileResult';
 import { FetchInterceptor } from '~src/contentsHelpers/FetchInterceptor';
+import { parentNode } from '~src/contentsHelpers/Misc';
 import { debug } from '~src/misc/config';
 import type {
   LikeResponse,
@@ -44,6 +45,12 @@ export class MainWorldProfileInjector {
 
   private swipeAlertShown = false; // Flag to track whether alert has been shown during the current swipe
 
+  private originalDislikeButton: HTMLButtonElement | null = null;
+
+  private clonedDislikeButton: HTMLButtonElement | null = null;
+
+  private HIDDEN_BUTTON_CLASS = 'hidden-original-dislike';
+
   constructor(fetchInterceptor: FetchInterceptor) {
     this.initializeHandlers(fetchInterceptor);
     this.prepSwipeReversal();
@@ -56,32 +63,12 @@ export class MainWorldProfileInjector {
     );
   }
 
-  private async handleLikePass(jsonOut: any, url?: string) {
-    const urlExec = LIKE_PASS_REGEX.exec(url!);
-    const id = urlExec[2];
-    const likeOrPass = urlExec[1] as 'like' | 'pass';
-
-    if (id !== this.profileFlag?.webProfile.user._id) return;
-    if (
-      typeof (jsonOut as UnsuccessfulLikeResponse)?.rate_limited_until ===
-        'number' &&
-      likeOrPass === 'like'
-    )
-      return;
-    console.log('Got result for flag profile', likeOrPass);
-    this.toggleSwipeReversal(false);
-    if (this.checkProfileInterval) clearInterval(this.checkProfileInterval);
-    this.profileAlreadyTagged = true;
-
-    await this.handleResult(likeOrPass);
-  }
-
   private originalAddEventListener:
     | typeof EventTarget.prototype.addEventListener
     | null = null;
 
   async init() {
-    console.log('getting profile to show');
+    console.log('Getting profile to show');
     const getProfileToShowRes = await sendToBackgroundViaRelay<
       GetProfileToShowRequest,
       GetProfileToShowResponse
@@ -217,25 +204,38 @@ export class MainWorldProfileInjector {
     console.log('Swipe reversal environment prepared');
   }
 
+  // First method
   toggleSwipeReversal(enable: boolean) {
+    console.log(`toggleSwipeReversal called with enable=${enable}`);
     if (enable && !this.swipeReversalEnabled) {
       console.log('Enabling swipe reversal');
       this.swipeReversalEnabled = true;
       window.__swipeReversalEnabled = true;
-      this.swapButtonsForProfile(true);
+      this.swapButtonsForProfile(false); // Changed to false to fix initial order
     } else if (!enable && this.swipeReversalEnabled) {
       console.log('Disabling swipe reversal');
       this.swipeReversalEnabled = false;
       window.__swipeReversalEnabled = false;
-      this.swapButtonsForProfile(false);
+      this.swapButtonsForProfile(true); // Changed to true to restore desired order
     }
   }
 
+  // Second method
   swapButtonsForProfile(swapButtonsEnabled: boolean) {
-    if (this.swapButtonsEnabled === swapButtonsEnabled) return;
+    console.log(
+      `swapButtonsForProfile called with swapButtonsEnabled=${swapButtonsEnabled}`,
+    );
+    console.log('Current swapButtonsEnabled state:', this.swapButtonsEnabled);
+
+    if (this.swapButtonsEnabled === swapButtonsEnabled) {
+      console.log('Buttons already in desired state, returning');
+      return;
+    }
+
     this.swapButtonsEnabled = swapButtonsEnabled;
 
     const buttons = document.querySelectorAll('.gamepad-button-wrapper');
+    console.log('Found buttons:', buttons.length);
 
     if (buttons.length < 4) {
       console.warn('Gamepad buttons not found or incomplete button set.');
@@ -244,7 +244,7 @@ export class MainWorldProfileInjector {
 
     const dislikeButton = buttons[1];
     const likeButton = buttons[3];
-
+    const superlikeButton = buttons[2];
     const parent = dislikeButton.parentElement;
 
     if (!parent) {
@@ -252,18 +252,39 @@ export class MainWorldProfileInjector {
       return;
     }
 
-    // Swap the dislike and like buttons if enabled
-    if (swapButtonsEnabled) {
-      const dislikeNextSibling = dislikeButton.nextElementSibling;
-      const likeNextSibling = likeButton.nextElementSibling;
-
-      if (dislikeNextSibling && likeNextSibling) {
-        parent.insertBefore(dislikeButton, likeNextSibling);
-        parent.insertBefore(likeButton, dislikeNextSibling);
-      }
+    // Fix initial order when swapButtonsEnabled is false
+    if (!swapButtonsEnabled) {
+      // Move buttons to [like, superlike, dislike] order
+      parent.insertBefore(likeButton, buttons[1]); // Move like to first position
+      parent.insertBefore(superlikeButton, buttons[2]); // Move superlike second
+      parent.insertBefore(dislikeButton, buttons[3]); // Move dislike third
     } else {
-      console.log('Reverting button swap to default.');
+      // Restore to original [dislike, superlike, like] order
+      parent.insertBefore(dislikeButton, buttons[1]); // Move dislike first
+      parent.insertBefore(superlikeButton, buttons[2]); // Keep superlike second
+      parent.insertBefore(likeButton, buttons[3]); // Move like third
     }
+  }
+
+  // Third method
+  cleanup() {
+    console.log('Cleanup called');
+    if (this.checkProfileInterval) {
+      clearInterval(this.checkProfileInterval);
+      this.checkProfileInterval = null;
+    }
+
+    if (this.cleanupSwipeGesture) {
+      this.cleanupSwipeGesture();
+      this.cleanupSwipeGesture = null;
+    }
+
+    this.restoreOriginalDislikeButton();
+
+    console.log('Disabling swipe reversal during cleanup');
+    this.toggleSwipeReversal(false);
+
+    console.log('Cleaned up all listeners and intervals');
   }
 
   interceptDislikeButton() {
@@ -288,13 +309,17 @@ export class MainWorldProfileInjector {
       return;
     }
 
-    if (!this.originalDislikeHandler) {
-      this.originalDislikeHandler = dislikeButton.onclick as () => void;
-    }
+    // Store the original button and hide it
+    this.originalDislikeButton = dislikeButton;
+    this.originalDislikeButton.style.display = 'none';
+    this.originalDislikeButton.classList.add(this.HIDDEN_BUTTON_CLASS);
 
-    const originalInnerHTML = dislikeButton.innerHTML;
+    // Create and insert clone
+    this.clonedDislikeButton = document.createElement('button');
+    this.clonedDislikeButton.innerHTML = this.originalDislikeButton.innerHTML;
+    this.clonedDislikeButton.className = this.originalDislikeButton.className;
 
-    dislikeButton.onclick = (event) => {
+    this.clonedDislikeButton.onclick = (event) => {
       event.preventDefault();
       event.stopPropagation();
 
@@ -306,7 +331,7 @@ export class MainWorldProfileInjector {
         rejectionOptions.rejectionBlockerAttempts -= 1;
 
         if (rejectionOptions.rejectionBlockerAttempts <= 0) {
-          this.restoreOriginalDislikeButton(dislikeButton, originalInnerHTML);
+          this.restoreOriginalDislikeButton();
         }
       } else if (
         'forceLike' in rejectionOptions &&
@@ -315,22 +340,48 @@ export class MainWorldProfileInjector {
         alert('You cannot dislike this profile. Forced like enabled.');
       }
     };
+
+    // Insert clone after original
+    this.originalDislikeButton.parentElement?.insertBefore(
+      this.clonedDislikeButton,
+      this.originalDislikeButton.nextSibling,
+    );
   }
 
-  restoreOriginalDislikeButton(
-    button: HTMLButtonElement,
-    originalInnerHTML: string,
-  ) {
-    if (button) {
-      // Restore the original innerHTML
-      button.innerHTML = originalInnerHTML;
+  restoreOriginalDislikeButton() {
+    if (this.originalDislikeButton && this.clonedDislikeButton) {
+      // Show original button
+      this.originalDislikeButton.style.display = '';
+      this.originalDislikeButton.classList.remove(this.HIDDEN_BUTTON_CLASS);
 
-      // Restore the original onclick behavior
-      if (this.originalDislikeHandler) {
-        button.onclick = this.originalDislikeHandler;
-        this.originalDislikeHandler = null;
-      }
+      // Remove clone
+      this.clonedDislikeButton.remove();
+
+      // Clear references
+      this.clonedDislikeButton = null;
     }
+  }
+
+  private async handleLikePass(jsonOut: any, url?: string) {
+    const urlExec = LIKE_PASS_REGEX.exec(url!);
+    const id = urlExec[2];
+    const likeOrPass = urlExec[1] as 'like' | 'pass';
+
+    if (id !== this.profileFlag?.webProfile.user._id) return;
+    if (
+      typeof (jsonOut as UnsuccessfulLikeResponse)?.rate_limited_until ===
+        'number' &&
+      likeOrPass === 'like'
+    )
+      return;
+    console.log('Got result for flag profile', likeOrPass);
+
+    // Restore original button before cleanup
+    this.restoreOriginalDislikeButton();
+
+    // Continue with regular cleanup
+    this.cleanup();
+    await this.handleResult(likeOrPass);
   }
 
   handleProfileShown() {
@@ -343,9 +394,7 @@ export class MainWorldProfileInjector {
       if (divs.length === 0) {
         if (this.targetProfileDiv) {
           console.log('Profile is no longer on the page, clearing interval');
-          if (this.profileFlag.changeDirections) {
-            this.toggleSwipeReversal(false);
-          }
+          this.cleanup(); // Cleanup when profile is no longer visible
         }
       } else if (!this.targetProfileDiv) {
         const firstDiv = divs[0];
@@ -357,7 +406,7 @@ export class MainWorldProfileInjector {
         }
 
         this.interceptDislikeButton();
-        this.interceptSwipeGesture(); // Ensure swipe interception is active
+        this.interceptSwipeGesture();
       }
     }, 50);
   }
@@ -366,12 +415,12 @@ export class MainWorldProfileInjector {
     const swipeThreshold = 100; // Adjust this value for swipe distance threshold
     let startX: number | null = null;
 
-    window.addEventListener('pointerdown', (event) => {
+    const handlePointerDown = (event: PointerEvent) => {
       startX = event.clientX;
-      this.swipeAlertShown = false; // Reset alert flag on new swipe
-    });
+      this.swipeAlertShown = false; // Reset alert flag for new swipe
+    };
 
-    window.addEventListener('pointermove', (event) => {
+    const handlePointerMove = (event: PointerEvent) => {
       if (startX !== null && !this.swipeAlertShown) {
         const currentX = event.clientX;
         const swipeDistance = currentX - startX;
@@ -380,20 +429,24 @@ export class MainWorldProfileInjector {
           (!isReversed && swipeDistance < -swipeThreshold) ||
           (isReversed && swipeDistance > swipeThreshold);
 
-        if (isRejectSwipe) {
-          const { rejectionOptions } = this.profileFlag!;
-          if ('rejectionBlockerAttempts' in rejectionOptions) {
-            alert(rejectionOptions.suggestionOnRejection);
+        if (isRejectSwipe && this.profileFlag) {
+          const { rejectionOptions } = this.profileFlag;
 
-            rejectionOptions.rejectionBlockerAttempts -= 1;
-            this.swipeAlertShown = true; // Ensure alert is only shown once per swipe
+          if (
+            rejectionOptions &&
+            'rejectionBlockerAttempts' in rejectionOptions
+          ) {
+            if (rejectionOptions.rejectionBlockerAttempts > 0) {
+              alert(rejectionOptions.suggestionOnRejection);
+              rejectionOptions.rejectionBlockerAttempts -= 1;
+              this.swipeAlertShown = true;
 
-            if (rejectionOptions.rejectionBlockerAttempts <= 0) {
-              console.log('No more rejection attempts allowed for swipes');
-              window.removeEventListener('pointerdown', () => null);
-              window.removeEventListener('pointermove', () => null);
+              if (rejectionOptions.rejectionBlockerAttempts <= 0) {
+                console.log('No more rejection attempts allowed for swipes');
+              }
             }
           } else if (
+            rejectionOptions &&
             'forceLike' in rejectionOptions &&
             rejectionOptions.forceLike
           ) {
@@ -402,6 +455,17 @@ export class MainWorldProfileInjector {
           }
         }
       }
-    });
+    };
+
+    window.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointermove', handlePointerMove);
+
+    // Cleanup swipe gesture listeners
+    this.cleanupSwipeGesture = () => {
+      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointermove', handlePointerMove);
+    };
   }
+
+  private cleanupSwipeGesture: (() => void) | null = null;
 }
