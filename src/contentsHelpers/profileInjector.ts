@@ -21,29 +21,20 @@ import type {
 } from '~src/misc/tinderTypes';
 import { getImageDivsFromIDs } from '~src/misc/utils';
 
-const LIKE_PASS_REGEX =
-  /https:\/\/api\.gotinder\.com\/(like|pass)\/([A-Za-z0-9]+)\?/g;
-
 export class MainWorldProfileInjector {
   profileFlag: ProfileFeatureFlag | undefined;
 
-  private keySwapEnabled = false; // Internal flag to enable/disable key swap
-
-  private swipeReversalEnabled = false; // Internal flag to enable/disable swipe reversal
+  private swipeReversalEnabled = false;
 
   private swapButtonsEnabled = false;
 
-  private keySwapHandler: ((event: KeyboardEvent) => void) | null = null; // Internal handler for key swap
+  private keySwapHandler: ((event: KeyboardEvent) => void) | null = null;
 
   private targetProfileDiv: HTMLElement | null = null;
 
-  private profileAlreadyTagged: boolean = false;
-
   private checkProfileInterval: NodeJS.Timeout | null = null;
 
-  private originalDislikeHandler: (() => void) | null = null; // Save original dislike handler for restoration
-
-  private swipeAlertShown = false; // Flag to track whether alert has been shown during the current swipe
+  private swipeAlertShown = false;
 
   private originalDislikeButton: HTMLButtonElement | null = null;
 
@@ -51,14 +42,26 @@ export class MainWorldProfileInjector {
 
   private HIDDEN_BUTTON_CLASS = 'hidden-original-dislike';
 
+  private LIKE_PASS_REGEX =
+    /https:\/\/api\.gotinder\.com\/(like|pass)\/([A-Za-z0-9]+)\?/g;
+
+  /**
+   * Initializes the MainWorldProfileInjector class.
+   * Sets up handlers and prepares the environment for swipe reversal.
+   * @param {FetchInterceptor} fetchInterceptor - Intercepts fetch requests for like/pass actions.
+   */
   constructor(fetchInterceptor: FetchInterceptor) {
     this.initializeHandlers(fetchInterceptor);
     this.prepSwipeReversal();
   }
 
+  /**
+   * Initializes fetch handlers for monitoring like/pass API calls.
+   * @param {FetchInterceptor} fetchInterceptor - The interceptor instance.
+   */
   private initializeHandlers(fetchInterceptor: FetchInterceptor) {
     fetchInterceptor.addHandler(
-      LIKE_PASS_REGEX,
+      this.LIKE_PASS_REGEX,
       this.handleLikePass.bind(this),
     );
   }
@@ -67,6 +70,9 @@ export class MainWorldProfileInjector {
     | typeof EventTarget.prototype.addEventListener
     | null = null;
 
+  /**
+   * Initializes the injector by fetching and injecting profile data into the page.
+   */
   async init() {
     console.log('Getting profile to show');
     const getProfileToShowRes = await sendToBackgroundViaRelay<
@@ -86,6 +92,9 @@ export class MainWorldProfileInjector {
     this.handleProfileShown();
   }
 
+  /**
+   * Injects profile data into the page by modifying the `window.__data` object.
+   */
   injectProfile() {
     if (!this.profileFlag) {
       console.error('No profile flag found');
@@ -94,13 +103,11 @@ export class MainWorldProfileInjector {
 
     const { webProfile } = this.profileFlag;
 
-    // setting data initially
     window.__customData = {
       ...window.__data,
       webProfile,
     };
 
-    // Making sure that if anyone tries to set __data, we update __customData
     Object.defineProperty(window, '__data', {
       get() {
         return window.__customData;
@@ -117,6 +124,11 @@ export class MainWorldProfileInjector {
     console.log('Injected profile data into window.__data!!');
   }
 
+  /**
+   * Handles the result of a swipe (like or pass) and sends it to the background script.
+   * @param {'like' | 'pass'} result - The result of the swipe.
+   * @throws Will throw an error if `profileFlag` is undefined.
+   */
   async handleResult(result: 'like' | 'pass') {
     if (!this.profileFlag) {
       throw new Error('No profile flag found');
@@ -135,6 +147,9 @@ export class MainWorldProfileInjector {
     });
   }
 
+  /**
+   * Prepares the environment for swipe reversal by overriding `addEventListener`.
+   */
   prepSwipeReversal() {
     if (this.originalAddEventListener) return;
 
@@ -204,23 +219,29 @@ export class MainWorldProfileInjector {
     console.log('Swipe reversal environment prepared');
   }
 
-  // First method
+  /**
+   * Toggles the swipe reversal feature on or off.
+   * @param {boolean} enable - Whether to enable or disable swipe reversal.
+   */
   toggleSwipeReversal(enable: boolean) {
     console.log(`toggleSwipeReversal called with enable=${enable}`);
     if (enable && !this.swipeReversalEnabled) {
       console.log('Enabling swipe reversal');
       this.swipeReversalEnabled = true;
       window.__swipeReversalEnabled = true;
-      this.swapButtonsForProfile(false); // Changed to false to fix initial order
+      this.swapButtonsForProfile(false); // Ensure initial order
     } else if (!enable && this.swipeReversalEnabled) {
       console.log('Disabling swipe reversal');
       this.swipeReversalEnabled = false;
       window.__swipeReversalEnabled = false;
-      this.swapButtonsForProfile(true); // Changed to true to restore desired order
+      this.swapButtonsForProfile(true); // Restore original order
     }
   }
 
-  // Second method
+  /**
+   * Swaps the positions of swipe buttons based on the specified state.
+   * @param {boolean} swapButtonsEnabled - Whether to swap the buttons or restore their original order.
+   */
   swapButtonsForProfile(swapButtonsEnabled: boolean) {
     console.log(
       `swapButtonsForProfile called with swapButtonsEnabled=${swapButtonsEnabled}`,
@@ -252,21 +273,20 @@ export class MainWorldProfileInjector {
       return;
     }
 
-    // Fix initial order when swapButtonsEnabled is false
     if (!swapButtonsEnabled) {
-      // Move buttons to [like, superlike, dislike] order
       parent.insertBefore(likeButton, buttons[1]); // Move like to first position
       parent.insertBefore(superlikeButton, buttons[2]); // Move superlike second
       parent.insertBefore(dislikeButton, buttons[3]); // Move dislike third
     } else {
-      // Restore to original [dislike, superlike, like] order
       parent.insertBefore(dislikeButton, buttons[1]); // Move dislike first
       parent.insertBefore(superlikeButton, buttons[2]); // Keep superlike second
       parent.insertBefore(likeButton, buttons[3]); // Move like third
     }
   }
 
-  // Third method
+  /**
+   * Cleans up all intervals, listeners, and resets the environment to its original state.
+   */
   cleanup() {
     console.log('Cleanup called');
     if (this.checkProfileInterval) {
@@ -363,7 +383,7 @@ export class MainWorldProfileInjector {
   }
 
   private async handleLikePass(jsonOut: any, url?: string) {
-    const urlExec = LIKE_PASS_REGEX.exec(url!);
+    const urlExec = this.LIKE_PASS_REGEX.exec(url!);
     const id = urlExec[2];
     const likeOrPass = urlExec[1] as 'like' | 'pass';
 
