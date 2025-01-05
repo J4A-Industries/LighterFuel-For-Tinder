@@ -150,17 +150,17 @@ export type Message = {
   matchId: string;
 };
 
-type SuccessfulLikeResponse = {};
-
 export type UnsuccessfulLikeResponse = {
-  status: number;
-  match: boolean;
-  likes_remaining: number;
   rate_limited_until: number;
   ads_remaining: number;
 };
 
-export type LikeResponse = UnsuccessfulLikeResponse | SuccessfulLikeResponse;
+export type LikeResponse = {
+  status: number;
+  match: boolean;
+  likes_remaining: number;
+  'X-Padding': string; // not super sure what this is for
+} & Partial<UnsuccessfulLikeResponse>;
 
 export interface Person {
   _id: string;

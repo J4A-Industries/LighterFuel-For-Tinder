@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
@@ -22,8 +23,6 @@ import { getImageDivsFromIDs } from '~src/misc/utils';
 const LIKE_PASS_REGEX =
   /https:\/\/api\.gotinder\.com\/(like|pass)\/([A-Za-z0-9]+)\?/g;
 
-// TODO: We need to check whether or not the given profile is currently being shown
-// for the button swap and the swipe reversal mode
 export class MainWorldProfileInjector {
   profileFlag: ProfileFeatureFlag | undefined;
 
@@ -41,6 +40,10 @@ export class MainWorldProfileInjector {
 
   private checkProfileInterval: NodeJS.Timeout | null = null;
 
+  private originalDislikeHandler: (() => void) | null = null; // Save original dislike handler for restoration
+
+  private swipeAlertShown = false; // Flag to track whether alert has been shown during the current swipe
+
   constructor(fetchInterceptor: FetchInterceptor) {
     this.initializeHandlers(fetchInterceptor);
     this.prepSwipeReversal();
@@ -51,7 +54,6 @@ export class MainWorldProfileInjector {
       LIKE_PASS_REGEX,
       this.handleLikePass.bind(this),
     );
-    // https://api.gotinder.com/pass/67502696a7bbc0010061140f?locale=en&s_number=8969268009655960
   }
 
   private async handleLikePass(jsonOut: any, url?: string) {
@@ -94,7 +96,6 @@ export class MainWorldProfileInjector {
     if (this.profileFlag) {
       this.injectProfile();
     }
-    // this.handleChangeDirections();
     this.handleProfileShown();
   }
 
@@ -148,18 +149,14 @@ export class MainWorldProfileInjector {
   }
 
   prepSwipeReversal() {
-    // Ensure this method can be safely called multiple times
     if (this.originalAddEventListener) return;
 
     console.log('Preparing swipe reversal environment');
 
-    // Save the original `addEventListener` method
     this.originalAddEventListener = EventTarget.prototype.addEventListener;
 
-    // Cache `originalAddEventListener` in a closure to avoid context issues
     const { originalAddEventListener } = this;
 
-    // Override `addEventListener` to prepare swipe reversal mechanics
     EventTarget.prototype.addEventListener = function (
       type: string,
       listener: EventListenerOrEventListenerObject,
@@ -175,7 +172,6 @@ export class MainWorldProfileInjector {
             const movementX = currentClientX - window.__swipeReversalLastX;
             const reversedMovementX = -movementX;
 
-            // Dynamically modify properties
             Object.defineProperty(event, 'movementX', {
               get() {
                 return reversedMovementX;
@@ -209,7 +205,6 @@ export class MainWorldProfileInjector {
       return originalAddEventListener.call(this, type, listener, options);
     };
 
-    // Reset state on pointerup
     window.addEventListener(
       'pointerup',
       () => {
@@ -227,14 +222,12 @@ export class MainWorldProfileInjector {
       console.log('Enabling swipe reversal');
       this.swipeReversalEnabled = true;
       window.__swipeReversalEnabled = true;
-      // TODO: swap around the buttons
       this.swapButtonsForProfile(true);
     } else if (!enable && this.swipeReversalEnabled) {
       console.log('Disabling swipe reversal');
       this.swipeReversalEnabled = false;
       window.__swipeReversalEnabled = false;
       this.swapButtonsForProfile(false);
-      // TODO: swap back the buttons (if they were swapped)
     }
   }
 
@@ -244,20 +237,99 @@ export class MainWorldProfileInjector {
 
     const buttons = document.querySelectorAll('.gamepad-button-wrapper');
 
+    if (buttons.length < 4) {
+      console.warn('Gamepad buttons not found or incomplete button set.');
+      return;
+    }
+
     const dislikeButton = buttons[1];
     const likeButton = buttons[3];
 
-    // Get the parent element
     const parent = dislikeButton.parentElement;
 
-    if (parent) {
-      // Create references to their siblings
+    if (!parent) {
+      console.error('Parent element not found for buttons.');
+      return;
+    }
+
+    // Swap the dislike and like buttons if enabled
+    if (swapButtonsEnabled) {
       const dislikeNextSibling = dislikeButton.nextElementSibling;
       const likeNextSibling = likeButton.nextElementSibling;
 
-      // Swap positions using the siblings as anchors
-      parent.insertBefore(dislikeButton, likeNextSibling);
-      parent.insertBefore(likeButton, dislikeNextSibling);
+      if (dislikeNextSibling && likeNextSibling) {
+        parent.insertBefore(dislikeButton, likeNextSibling);
+        parent.insertBefore(likeButton, dislikeNextSibling);
+      }
+    } else {
+      console.log('Reverting button swap to default.');
+    }
+  }
+
+  interceptDislikeButton() {
+    if (!this.profileFlag || !this.profileFlag.rejectionOptions) {
+      console.warn('No rejection options available for this profile');
+      return;
+    }
+
+    const svgPathSelector =
+      'path[d="m16.526 12 6.896-6.895a1.99 1.99 0 0 0-.005-2.809L21.706.585a1.986 1.986 0 0 0-2.81-.005L12 7.474 5.104.58a1.986 1.986 0 0 0-2.81.005L.583 2.296a1.99 1.99 0 0 0-.005 2.81L7.474 12 .578 18.895a1.99 1.99 0 0 0 .005 2.809l1.711 1.711c.778.778 2.036.78 2.81.006L12 16.526l6.896 6.895a1.986 1.986 0 0 0 2.81-.006l1.711-1.711a1.99 1.99 0 0 0 .005-2.81z"]';
+    const dislikeButtonSVG = document.querySelector(svgPathSelector);
+
+    if (!dislikeButtonSVG) {
+      console.error('Dislike button SVG not found');
+      return;
+    }
+
+    const dislikeButton = dislikeButtonSVG.closest('button');
+
+    if (!dislikeButton) {
+      console.error('Dislike button not found');
+      return;
+    }
+
+    if (!this.originalDislikeHandler) {
+      this.originalDislikeHandler = dislikeButton.onclick as () => void;
+    }
+
+    const originalInnerHTML = dislikeButton.innerHTML;
+
+    dislikeButton.onclick = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const { rejectionOptions } = this.profileFlag!;
+
+      if ('rejectionBlockerAttempts' in rejectionOptions) {
+        alert(rejectionOptions.suggestionOnRejection);
+
+        rejectionOptions.rejectionBlockerAttempts -= 1;
+
+        if (rejectionOptions.rejectionBlockerAttempts <= 0) {
+          this.restoreOriginalDislikeButton(dislikeButton, originalInnerHTML);
+        }
+      } else if (
+        'forceLike' in rejectionOptions &&
+        rejectionOptions.forceLike
+      ) {
+        alert('You cannot dislike this profile. Forced like enabled.');
+      }
+    };
+  }
+
+  restoreOriginalDislikeButton(
+    button: HTMLButtonElement,
+    originalInnerHTML: string,
+  ) {
+    if (button) {
+      // Restore the original innerHTML
+      button.innerHTML = originalInnerHTML;
+
+      // Restore the original onclick behavior
+      if (this.originalDislikeHandler) {
+        button.onclick = this.originalDislikeHandler;
+        this.originalDislikeHandler = null;
+      }
     }
   }
 
@@ -284,9 +356,52 @@ export class MainWorldProfileInjector {
           this.toggleSwipeReversal(true);
         }
 
-        // TODO: check if the element is actually in the view of the user
-        // TODO: Otherwise we're going to have to just wait until the pass or like request is sent
+        this.interceptDislikeButton();
+        this.interceptSwipeGesture(); // Ensure swipe interception is active
       }
     }, 50);
+  }
+
+  interceptSwipeGesture() {
+    const swipeThreshold = 100; // Adjust this value for swipe distance threshold
+    let startX: number | null = null;
+
+    window.addEventListener('pointerdown', (event) => {
+      startX = event.clientX;
+      this.swipeAlertShown = false; // Reset alert flag on new swipe
+    });
+
+    window.addEventListener('pointermove', (event) => {
+      if (startX !== null && !this.swipeAlertShown) {
+        const currentX = event.clientX;
+        const swipeDistance = currentX - startX;
+        const isReversed = this.swipeReversalEnabled;
+        const isRejectSwipe =
+          (!isReversed && swipeDistance < -swipeThreshold) ||
+          (isReversed && swipeDistance > swipeThreshold);
+
+        if (isRejectSwipe) {
+          const { rejectionOptions } = this.profileFlag!;
+          if ('rejectionBlockerAttempts' in rejectionOptions) {
+            alert(rejectionOptions.suggestionOnRejection);
+
+            rejectionOptions.rejectionBlockerAttempts -= 1;
+            this.swipeAlertShown = true; // Ensure alert is only shown once per swipe
+
+            if (rejectionOptions.rejectionBlockerAttempts <= 0) {
+              console.log('No more rejection attempts allowed for swipes');
+              window.removeEventListener('pointerdown', () => null);
+              window.removeEventListener('pointermove', () => null);
+            }
+          } else if (
+            'forceLike' in rejectionOptions &&
+            rejectionOptions.forceLike
+          ) {
+            alert('You cannot reject this profile. Forced like enabled.');
+            this.swipeAlertShown = true;
+          }
+        }
+      }
+    });
   }
 }
