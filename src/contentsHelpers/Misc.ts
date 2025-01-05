@@ -1,16 +1,18 @@
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
 import { debug, text } from '@/misc/config';
-import { Sites, type ImageType, type ProfileImage } from '@/misc/types';
+import { type ImageType, type ProfileImage, Sites } from '@/misc/types';
+
+import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
 // return `https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIIDP&sbisrc=UrlPaste&q=imgurl:${encodeURIComponent(url)}&exph=800&expw=640&vt=2&sim=15`;
-const getReverseImageURL = (url: string): string => `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`;
+const getReverseImageURL = (url: string): string =>
+  `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(url)}`;
 
 /**
-   * Used to genereate the button
-   * TODO: make platform agnostic
-   * @returns The buttons
-   */
+ * Used to generate the button
+ * @returns The buttons
+ */
 export const createButton = (url: string, withSearch: boolean): HTMLElement => {
   const parent = document.createElement('div');
   parent.classList.add('buttonParent');
@@ -108,9 +110,17 @@ export const getTimeOld = (time: number): string => {
 };
 
 export const getShownImages = () => {
-  const divs = [...document.querySelectorAll('div.StretchedBox, div.profileCard__slider__img')];
-  return divs.filter((x) => window.getComputedStyle(x, null) // @ts-ignore parentNode.getAttirbute is valid
-    .getPropertyValue('background-image').includes('url("'));
+  const divs = [
+    ...document.querySelectorAll(
+      'div.StretchedBox, div.profileCard__slider__img',
+    ),
+  ];
+  return divs.filter((x) =>
+    window
+      .getComputedStyle(x, null) // @ts-ignore parentNode.getAttirbute is valid
+      .getPropertyValue('background-image')
+      .includes('url("'),
+  );
 };
 
 /**
@@ -118,12 +128,18 @@ export const getShownImages = () => {
  * @deprecated Use getShownImages instead
  * @returns The array of nodes with a background image
  */
-export const getProfileImagesShown = () => [...document.querySelectorAll('div')]
-  .filter((x) => window.getComputedStyle(x, null)
-    .getPropertyValue('background-image').includes('url("'));
+export const getProfileImagesShown = () =>
+  [...document.querySelectorAll('div')].filter((x) =>
+    window
+      .getComputedStyle(x, null)
+      .getPropertyValue('background-image')
+      .includes('url("'),
+  );
 
 export const getBackgroundImageFromNode = (node: Element): string => {
-  const style = window.getComputedStyle(node, null).getPropertyValue('background-image');
+  const style = window
+    .getComputedStyle(node, null)
+    .getPropertyValue('background-image');
   const regex = /background-image:\s*url\("?(.*?)"?\);/;
   const match = regex.exec(style);
 
@@ -143,10 +159,15 @@ export const getDomsWithBGImages = (doc: HTMLElement): Element[] => {
   const arr: Array<Element> = Array.from(doc.querySelectorAll('*'));
   if (arr.length === 0) return [];
   const imageArray = arr.reduce((collection: Set<Element>, node: Element) => {
-    const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
+    const prop = window
+      .getComputedStyle(node, null)
+      .getPropertyValue('background-image');
     const match = srcChecker.exec(prop);
     if (match) {
-      if ((node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
+      if (
+        node.classList.contains('StretchedBox') ||
+        node.classList.contains('profileCard__slider__img')
+      ) {
         collection.add(node);
       }
     }
@@ -166,7 +187,9 @@ export const getDomsWithBGImages = (doc: HTMLElement): Element[] => {
 export const getImageURLfromNode = (node: Element): string | undefined => {
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   // get background image from node
-  const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
+  const prop = window
+    .getComputedStyle(node, null)
+    .getPropertyValue('background-image');
   const match = srcChecker.exec(prop);
 
   return match ? match[1] : undefined;
@@ -220,7 +243,11 @@ export const getTextButtonParent = (): HTMLElement | null => {
   const hiddenSpans = spanArr.filter((n) => n.classList.contains('Hidden'));
   for (let i = 0; i < hiddenSpans.length; i++) {
     const n = hiddenSpans[i];
-    if (n.innerText === 'Vinyl' || n.innerText === 'Sticker' || n.innerText === 'GIF') {
+    if (
+      n.innerText === 'Vinyl' ||
+      n.innerText === 'Sticker' ||
+      n.innerText === 'GIF'
+    ) {
       return parentNode(n, 3);
     }
   }
@@ -228,8 +255,8 @@ export const getTextButtonParent = (): HTMLElement | null => {
 };
 
 /**
-* a console log facade for the debug bool
-*/
+ * a console log facade for the debug bool
+ */
 export const consoleOut = (message: string | any[] | any) => {
   // if (debug) console.log(message);
 };
@@ -241,31 +268,39 @@ export const consoleOut = (message: string | any[] | any) => {
  * @para  urlArray The array of URLs that the method searches for
  * @returns An array of images found with the node and the data entry
  */
-export const getProfileImages = (doc: HTMLElement | Document | Element, urlArray: any[]): ProfileImage[] => {
+export const getProfileImages = (
+  doc: HTMLElement | Document | Element,
+  urlArray: any[],
+): ProfileImage[] => {
   if (!doc) return [];
   // The regex to check for the background to match `url(...)`
   const srcChecker = /url\(\s*?['"]?\s*?(\S+?)\s*?["']?\s*?\)/i;
   const outArr = Array.from(
-    Array.from(doc.querySelectorAll('div'))
-      .reduce((collection, node) => {
-        // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
-        const prop = window.getComputedStyle(node, null).getPropertyValue('background-image');
-        // match `url(...)`
-        const match = srcChecker.exec(prop);
-        if (match) {
-          // look for the found URL in the URL list
-          const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
-          // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
-          if (urlEntry && (node.classList.contains('StretchedBox') || node.classList.contains('profileCard__slider__img'))) {
-            // add tothe collection
-            const entry: ProfileImage = { domNode: node, data: urlEntry };
-            collection.add(entry);
-          } else {
-            console.error('URL not found in array', match[1]);
-          }
+    Array.from(doc.querySelectorAll('div')).reduce((collection, node) => {
+      // looking for: <div aria-label="Profile slider" class="profileCard__slider__img Z(-1)" style="background-image: url(&quot;https://images-ssl.gotinder.com/541b6caf953a993e14736e0f/640x640_f95e8fc1-fb18-40a1-8a41-53a409a238a3.jpg&quot;); background-position: 50% 50%; background-size: auto 100%;"></div>
+      const prop = window
+        .getComputedStyle(node, null)
+        .getPropertyValue('background-image');
+      // match `url(...)`
+      const match = srcChecker.exec(prop);
+      if (match) {
+        // look for the found URL in the URL list
+        const urlEntry = urlArray.find((x: ImageType) => x.url === match[1]);
+        // if the URL is in the list and the node has the classes 'StretchedBox' or 'profileCard__slider__img'
+        if (
+          urlEntry &&
+          (node.classList.contains('StretchedBox') ||
+            node.classList.contains('profileCard__slider__img'))
+        ) {
+          // add tothe collection
+          const entry: ProfileImage = { domNode: node, data: urlEntry };
+          collection.add(entry);
+        } else {
+          console.error('URL not found in array', match[1]);
         }
-        return collection;
-      }, new Set()),
+      }
+      return collection;
+    }, new Set()),
   );
   return outArr as ProfileImage[];
 };

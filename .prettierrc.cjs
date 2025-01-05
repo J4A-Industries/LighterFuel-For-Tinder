@@ -7,7 +7,7 @@ module.exports = {
   useTabs: false,
   semi: true,
   singleQuote: true,
-  trailingComma: "none",
+  trailingComma: "all",
   bracketSpacing: true,
   bracketSameLine: true,
   plugins: [require.resolve("@plasmohq/prettier-plugin-sort-imports")],
