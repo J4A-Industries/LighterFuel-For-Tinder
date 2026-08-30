@@ -44,3 +44,4 @@ keys.json
 *.pem
 
 *.crx
+example/

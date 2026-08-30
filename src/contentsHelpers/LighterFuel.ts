@@ -30,11 +30,6 @@ import type {
 } from '~src/background/messages/getImageInfo';
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 
-import type {
-  getInstallTypeRequest,
-  getInstallTypeResponse,
-} from '../background/messages/getInstallType';
-
 let imageConsoleLogMod = 0;
 
 /**
@@ -91,40 +86,20 @@ class LighterFuel {
   }
 
   async setup() {
-    const { installType } = await sendToBackground<
-      getInstallTypeRequest,
-      getInstallTypeResponse
-    >({
-      name: 'getInstallType',
-    });
-
-    if (debug) console.log('installType', installType, debug);
-    if (installType === 'normal' || debug) {
-      this.startMonitorInterval();
-      this.initializeEventListeners();
-      this.getSettings();
-      this.sendLoadedEvent();
-      this.beginPingPongLoop();
-      window.addEventListener('resize', () => {
-        if (this.windowResizeTimeout) {
-          clearTimeout(this.windowResizeTimeout);
-        }
-        this.windowResizeTimeout = setTimeout(
-          this.handleWindowResize.bind(this),
-          100,
-        );
-      });
-    } else {
-      alert(
-        'You must install LighterFuel via the Chrome Web Store to use it.\n\n Uninstall this version and install the Chrome Web Store version.',
+    this.startMonitorInterval();
+    this.initializeEventListeners();
+    this.getSettings();
+    this.sendLoadedEvent();
+    this.beginPingPongLoop();
+    window.addEventListener('resize', () => {
+      if (this.windowResizeTimeout) {
+        clearTimeout(this.windowResizeTimeout);
+      }
+      this.windowResizeTimeout = setTimeout(
+        this.handleWindowResize.bind(this),
+        100,
       );
-      window
-        .open(
-          'https://chromewebstore.google.com/detail/lighterfuel-for-tinder/bmcnbhnpmbkcpkhnmknmnkgdeodfljnc',
-          '_blank',
-        )
-        .focus();
-    }
+    });
   }
 
   async sendLoadedEvent() {
@@ -197,6 +172,77 @@ class LighterFuel {
     return res.info;
   }
 
+  /**
+   * Works out which slide the user is actually looking at.
+   *
+   * `aria-hidden` on its own isn't enough - while the slider is moving (and
+   * for a moment after a tap) more than one slide can be marked as visible,
+   * so we take the aria-hidden candidates and pick whichever one is actually
+   * sitting over the middle of the slider.
+   *
+   * @param slider The keen-slider/profileCard slider to look inside
+   * @returns The node holding the image currently on screen
+   */
+  getCurrentSliderImage(slider: Element): Element | undefined {
+    const profileImages = [
+      ...slider.querySelectorAll(
+        'div.StretchedBox, div.profileCard__slider__img',
+      ),
+    ];
+    if (profileImages.length === 0) return undefined;
+
+    const sliderBounds = slider.getBoundingClientRect();
+    const sliderCentre = sliderBounds.left + sliderBounds.width / 2;
+
+    const scored = profileImages.map((image) => {
+      const bounds = image.getBoundingClientRect();
+      const onScreen =
+        bounds.width > 0 &&
+        bounds.height > 0 &&
+        image.checkVisibility({
+          checkOpacity: true,
+          visibilityProperty: true,
+          contentVisibilityAuto: true,
+        });
+      const ariaVisible = [
+        image,
+        image.parentElement,
+        image.parentElement?.parentElement,
+      ].some((node) => node?.getAttribute('aria-hidden') === 'false');
+
+      return {
+        image,
+        onScreen,
+        ariaVisible,
+        distance: Math.abs(bounds.left + bounds.width / 2 - sliderCentre),
+      };
+    });
+
+    const ariaCandidates = scored.filter((x) => x.onScreen && x.ariaVisible);
+    const onScreenCandidates = scored.filter((x) => x.onScreen);
+    const pool =
+      ariaCandidates.length > 0
+        ? ariaCandidates
+        : onScreenCandidates.length > 0
+          ? onScreenCandidates
+          : scored;
+
+    return pool.reduce((acc, curr) => (curr.distance < acc.distance ? curr : acc))
+      .image;
+  }
+
+  /**
+   * @param slider The slider to get the currently shown media URL for
+   * @returns The image (or video) URL currently on screen for that slider
+   */
+  getCurrentMediaURL(slider: Element): string | undefined {
+    const currentImage = this.getCurrentSliderImage(slider);
+    if (!currentImage) return undefined;
+    return (
+      getImageURLfromNode(currentImage) ?? getVideoURLfromNode(currentImage)
+    );
+  }
+
   async handleConventionalSliderImages() {
     const keenSlider = [
       ...document.querySelectorAll('div.keen-slider, div.profileCard__slider'),
@@ -213,25 +259,17 @@ class LighterFuel {
     if (visible.length > 0) {
       // For every slider, make sure there's the overlay
       for (const slider of visible) {
-        // check to see if the overlay 'aria-url' matches the current image
-        const profileImages = [
-          ...slider.querySelectorAll(
-            'div.StretchedBox, div.profileCard__slider__img',
-          ),
-        ];
-        if (profileImages.length === 0) {
-          break;
+        const mediaURL = this.getCurrentMediaURL(slider);
+
+        if (!mediaURL) {
+          if (debug) {
+            console.log(
+              'getImageURLfromNode + getVideoURLfromNode returned undefined, skipping this image',
+            );
+          }
+          continue;
         }
-        const currentImage = profileImages.reduce((acc, curr) => {
-          const firstParent =
-            curr.parentElement.getAttribute('aria-hidden') === 'false';
-          const secondParent =
-            curr.parentElement.parentElement.getAttribute('aria-hidden') ===
-            'false';
-          if (firstParent || secondParent) return curr;
-          return acc;
-        });
-        let mediaURL = getImageURLfromNode(currentImage);
+
         if (debug && imageConsoleLogMod % 50 === 0)
           console.log(
             'currentImage',
@@ -239,26 +277,12 @@ class LighterFuel {
             await this.getImageInfo(mediaURL),
           );
         imageConsoleLogMod++;
-        if (!mediaURL) {
-          const videoURL = getVideoURLfromNode(currentImage);
-
-          if (!videoURL) {
-            if (debug) {
-              console.log(
-                'getImageURLfromNode + getVideoURLfromNode returned undefined, skipping this image',
-              );
-            }
-            break;
-          } else {
-            mediaURL = videoURL;
-          }
-        }
 
         this.getImageInfo(mediaURL).then((info) => {
-          if (!info) {
-            // if (debug) console.log('No info for', mediaURL);
-            return;
-          }
+          // * the slider can move on while we're waiting for the response, and
+          // * applying a stale one leaves the buttons pointing at the last image
+          if (this.getCurrentMediaURL(slider) !== mediaURL) return;
+
           let existingOverlay = slider.parentNode.querySelector(
             'p.overlayBox, p.topBox',
           );
@@ -284,6 +308,17 @@ class LighterFuel {
                 }
               }
             }
+          }
+
+          if (!info) {
+            // * we know nothing about the image on screen, so anything still
+            // * on the slider belongs to a previous image - bin it rather than
+            // * leaving buttons that open the wrong photo
+            if (existingOverlay?.parentNode) {
+              existingOverlay.parentNode.removeChild(existingOverlay);
+              consoleOut('Removed stale overlay');
+            }
+            return;
           }
 
           if (!existingOverlay) {

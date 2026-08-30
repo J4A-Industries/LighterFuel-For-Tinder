@@ -27,19 +27,3 @@ relayMessage({
 relayMessage({
   name: 'getPeople',
 });
-
-relayMessage({
-  name: 'bumbleID',
-});
-
-relayMessage({
-  name: 'getFeatureFlags',
-});
-
-relayMessage({
-  name: 'getProfileToShow',
-});
-
-relayMessage({
-  name: 'sendProfileResult',
-});
