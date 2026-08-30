@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackgroundViaRelay } from '@/misc/messaging';
 
 import { FetchInterceptor } from '~src/contentsHelpers/FetchInterceptor';
 import { debug } from '~src/misc/config';

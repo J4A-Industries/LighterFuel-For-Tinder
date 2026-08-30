@@ -1,9 +1,12 @@
+import { browser } from 'wxt/browser';
+
 import languages from './languages.json';
 
-export const debug = process.env.PLASMO_PUBLIC_DEBUG === 'true';
+// * set WXT_DEBUG=true in .env (or the shell) to turn the debug logging on
+export const debug = import.meta.env.WXT_DEBUG === 'true';
 export const gpt = false;
-export const chromeStore =
-  process.env.PLASMO_PUBLIC_PKG_ID !== chrome.runtime.id;
+export const chromeWebStoreId = 'bmcnbhnpmbkcpkhnmknmnkgdeodfljnc';
+export const chromeStore = browser.runtime.id === chromeWebStoreId;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const findLanguage = (): (typeof languages)['en-GB'] => {

@@ -1,4 +1,4 @@
-import type { PlasmoMessaging } from '@plasmohq/messaging';
+import type { MessageHandler } from '@/misc/messaging';
 import { peopleHandler } from '..';
 import type { photoInfo } from '../PeopleHandler';
 
@@ -10,7 +10,7 @@ export type getImageInfoResponse = {
 	info: photoInfo;
 };
 
-const handler: PlasmoMessaging.MessageHandler<getImageInfoRequest, getImageInfoResponse> = async (req, res) => {
+const handler: MessageHandler<getImageInfoRequest, getImageInfoResponse> = async (req, res) => {
   const info = peopleHandler.getInfoFromPhoto(req.body.url);
   res.send({
     info,

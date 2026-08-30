@@ -2,7 +2,7 @@
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-underscore-dangle */
-import { Storage } from '@plasmohq/storage';
+import { Storage } from '@/misc/storage';
 import { debug } from '~src/misc/config';
 import type { Person, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
 

@@ -1,7 +1,7 @@
 import { debug, text } from '@/misc/config';
 import { type ImageType, type ProfileImage, Sites } from '@/misc/types';
 
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackgroundViaRelay } from '@/misc/messaging';
 
 import type { sendAnalyticsEventRequest } from '~src/background/messages/sendAnalyticsEvent';
 

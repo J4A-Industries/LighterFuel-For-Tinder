@@ -1,6 +1,6 @@
-import type { PlasmoMessaging } from '@plasmohq/messaging';
+import type { MessageHandler } from '@/misc/messaging';
 
-const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
+const handler: MessageHandler = async (req, res) => {
   res.send({
     msg: 'pong',
   });

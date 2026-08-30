@@ -1,16 +1,7 @@
-declare namespace NodeJS {
-  interface ProcessEnv {
-    PLASMO_PUBLIC_GTAG_ID?: string;
-  }
+interface ImportMetaEnv {
+  readonly WXT_DEBUG?: string;
+  readonly WXT_GTAG_ID?: string;
 }
-
-declare module '*.svg' {
-  const content: string;
-  export default content;
-}
-
-declare module '*.png';
-declare module '*.jpg';
 
 interface Window {
   __data: any; // Holds the data object that might be set dynamically

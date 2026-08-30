@@ -1,4 +1,4 @@
-import { sendToBackgroundViaRelay } from '@plasmohq/messaging';
+import { sendToBackgroundViaRelay } from '@/misc/messaging';
 
 import { debug } from '~src/misc/config';
 

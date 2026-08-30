@@ -1,4 +1,4 @@
-import type { PlasmoMessaging } from '@plasmohq/messaging';
+import type { MessageHandler } from '@/misc/messaging';
 import { AnalyticsEvent } from '~src/misc/GA';
 import { debug } from '~src/misc/config';
 
@@ -11,7 +11,7 @@ export type sendAnalyticsEventResponse = {
 	success: boolean;
 };
 
-const handler: PlasmoMessaging.MessageHandler<sendAnalyticsEventRequest, sendAnalyticsEventResponse> = async (req, res) => {
+const handler: MessageHandler<sendAnalyticsEventRequest, sendAnalyticsEventResponse> = async (req, res) => {
   try {
     await AnalyticsEvent([{
       name: req.body.name,

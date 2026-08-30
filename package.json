@@ -5,34 +5,34 @@
   "description": "LighterFuel helps you see when accounts were created, see enlarged photos and reverse image search photos!",
   "author": "James",
   "scripts": {
-    "dev": "plasmo dev",
-    "build": "plasmo build",
-    "package": "plasmo package"
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^5.16.7",
-    "@plasmohq/messaging": "^0.6.2",
-    "@plasmohq/storage": "^1.12.0",
     "@tailwindcss/typography": "^0.5.15",
-    "@types/webextension-polyfill": "^0.10.7",
     "daisyui": "^3.9.4",
+    "events": "^3.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.12.0",
     "tailwindcss": "3.2.4",
-    "uuid": "^9.0.1",
-    "webextension-polyfill": "^0.10.0"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@plasmohq/prettier-plugin-sort-imports": "3.6.3",
-    "@types/chrome": "0.0.210",
-    "@types/node": "18.11.18",
+    "@types/node": "22.20.1",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "@wxt-dev/module-react": "^1.2.2",
     "autoprefixer": "10.4.13",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
@@ -41,44 +41,10 @@
     "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "plasmo": "^0.89.4",
     "postcss": "^8.4.47",
     "prettier": "2.8.3",
-    "typescript": "4.9.4"
-  },
-  "manifest": {
-    "host_permissions": [
-      "*://*.tinder.com/*",
-      "*://*.gotinder.com/*"
-    ],
-    "permissions": [
-      "storage",
-      "scripting"
-    ],
-    "icons": {
-      "64": "/assets/icon.png"
-    },
-    "externally_connectable": {
-      "matches": [
-        "*://tinder.com/*"
-      ]
-    },
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "resources/clarity.js"
-        ],
-        "matches": [
-          "<all_urls>"
-        ]
-      }
-    ]
-  },
-  "postcss": {
-    "plugins": {
-      "tailwindcss": {},
-      "autoprefixer": {}
-    }
+    "typescript": "5.9.3",
+    "wxt": "^0.21.4"
   },
   "eslintConfig": {
     "env": {

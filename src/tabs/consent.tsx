@@ -1,5 +1,5 @@
-import { Storage } from '@plasmohq/storage';
-import { useStorage } from '@plasmohq/storage/hook';
+import { Storage } from '@/misc/storage';
+import { useStorage } from '@/misc/useStorage';
 
 import './style.css';
 

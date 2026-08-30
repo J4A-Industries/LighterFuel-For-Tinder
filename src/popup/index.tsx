@@ -7,11 +7,11 @@ import { AnalyticsEvent } from '@/misc/GA';
 import { debug, defaultSettings, links, text } from '@/misc/config';
 import { openTab } from '@/misc/utils';
 import Switch from '@mui/material/Switch';
-import browser from 'webextension-polyfill';
+import { browser } from 'wxt/browser';
 
 // import { MdHeartBroken } from 'react-icons/md';
-import { sendToBackground } from '@plasmohq/messaging';
-import { useStorage } from '@plasmohq/storage/hook';
+import { sendToBackground } from '@/misc/messaging';
+import { useStorage } from '@/misc/useStorage';
 
 import logo from '~assets/LighterFuel512.png';
 
@@ -108,7 +108,7 @@ const IndexPopup = () => {
             <DiGoogleAnalytics
               className="m-auto w-16 h-16 bg-slate-600 p-2 cursor-pointer hover:outline-offset-2 outline-white outline"
               onClick={() =>
-                openTab(browser.runtime.getURL('tabs/consent.html'))
+                openTab(browser.runtime.getURL('/consent.html'))
               }
             />
           </div>

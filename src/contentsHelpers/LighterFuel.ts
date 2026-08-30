@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+/* eslint-disable no-continue */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable consistent-return */
 /* eslint-disable no-restricted-syntax */
@@ -20,8 +21,8 @@ import {
 } from '@/misc/types';
 import EventEmitter from 'events';
 
-import { sendToBackground } from '@plasmohq/messaging';
-import { Storage } from '@plasmohq/storage';
+import { sendToBackground } from '@/misc/messaging';
+import { Storage } from '@/misc/storage';
 
 import type { photoInfo } from '~src/background/PeopleHandler';
 import type {
@@ -218,17 +219,16 @@ class LighterFuel {
       };
     });
 
-    const ariaCandidates = scored.filter((x) => x.onScreen && x.ariaVisible);
     const onScreenCandidates = scored.filter((x) => x.onScreen);
-    const pool =
-      ariaCandidates.length > 0
-        ? ariaCandidates
-        : onScreenCandidates.length > 0
-          ? onScreenCandidates
-          : scored;
+    const ariaCandidates = onScreenCandidates.filter((x) => x.ariaVisible);
+    // * best evidence first: aria says it's the slide, then anything painted
+    const pool = [ariaCandidates, onScreenCandidates, scored].find(
+      (candidates) => candidates.length > 0,
+    );
 
-    return pool.reduce((acc, curr) => (curr.distance < acc.distance ? curr : acc))
-      .image;
+    return (pool ?? scored).reduce((acc, curr) =>
+      curr.distance < acc.distance ? curr : acc,
+    ).image;
   }
 
   /**

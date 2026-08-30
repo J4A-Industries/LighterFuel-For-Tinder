@@ -1,8 +1,8 @@
 import { debug } from '@/misc/config';
 import type { ImageType, TabMessage } from '@/misc/types';
-import browser from 'webextension-polyfill';
+import { browser } from 'wxt/browser';
 
-import { Storage } from '@plasmohq/storage';
+import { Storage } from '@/misc/storage';
 
 /**
  * This filters through all the tabs and sends the info to them

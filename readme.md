@@ -16,7 +16,7 @@ It also helps users out by allowing them to reverse image search their matches p
 - Enables quick reverse image searching with your matches profile photos
 
 
-This project is based off of the [Plasmo framework](https://docs.plasmo.com/).
+This project is built with the [WXT framework](https://wxt.dev/).
 
 # How to build
 
@@ -24,10 +24,16 @@ Run these commands to create a build, to see the other available commands, look 
 ```
 pnpm i
 
-pnpm run build-chrome
+pnpm dev          # loads an unpacked dev build into chrome with hot reloading
 
-pnpm run build-firefox
+pnpm build        # builds to .output/chrome-mv3
+
+pnpm build:firefox
+
+pnpm zip          # builds and zips for the web store
 ```
+
+Set `WXT_DEBUG=true` in a `.env` file to turn on the debug logging.
 
 # TODO
 

@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 
-import { Storage } from '@plasmohq/storage';
+import { Storage } from '@/misc/storage';
 
 import { chromeStore, debug } from '~src/misc/config';
 

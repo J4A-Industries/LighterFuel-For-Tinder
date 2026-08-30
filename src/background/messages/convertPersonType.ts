@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import type { PlasmoMessaging } from '@plasmohq/messaging';
+import type { MessageHandler } from '@/misc/messaging';
 import { peopleHandler } from '..';
 
 export type ConvertPersonTypeRequest = {
@@ -11,7 +11,7 @@ export type ConvertPersonTypeResponse = {
   received: true;
 };
 
-const handler: PlasmoMessaging.MessageHandler<ConvertPersonTypeRequest, ConvertPersonTypeResponse> = async (req, res) => {
+const handler: MessageHandler<ConvertPersonTypeRequest, ConvertPersonTypeResponse> = async (req, res) => {
   const newPersonRecord = peopleHandler.people.find((p) => p._id === req.body.personId);
   if (!newPersonRecord) {
     console.error('Could not find person with id', req.body.personId);
