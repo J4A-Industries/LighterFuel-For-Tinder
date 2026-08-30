@@ -46,3 +46,8 @@ keys.json
 
 *.crx
 example/
+
+# playwright
+/e2e/.auth
+/test-results
+/playwright-report

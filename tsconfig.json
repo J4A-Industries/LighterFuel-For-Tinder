@@ -6,6 +6,6 @@
     // * the codebase predates WXT's strict default - loosened to keep parity
     "strict": false
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "wxt.config.ts", ".wxt/**/*"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "e2e/**/*.ts", "wxt.config.ts", "playwright.config.ts", ".wxt/**/*"],
   "exclude": ["node_modules", "build", ".output"]
 }

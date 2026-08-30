@@ -11,7 +11,9 @@
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "compile": "tsc --noEmit",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "test:e2e": "wxt build && playwright test",
+    "test:e2e:login": "LF_LOGIN=1 playwright test e2e/login.spec.ts --timeout=0"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -27,6 +29,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/node": "22.20.1",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
@@ -108,7 +111,19 @@
       "@typescript-eslint/no-shadow": "error",
       "no-restricted-globals": 0,
       "no-undef": 0
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "e2e/**/*.ts",
+          "playwright.config.ts"
+        ],
+        "rules": {
+          "import/no-extraneous-dependencies": 0,
+          "no-empty-pattern": 0
+        }
+      }
+    ]
   },
   "pnpm": {
     "overrides": {
