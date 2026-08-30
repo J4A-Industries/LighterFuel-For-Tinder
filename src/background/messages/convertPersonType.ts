@@ -12,19 +12,16 @@ export type ConvertPersonTypeResponse = {
 };
 
 const handler: MessageHandler<ConvertPersonTypeRequest, ConvertPersonTypeResponse> = async (req, res) => {
-  const newPersonRecord = peopleHandler.people.find((p) => p._id === req.body.personId);
-  if (!newPersonRecord) {
+  // * the worker may have just restarted, so wait for the cache to come back
+  await peopleHandler.ready();
+
+  const converted = peopleHandler.convertPersonType(req.body.personId, req.body.type);
+
+  if (!converted) {
     console.error('Could not find person with id', req.body.personId);
     return;
   }
 
-  const newPerson = {
-    ...newPersonRecord,
-    type: req.body.type,
-  };
-
-  peopleHandler.people = peopleHandler.people.filter((p) => p._id !== req.body.personId);
-  peopleHandler.people.push(newPerson);
   res.send({
     received: true,
   });

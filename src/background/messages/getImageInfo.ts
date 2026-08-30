@@ -11,6 +11,9 @@ export type getImageInfoResponse = {
 };
 
 const handler: MessageHandler<getImageInfoRequest, getImageInfoResponse> = async (req, res) => {
+  // * the worker may have just restarted, so wait for the cache to come back
+  await peopleHandler.ready();
+
   const info = peopleHandler.getInfoFromPhoto(req.body.url);
   res.send({
     info,

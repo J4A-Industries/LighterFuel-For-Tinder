@@ -4,10 +4,15 @@
 /* eslint-disable no-underscore-dangle */
 import { Storage } from '@/misc/storage';
 import { debug } from '~src/misc/config';
-import type { Person, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
+import type { Person, Photos, ProfileResponseData, UserStats } from '~src/misc/tinderTypes';
 
 const maxPeopleToStore = 1000;
 const maxPeopleToSave = 200;
+
+// * where the people list is parked so it survives the worker being killed
+const peopleCacheKey = 'peopleCache';
+// * people arrive in bursts, so wait for the burst to finish before writing
+const persistDebounceMs = 300;
 
 export type photoInfo = {
 	hqUrl: string;
@@ -60,10 +65,107 @@ const calculateAge = (birthday) => { // birthday is a date
 
 type PersonWithAddedAt = Person & {addedAt: number};
 
+/**
+ * The slimmed down version of a person we keep in session storage - only the
+ * bits getInfoFromPhoto and the type conversion actually read. Tinder's full
+ * person objects are far too big to write out a thousand at a time.
+ */
+type CachedPerson = Pick<PersonWithAddedAt, '_id' | 'type' | 'addedAt'> & {
+  photos: Pick<Photos, 'id' | 'url'>[];
+};
+
 export class PeopleHandler {
   people: PersonWithAddedAt[] = [];
 
   storage: Storage;
+
+  private hydrated: Promise<void>;
+
+  private persistTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    // * session storage, so it goes away with the browser rather than sitting
+    // * on disk, but survives the worker restarting
+    this.storage = new Storage({ area: 'session' });
+    this.hydrated = this.hydrate();
+  }
+
+  /**
+   * MV3 shuts the background worker down after ~30 seconds of no events, which
+   * took the whole people list with it - that's why lighterfuel went blank for
+   * a while after leaving tinder sitting idle. Read it back on startup.
+   */
+  private async hydrate() {
+    try {
+      const cached = await this.storage.get<CachedPerson[]>(peopleCacheKey);
+      if (!Array.isArray(cached)) return;
+
+      // * anything that arrived while we were reading is newer, so it wins
+      const alreadyHere = new Set(
+        this.people.map((person) => `${person._id}-${person.type}`),
+      );
+
+      this.people.push(
+        ...(cached.filter(
+          (person) => !alreadyHere.has(`${person._id}-${person.type}`),
+        ) as PersonWithAddedAt[]),
+      );
+
+      if (debug) console.log('restored people from cache', this.people.length);
+    } catch (e) {
+      console.error('Could not restore the people cache', e);
+    }
+  }
+
+  /**
+   * @returns a promise that resolves once the previous worker's cache is back
+   */
+  ready() {
+    return this.hydrated;
+  }
+
+  private schedulePersist() {
+    if (this.persistTimeout) clearTimeout(this.persistTimeout);
+    this.persistTimeout = setTimeout(() => {
+      this.persistTimeout = undefined;
+      this.persist();
+    }, persistDebounceMs);
+  }
+
+  private async persist() {
+    try {
+      const cache: CachedPerson[] = this.people.map(
+        ({ _id, type, addedAt, photos }) => ({
+          _id,
+          type,
+          addedAt,
+          photos: (photos ?? []).map(({ id, url }) => ({ id, url })),
+        }),
+      );
+
+      await this.storage.set(peopleCacheKey, cache);
+    } catch (e) {
+      console.error('Could not cache the people list', e);
+    }
+  }
+
+  /**
+   * Moves someone between rec/match/profile, e.g. once a like turns into a match
+   *
+   * @param personId The tinder id of the person
+   * @param type The type to move them to
+   * @returns whether the person was found
+   */
+  convertPersonType(personId: string, type: Person['type']) {
+    const person = this.people.find((p) => p._id === personId);
+    if (!person) return false;
+
+    this.people = this.people.filter((p) => p._id !== personId);
+    this.people.push({ ...person, type });
+    this.schedulePersist();
+
+    return true;
+  }
 
   handleNewPeople(people: Person[]) {
     people.forEach((person) => {
@@ -86,13 +188,15 @@ export class PeopleHandler {
       const recs = this.people.filter((person) => person.type === 'rec')
         .sort((a, b) => a.addedAt - b.addedAt);
 
-      while (recs.length > maxPeopleToStore) {
+      while (this.people.length > maxPeopleToStore && recs.length > 0) {
         const oldestPerson = recs.shift();
         this.people = this.people.filter((person) => person._id !== oldestPerson._id);
       }
     }
 
     if (debug) console.log('people', this.people);
+
+    this.schedulePersist();
   }
 
   /**
