@@ -4,40 +4,13 @@ import { join } from 'node:path';
 
 import { expect, test } from '@playwright/test';
 
-import { shouldOpenAnnouncement } from '@/background/announcement';
-
 import { getServiceWorker, launchWithExtension } from './fixtures';
 
-/**
- * These use a throwaway profile rather than the logged-in one, because a fresh
- * profile is what makes chrome fire onInstalled.
- */
+/** A throwaway profile, so these never touch the logged-in tinder session */
 const freshProfile = () => mkdtempSync(join(tmpdir(), 'lf-e2e-'));
 
-const readSync = (worker: any, key: string) =>
-  worker.evaluate(
-    (k: string) => (globalThis as any).chrome.storage.sync.get(k),
-    key,
-  );
-
-test.describe('the announcement page', () => {
-  test('a fresh install does not announce, but records the version', async () => {
-    const context = await launchWithExtension(freshProfile());
-
-    try {
-      const worker = await getServiceWorker(context);
-      await expect
-        .poll(async () => (await readSync(worker, 'announcementSeen'))?.announcementSeen)
-        .toBe('"1.7.0"');
-
-      const urls = context.pages().map((page) => page.url());
-      expect(urls.some((url) => url.includes('review.html'))).toBe(false);
-    } finally {
-      await context.close();
-    }
-  });
-
-  test('it says what changed, and only announces once', async () => {
+test.describe("the what's new page", () => {
+  test('renders the current release notes', async () => {
     const context = await launchWithExtension(freshProfile());
 
     try {
@@ -94,27 +67,3 @@ test.describe('the popup', () => {
   });
 });
 
-/**
- * Chrome only fires onInstalled with reason "update" for a genuine version
- * change, which can't be forced against an unpacked build - reloading one
- * doesn't fire it, and rewriting its manifest stops chrome bringing the worker
- * back at all. So the decision itself is tested directly.
- */
-test.describe('when to announce', () => {
-  test('only on an update, and only once per announcement', () => {
-    // a fresh install gets the consent page instead
-    expect(shouldOpenAnnouncement('install', undefined, '1.7.0')).toBe(false);
-    expect(shouldOpenAnnouncement('install', '1.6.6', '1.7.0')).toBe(false);
-
-    // a returning user who hasn't seen this one
-    expect(shouldOpenAnnouncement('update', '1.6.6', '1.7.0')).toBe(true);
-    expect(shouldOpenAnnouncement('update', undefined, '1.7.0')).toBe(true);
-
-    // ...but never twice, so a patch release or a reload doesn't nag
-    expect(shouldOpenAnnouncement('update', '1.7.0', '1.7.0')).toBe(false);
-
-    // and nothing else opens it
-    expect(shouldOpenAnnouncement('chrome_update', '1.6.6', '1.7.0')).toBe(false);
-    expect(shouldOpenAnnouncement('shared_module_update', undefined, '1.7.0')).toBe(false);
-  });
-});

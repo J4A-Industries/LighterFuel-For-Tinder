@@ -14,7 +14,7 @@ type Release = {
   body: ReactNode;
 };
 
-/** Newest first. The top entry is the one the announcement page leads with. */
+/** Newest first. The top entry is the one the page leads with. */
 const releases: Release[] = [
   {
     version: '1.7.0',
