@@ -27,6 +27,12 @@ export const links = {
   discord: 'https://discord.gg/nHcDMkqYgP',
 };
 
+/**
+ * The announcement page opens once per user for each new value here, so bump
+ * it when there's something worth telling everyone about - not on every patch.
+ */
+export const announcementVersion = '1.7.0';
+
 export const defaultSettings = {
   overlayButton: true,
   searchButton: true,

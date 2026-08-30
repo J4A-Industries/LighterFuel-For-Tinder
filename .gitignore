@@ -51,3 +51,6 @@ example/
 /e2e/.auth
 /test-results
 /playwright-report
+
+# screenshots from e2e/screenshots.spec.ts
+/screenshots

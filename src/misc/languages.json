@@ -5,11 +5,11 @@
 			"location": "Donations go to the Ukraine Humanitarian Appeal, Slava Ukraini!",
 			"buttonText": "Donate Here"
 		},
-		"enableOverlay": "Enable overlay",
-		"enableSearchButton": "Enable Buttons",
-		"brokenButton": "Report Lighterfuel Broken",
-		"brokenButtonClicked": "Sent Broken Report",
-		"funMode": "Enable Fun Mode",
+		"enableOverlay": "Account age overlay",
+		"enableSearchButton": "Search & high quality",
+		"brokenButton": "Report LighterFuel broken",
+		"brokenButtonClicked": "Report sent, thank you",
+		"funMode": "Fun mode",
 		"info": {
 			"title": "Info",
 			"text": "Lighterfuel allows you to see when profile images were uploaded to get an idea of when they made their account and reverse image search your matches photos!"
@@ -21,6 +21,16 @@
 		"overlay": {
 			"createdAt": "Created",
 			"search": "Search"
+		},
+		"popup": {
+			"statusActive": "Running on this tab",
+			"statusIdle": "Open Tinder to get going",
+			"enableSearchButtonDesc": "Search only works on matches",
+			"about": "What LighterFuel does",
+			"review": "Review",
+			"discord": "Discord",
+			"ukraine": "Ukraine appeal",
+			"settings": "Settings & privacy"
 		}
 	}
 }

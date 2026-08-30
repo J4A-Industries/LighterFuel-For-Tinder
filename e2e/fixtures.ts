@@ -22,12 +22,16 @@ export const recsUrl = 'https://tinder.com/app/recs';
  * awkward in headless chrome regardless.
  *
  * @param profile The user data dir to launch with
+ * @param extensionDir The build to load, defaulting to the real one
  * @returns The browser context
  */
-export const launchWithExtension = (profile: string): Promise<BrowserContext> => {
-  if (!existsSync(extensionPath)) {
+export const launchWithExtension = (
+  profile: string,
+  extensionDir: string = extensionPath,
+): Promise<BrowserContext> => {
+  if (!existsSync(extensionDir)) {
     throw new Error(
-      `No build found at ${extensionPath}. Run \`pnpm build\` first.`,
+      `No build found at ${extensionDir}. Run \`pnpm build\` first.`,
     );
   }
 
@@ -40,8 +44,8 @@ export const launchWithExtension = (profile: string): Promise<BrowserContext> =>
     args: [
       // * chrome 137 dropped --load-extension unless you opt back in
       '--disable-features=DisableLoadExtensionCommandLineSwitch',
-      `--disable-extensions-except=${extensionPath}`,
-      `--load-extension=${extensionPath}`,
+      `--disable-extensions-except=${extensionDir}`,
+      `--load-extension=${extensionDir}`,
     ],
   });
 };

@@ -1,19 +1,28 @@
-import { Storage } from '@/misc/storage';
-import { useStorage } from '@/misc/useStorage';
+import { useEffect } from 'react';
 
 import './style.css';
 
-import { Button, Switch } from '@mui/material';
-import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Storage } from '@/misc/storage';
+import { useStorage } from '@/misc/useStorage';
 
 import logo from '~assets/LighterFuel512.png';
 
 const consentText = {
-  analyticsConsent: 'Enable analytics',
-  replayConsent: 'Enable error reporting',
-  funMode: 'Enable fun mode',
+  analyticsConsent: 'Usage analytics',
+  analyticsDesc:
+    'Anonymous counts of how many people use LighterFuel and which features they use. Sent to Google Analytics.',
+  replayConsent: 'Error reporting',
+  replayDesc:
+    'Lets the "something’s broken" button record your Tinder tab so I can see what went wrong. Recording only ever starts when you press that button. Uses Microsoft Clarity.',
+  funMode: 'Fun mode',
+  funDesc:
+    'LighterFuel-themed pranks, once a year, on the 1st of April.',
   goToTinder: 'Go to Tinder',
 };
+
+const syncStorage = new Storage({ area: 'sync' });
 
 const Consent = () => {
   const [funMode, setFunMode] = useStorage('funMode', (x) =>
@@ -22,115 +31,100 @@ const Consent = () => {
 
   const [analyticsConsent, setAnalyticsConsent] = useStorage({
     key: 'analyticsConsent',
-    instance: new Storage({
-      area: 'sync',
-    }),
+    instance: syncStorage,
   });
 
   const [replayConsent, setReplayConsent] = useStorage({
     key: 'replayConsent',
-    instance: new Storage({
-      area: 'sync',
-    }),
+    instance: syncStorage,
   });
 
-  // sometimes analytics consent is undefined, so we set it to true
+  // sometimes consent comes back undefined, so default it to on
   useEffect(() => {
     if (analyticsConsent === undefined) setAnalyticsConsent(true);
     if (replayConsent === undefined) setReplayConsent(true);
-  }, []);
+  }, [analyticsConsent, replayConsent]);
+
+  const rows = [
+    {
+      title: consentText.analyticsConsent,
+      description: consentText.analyticsDesc,
+      checked: Boolean(analyticsConsent),
+      onChange: () => setAnalyticsConsent(!analyticsConsent),
+    },
+    {
+      title: consentText.replayConsent,
+      description: consentText.replayDesc,
+      checked: Boolean(replayConsent),
+      onChange: () => setReplayConsent(!replayConsent),
+    },
+    {
+      title: consentText.funMode,
+      description: consentText.funDesc,
+      checked: Boolean(funMode),
+      onChange: () => setFunMode(!funMode),
+    },
+  ];
 
   return (
-    <div className="min-h-screen w-screen bg-gray-900 flex justify-center align-middle text-white">
-      <div className="m-auto flex flex-col p-4 bg-neutral-focus gap-4">
-        <div className="flex justify-center align-middle">
-          <h1 className="text-4xl m-auto flex-1 text-center">Consent</h1>
-          <div className="m-auto flex justify-center align-middle flex-1">
-            <img
-              src={logo}
-              className="m-auto max-h-[10em] max-w-[10em]"
-              alt="logo"
-            />
+    <div className="min-h-screen w-full bg-background px-6 py-14 text-foreground">
+      <div className="mx-auto flex max-w-2xl flex-col gap-8">
+        <header className="flex items-center gap-4">
+          <img src={logo} className="h-14 w-14 rounded-xl" alt="" />
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Your data, your call
+            </h1>
+            <p className="mt-1 max-w-md text-muted-foreground">
+              You can change these any time from the popup.
+            </p>
           </div>
+        </header>
+
+        <div className="divide-y divide-border rounded-lg border bg-card">
+          {rows.map((row) => (
+            <div
+              key={row.title}
+              className="flex items-start justify-between gap-6 p-5">
+              <div>
+                <div className="text-lg">{row.title}</div>
+                <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
+                  {row.description}
+                </p>
+              </div>
+              <div className="pt-1.5">
+                <Switch
+                  checked={row.checked}
+                  onCheckedChange={row.onChange}
+                  aria-label={row.title}
+                />
+              </div>
+            </div>
+          ))}
         </div>
-        <p className="text-xl">
-          By using LighterFuel, you agree to sending anonymous usage data back
-          to us. <br />
-          This data will be used to help improve the extension, see how
-          it&apos;s used for marketing purposes and is not sold to any third
-          parties. <br />
-          If you want to turn this off, you can do so here at any time. <br />
-          Analytics are used to help us understand how many people are using the
-          extension, and how they are using it.
-          <br />
-          This is done via Google Analytics.
-          <br />
-          Error reporting is used to help us understand what errors are
-          happening, and how to fix them.
-          <br />
-          This is done via Microsoft Clarity
-          <br />
-          <p className="bold">
-            Finally, we reserve the right, on the 1st of april each year, to
-            play a prank on you. If you&apos;re boring then you can opt out of
-            this too by disabling fun mode.
+
+        <Button asChild size="lg" className="w-full">
+          <a href="https://tinder.com">{consentText.goToTinder}</a>
+        </Button>
+
+        <div className="border-t pt-6 text-sm leading-relaxed text-muted-foreground">
+          <h2 className="mb-2 text-base text-foreground">
+            The longer version
+          </h2>
+          <p className="mb-3">
+            LighterFuel is free, and none of this data is sold to anyone. Usage
+            analytics tell me how many people are using the extension and
+            roughly which parts, which is what keeps it worth maintaining. Error
+            reporting only ever fires when you actively report something as
+            broken, and it stops as soon as you refresh or close the tab.
           </p>
-          <br />
-          This will make lighterfuel work more reliably and consistently for
-          everyone.
-          <br />
-          <br />
-          <a
-            href="https://j4a.uk/privacy-policy"
-            className="text-blue-500 underline">
-            Click Here For The Privacy Policy
-          </a>
-        </p>
-        <div className="flex gap-4">
-          <div className="flex flex-col justify-center m-auto bg-slate-800 text-center text-2xl flex-1">
-            <div>{consentText.analyticsConsent}</div>
-
-            <Switch
-              checked={analyticsConsent}
-              onChange={() => setAnalyticsConsent(!analyticsConsent)}
-              inputProps={{ 'aria-label': 'controlled' }}
-              aria-label={consentText.analyticsConsent}
-              className="m-auto"
-            />
-          </div>
-
-          <div className="flex flex-col justify-center m-auto bg-slate-800 text-center text-2xl flex-1">
-            <div>{consentText.replayConsent}</div>
-
-            <Switch
-              checked={replayConsent}
-              onChange={() => setReplayConsent(!replayConsent)}
-              inputProps={{ 'aria-label': 'controlled' }}
-              aria-label={consentText.replayConsent}
-              className="m-auto"
-            />
-          </div>
-          <div className="flex flex-col justify-center m-auto bg-slate-800 text-center text-2xl flex-1">
-            <div>{consentText.funMode}</div>
-
-            <Switch
-              checked={funMode}
-              onChange={() => setFunMode(!funMode)}
-              inputProps={{ 'aria-label': 'controlled' }}
-              aria-label={consentText.funMode}
-              className="m-auto"
-            />
-          </div>
-        </div>
-        <div className="flex justify-center align-middle w-full mt-5">
-          <Button
-            size="large"
-            type="button"
-            variant="contained"
-            className="h-20 w-1/2 m-auto"
-            href="https://tinder.com">
-            {consentText.goToTinder}
-          </Button>
+          <p>
+            <a
+              href="https://j4a.uk/privacy-policy"
+              className="text-primary underline underline-offset-2">
+              Read the privacy policy
+            </a>
+          </p>
         </div>
       </div>
     </div>
